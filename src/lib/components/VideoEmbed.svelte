@@ -1,14 +1,25 @@
 <script lang="ts">
+	import { base } from '$app/paths';
+
 	interface Props {
 		url?: string;
 	}
 
 	let { url }: Props = $props();
+
+	// Detect if URL is a local video file vs an embed iframe
+	let isLocalVideo = $derived(url ? /\.(mp4|webm|ogg)$/i.test(url) : false);
+	let videoSrc = $derived(url && isLocalVideo ? `${base}/${url}` : url);
 </script>
 
 <div class="video">
 	<div class="video__wrap">
-		{#if url}
+		{#if url && isLocalVideo}
+			<video controls preload="metadata">
+				<source src={videoSrc} type="video/mp4" />
+				<track kind="captions" />
+			</video>
+		{:else if url}
 			<iframe
 				src={url}
 				title="Tutorial video"
@@ -41,7 +52,8 @@
 		padding-top: 56.25%;
 	}
 
-	.video__wrap iframe {
+	.video__wrap iframe,
+	.video__wrap video {
 		position: absolute;
 		top: 0;
 		left: 0;

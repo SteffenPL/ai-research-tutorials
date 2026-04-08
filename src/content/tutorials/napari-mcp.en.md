@@ -4,6 +4,7 @@ tags: [python, napari, image-analysis, MCP, beginner]
 updated: "2026-04"
 duration: 15
 hasVideo: true
+videoUrl: videos/napari-mcp.mp4
 githubUrl: https://github.com/ashbi-kyoto/napari-mcp
 links:
   - label: napari Documentation
