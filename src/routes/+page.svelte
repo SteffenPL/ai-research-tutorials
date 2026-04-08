@@ -2,6 +2,7 @@
 	import Nav from '$lib/components/Nav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import TutorialCard from '$lib/components/TutorialCard.svelte';
+	import MatrixRain from '$lib/components/MatrixRain.svelte';
 	import { t } from '$lib/stores/lang.svelte';
 	import { getAllTutorials } from '$lib/data/markdown';
 
@@ -23,6 +24,7 @@
 
 <!-- Hero Section -->
 <section class="hero">
+	<MatrixRain />
 	<div class="hero__inner">
 		<div class="hero__label">
 			<span>{t({ en: 'Kyoto University · ASHBi', ja: '京都大学 · ASHBi' })}</span>
