@@ -17,7 +17,8 @@ const promptExtension: TokenizerExtension & RendererExtension = {
 		return src.indexOf(':::prompt');
 	},
 	tokenizer(src: string): PromptToken | undefined {
-		const match = src.match(/^:::prompt\n([\s\S]*?)^:::/m);
+		// Must start at beginning of src; capture until a line that is exactly ":::"
+		const match = src.match(/^:::prompt\n([\s\S]*?)\n:::\s*(?:\n|$)/);
 		if (match) {
 			return {
 				type: 'prompt',
