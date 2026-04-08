@@ -45,20 +45,6 @@
 				<path d="M5 12h14m-7-7 7 7-7 7" />
 			</svg>
 		</a>
-
-		<!-- Decorative -->
-		<div class="hero__deco" aria-hidden="true">
-			<svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1.2">
-				<circle cx="100" cy="100" r="80" opacity="0.5" />
-				<circle cx="100" cy="100" r="55" opacity="0.35" />
-				<circle cx="100" cy="100" r="30" opacity="0.2" />
-				<line x1="20" y1="100" x2="180" y2="100" opacity="0.15" />
-				<line x1="100" y1="20" x2="100" y2="180" opacity="0.15" />
-				<circle cx="60" cy="55" r="3" fill="currentColor" opacity="0.15" />
-				<circle cx="140" cy="80" r="2.5" fill="currentColor" opacity="0.12" />
-				<circle cx="85" cy="145" r="3.5" fill="currentColor" opacity="0.1" />
-			</svg>
-		</div>
 	</div>
 
 	<!-- Wave divider -->
@@ -194,21 +180,7 @@
 		transform: translateX(3px);
 	}
 
-	.hero__deco {
-		position: absolute;
-		top: 80px;
-		right: -20px;
-		width: 320px;
-		height: 320px;
-		opacity: 0.06;
-		pointer-events: none;
-	}
-
-	:global([data-theme='dark']) .hero__deco {
-		opacity: 0.04;
-	}
-
-	.hero__wave {
+.hero__wave {
 		position: absolute;
 		bottom: -1px;
 		left: 0;
@@ -261,10 +233,6 @@
 	@media (max-width: 640px) {
 		.hero {
 			padding: 100px 16px 56px;
-		}
-
-		.hero__deco {
-			display: none;
 		}
 
 		.hero__subtitle {
