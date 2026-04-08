@@ -40,6 +40,12 @@
 		trailLength: number;
 	}
 
+	const digits = '0123456789';
+
+	function randomDigit(): string {
+		return digits[Math.floor(Math.random() * digits.length)];
+	}
+
 	let canvas = $state<HTMLCanvasElement>(null!);
 
 	function setup(canvas: HTMLCanvasElement) {
@@ -110,6 +116,15 @@
 					const charY = col.y + i * CHAR_HEIGHT;
 
 					if (charY < -CHAR_HEIGHT || charY > h) continue;
+
+					// From mid-screen down, randomly replace characters with digits
+					const yNorm = charY / h; // 0=top, 1=bottom
+					if (yNorm > 0.5) {
+						const replaceChance = (yNorm - 0.5) * 2; // 0 at middle, 1 at bottom
+						if (Math.random() < replaceChance * replaceChance * 0.15) {
+							col.chars[i] = randomDigit();
+						}
+					}
 
 					// Bottom char (last) is brightest, fades toward top
 					const distFromBottom = col.trailLength - 1 - i;
