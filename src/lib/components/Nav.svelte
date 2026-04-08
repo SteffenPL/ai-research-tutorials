@@ -21,10 +21,10 @@
 				</a>
 				<div class="nav__sep" aria-hidden="true"></div>
 			{/if}
-			<a href="/" class="nav__logo" aria-label="ASHBi Coding Tutorials Home">
+			<a href="/" class="nav__logo" aria-label="AI Coding Tutorials Home">
 				<div class="nav__logo-mark">A</div>
 				<span class="nav__logo-text">
-					{t({ en: 'ASHBi Tutorials', ja: 'ASHBi チュートリアル' })}
+					{t({ en: 'AI Tutorials', ja: 'AI チュートリアル' })}
 				</span>
 			</a>
 		</div>

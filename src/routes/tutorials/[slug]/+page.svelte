@@ -87,7 +87,7 @@
 </script>
 
 <svelte:head>
-	<title>{meta.title} — ASHBi Tutorials</title>
+	<title>{meta.title} — AI Tutorials</title>
 </svelte:head>
 
 <Nav showBack />
