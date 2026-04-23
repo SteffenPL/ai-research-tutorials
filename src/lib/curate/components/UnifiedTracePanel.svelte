@@ -61,6 +61,18 @@
 	let inlineEditingStep: string | null = $state(null);
 	let inlineEditValues: { content: string; toolName: string } = $state({ content: '', toolName: '' });
 
+	function hideAllActions() {
+		for (const round of curation.rounds) {
+			for (const step of round.steps) {
+				if (!step.included && !step.inserted) continue;
+				const cat = getCategory(stepLabel(step));
+				if (cat === 'supporting' && !step.hidden) {
+					onToggleHidden(step);
+				}
+			}
+		}
+	}
+
 	function getCommentText(step: TraceStep): string {
 		if (!step.comment) return '';
 		return typeof step.comment === 'string' ? step.comment : step.comment.en ?? '';
@@ -237,7 +249,7 @@
 			if (isExcluded(step) && !showExcluded) continue;
 			if (isCompactStep(step)) {
 				if (combineCompact) {
-					compactBuf.push(step);
+					if (!step.hidden || showExcluded) compactBuf.push(step);
 				} else {
 					groups.push({ kind: 'full', step });
 				}
@@ -375,8 +387,9 @@
 			</label>
 			<label class="toggle-excluded">
 				<input type="checkbox" bind:checked={showExcluded} />
-				<span>Show excluded</span>
+				<span>Show all</span>
 			</label>
+			<button class="btn-hide-actions" title="Hide all supporting steps (tool calls, results, thinking, status, permissions)" onclick={hideAllActions}>Hide actions</button>
 			<span class="panel-meta">{curation.rounds.length} rounds</span>
 		</div>
 	</div>
@@ -437,9 +450,11 @@
 							<div class="compact-flow">
 								{#each group.steps as step (step.id)}
 									{@const chipStyle = getStepStyle(stepLabel(step) as import('$lib/data/tutorials').StepType)}
+									<div class="compact-chip-wrap">
 									<button
 										class="compact-chip"
 										class:compact-chip-expanded={expandedCompactId === step.id}
+										class:compact-chip-hidden={step.hidden}
 										style="--chip-accent: {chipStyle.accent}"
 										onclick={() => toggleCompactExpand(step.id)}
 										title={stepPreview(step)}
@@ -448,6 +463,12 @@
 										<span class="chip-text">{compactChipText(step)}</span>
 										<span class="chip-type">{stepLabel(step)}</span>
 									</button>
+									<button
+										class="chip-hide-btn"
+										title={step.hidden ? 'Unhide' : 'Hide'}
+										onclick={(e) => { e.stopPropagation(); onToggleHidden(step); }}
+									>{step.hidden ? '◌' : '●'}</button>
+								</div>
 								{/each}
 							</div>
 							{#each group.steps as step (step.id)}
@@ -575,6 +596,23 @@
 		font-family: var(--font-mono);
 		font-size: 0.72rem;
 		color: var(--text-secondary);
+	}
+
+	.btn-hide-actions {
+		padding: 3px 10px;
+		border: 1px solid var(--border-subtle);
+		border-radius: 4px;
+		background: none;
+		color: var(--text-tertiary);
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		cursor: pointer;
+		transition: color 0.15s, border-color 0.15s;
+	}
+
+	.btn-hide-actions:hover {
+		color: var(--text-secondary);
+		border-color: var(--orange-300);
 	}
 
 	/* ─── Terminal-like background ─── */
@@ -1085,6 +1123,44 @@
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
 		opacity: 0.6;
+	}
+
+	.compact-chip-wrap {
+		position: relative;
+		display: inline-flex;
+	}
+
+	.chip-hide-btn {
+		position: absolute;
+		top: -6px;
+		right: -6px;
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		border: 1px solid var(--border-subtle);
+		background: #332730;
+		color: var(--text-tertiary);
+		font-size: 8px;
+		line-height: 1;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0;
+		transition: opacity 0.15s;
+	}
+
+	.compact-chip-wrap:hover .chip-hide-btn {
+		opacity: 1;
+	}
+
+	.chip-hide-btn:hover {
+		background: var(--bg-hover);
+		color: var(--text-primary);
+	}
+
+	.compact-chip.compact-chip-hidden {
+		opacity: 0.4;
 	}
 
 	.compact-expanded {
