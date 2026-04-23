@@ -54,7 +54,7 @@
 	} = $props();
 
 	let showExcluded = $state(true);
-	let showCompact = $state(true);
+	let combineCompact = $state(false);
 	let expandedCompactId: string | null = $state(null);
 	let editingCommentId: string | null = $state(null);
 	let commentEditValue = $state('');
@@ -231,7 +231,11 @@
 
 		for (const step of steps) {
 			if (isCompactStep(step)) {
-				compactBuf.push(step);
+				if (combineCompact) {
+					compactBuf.push(step);
+				} else {
+					groups.push({ kind: 'full', step });
+				}
 			} else if (step.included || step.inserted) {
 				flushCompact();
 				groups.push({ kind: 'full', step });
@@ -361,8 +365,8 @@
 		<h2>Trace</h2>
 		<div class="panel-header-actions">
 			<label class="toggle-excluded">
-				<input type="checkbox" bind:checked={showCompact} />
-				<span>Show compact</span>
+				<input type="checkbox" bind:checked={combineCompact} />
+				<span>Combine</span>
 			</label>
 			<label class="toggle-excluded">
 				<input type="checkbox" bind:checked={showExcluded} />
@@ -425,50 +429,45 @@
 					<!-- Steps rendered with real StepRenderer, compact steps grouped -->
 					{#each groupSteps(round.steps) as group}
 						{#if group.kind === 'compact'}
-							{#if showCompact}
-								<div class="compact-flow">
-									{#each group.steps as step (step.id)}
-										{@const chipStyle = getStepStyle(stepLabel(step) as import('$lib/data/tutorials').StepType)}
-										<button
-											class="compact-chip"
-											class:compact-chip-expanded={expandedCompactId === step.id}
-											style="--chip-accent: {chipStyle.accent}"
-											onclick={() => toggleCompactExpand(step.id)}
-											title={stepPreview(step)}
-										>
-											<span class="chip-icon">{chipStyle.icon}</span>
-											<span class="chip-text">{compactChipText(step)}</span>
-											<span class="chip-type">{stepLabel(step)}</span>
-										</button>
-									{/each}
-								</div>
-								<!-- Expanded compact step (radio-select: one at a time) -->
+							<div class="compact-flow">
 								{#each group.steps as step (step.id)}
-									{#if expandedCompactId === step.id}
-										{@const previewStep = toPreviewStep(step)}
-										<div class="step-wrap compact-expanded" class:step-hidden={step.hidden}>
-											{@render stepToolbar(round, step)}
-											<div class="step-render">
-												{#if previewStep}
-													<StepRenderer
-														step={{ ...previewStep, compact: false }}
-														showClaudeLabel={previewStep.type === 'assistant'}
-														isLast={false}
-														onFocusWindow={noopFocus}
-													/>
-												{/if}
-											</div>
-											{@render commentBlock(step)}
-										</div>
-									{/if}
+									{@const chipStyle = getStepStyle(stepLabel(step) as import('$lib/data/tutorials').StepType)}
+									<button
+										class="compact-chip"
+										class:compact-chip-expanded={expandedCompactId === step.id}
+										style="--chip-accent: {chipStyle.accent}"
+										onclick={() => toggleCompactExpand(step.id)}
+										title={stepPreview(step)}
+									>
+										<span class="chip-icon">{chipStyle.icon}</span>
+										<span class="chip-text">{compactChipText(step)}</span>
+										<span class="chip-type">{stepLabel(step)}</span>
+									</button>
 								{/each}
-								{@const lastCompact = group.steps[group.steps.length - 1]}
-								<button class="insert-btn" onclick={() => toggleInsertMenu(round.id, lastCompact.id)}>+</button>
-								{#if showInsertMenu?.roundId === round.id && showInsertMenu?.afterStepId === lastCompact.id}
-									{@render insertMenu(round.id, lastCompact.id)}
+							</div>
+							{#each group.steps as step (step.id)}
+								{#if expandedCompactId === step.id}
+									{@const previewStep = toPreviewStep(step)}
+									<div class="step-wrap compact-expanded" class:step-hidden={step.hidden}>
+										{@render stepToolbar(round, step)}
+										<div class="step-render">
+											{#if previewStep}
+												<StepRenderer
+													step={{ ...previewStep, compact: false }}
+													showClaudeLabel={previewStep.type === 'assistant'}
+													isLast={false}
+													onFocusWindow={noopFocus}
+												/>
+											{/if}
+										</div>
+										{@render commentBlock(step)}
+									</div>
 								{/if}
-							{:else}
-								<div class="compact-hidden-bar">{group.steps.length} compact steps</div>
+							{/each}
+							{@const lastCompact = group.steps[group.steps.length - 1]}
+							<button class="insert-btn" onclick={() => toggleInsertMenu(round.id, lastCompact.id)}>+</button>
+							{#if showInsertMenu?.roundId === round.id && showInsertMenu?.afterStepId === lastCompact.id}
+								{@render insertMenu(round.id, lastCompact.id)}
 							{/if}
 						{:else if group.kind === 'full'}
 							{@const step = group.step}
@@ -1025,16 +1024,6 @@
 	}
 
 	/* ─── Compact flow (multi-column chips) ─── */
-	.compact-hidden-bar {
-		padding: 3px 14px;
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		color: var(--text-tertiary);
-		opacity: 0.5;
-		border-left: 2px dotted var(--border-subtle);
-		margin: 2px 0;
-	}
-
 	.compact-flow {
 		display: flex;
 		flex-wrap: wrap;
