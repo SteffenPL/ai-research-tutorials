@@ -218,6 +218,10 @@
 		| { kind: 'full'; step: TraceStep }
 		| { kind: 'excluded'; step: TraceStep };
 
+	function isExcluded(step: TraceStep): boolean {
+		return !step.included && !step.inserted;
+	}
+
 	function groupSteps(steps: TraceStep[]): StepGroup[] {
 		const groups: StepGroup[] = [];
 		let compactBuf: TraceStep[] = [];
@@ -230,6 +234,7 @@
 		}
 
 		for (const step of steps) {
+			if (isExcluded(step) && !showExcluded) continue;
 			if (isCompactStep(step)) {
 				if (combineCompact) {
 					compactBuf.push(step);
@@ -504,7 +509,7 @@
 							{#if showInsertMenu?.roundId === round.id && showInsertMenu?.afterStepId === step.id}
 								{@render insertMenu(round.id, step.id)}
 							{/if}
-						{:else if group.kind === 'excluded' && showExcluded}
+						{:else if group.kind === 'excluded'}
 							{@const step = group.step}
 							<div class="step-wrap step-excluded-row">
 								<span class="excluded-icon">{stepIcon(step)}</span>
