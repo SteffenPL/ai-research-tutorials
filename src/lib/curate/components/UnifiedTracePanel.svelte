@@ -339,22 +339,51 @@
 	<div class="step-toolbar">
 		<span class="toolbar-type">{type}</span>
 		<span class="toolbar-cat" class:cat-primary={cat === 'primary'} class:cat-supporting={cat === 'supporting'} class:cat-structural={cat === 'structural'}>{categoryLabels[cat]}</span>
-		<button class="tb" class:tb-override={isOverridden} title="Mode: {step.displayMode} (default: {getDefaultMode(type)})" onclick={() => onCycleDisplayMode(step)}>{displayModeIcon(step.displayMode)}</button>
-		<button class="tb" class:tb-active={step.hidden} title={step.hidden ? 'Unhide' : 'Hide in tutorial'} onclick={() => onToggleHidden(step)}>{step.hidden ? '◌' : '●'}</button>
-		{#if !step.comment}
-			<button class="tb" title="Add comment" onclick={() => addComment(step)}>💬</button>
-		{/if}
+
 		<span class="tb-spacer"></span>
+
+		<!-- Primary: Edit -->
+		<button class="tb-labeled" title="Edit" onclick={() => onEditStep(round.id, step.id)}>
+			<span class="tb-icon">✎</span><span class="tb-label">Edit</span>
+		</button>
+
+		<span class="tb-spacer"></span>
+
+		<!-- Display controls -->
+		<button class="tb-labeled" class:tb-override={isOverridden} title="Mode: {step.displayMode} (default: {getDefaultMode(type)})" onclick={() => onCycleDisplayMode(step)}>
+			<span class="tb-icon">{displayModeIcon(step.displayMode)}</span><span class="tb-label">{step.displayMode}</span>
+		</button>
+		<button class="tb-labeled" class:tb-active={step.hidden} title={step.hidden ? 'Unhide' : 'Hide in tutorial'} onclick={() => onToggleHidden(step)}>
+			<span class="tb-icon">{step.hidden ? '◌' : '●'}</span><span class="tb-label">{step.hidden ? 'Hidden' : 'Visible'}</span>
+		</button>
+		{#if !step.comment}
+			<button class="tb-labeled" title="Add comment" onclick={() => addComment(step)}>
+				<span class="tb-icon">💬</span><span class="tb-label">Comment</span>
+			</button>
+		{/if}
+
+		<span class="tb-spacer"></span>
+
+		<!-- Move -->
 		<button class="tb" title="Move up" onclick={() => onMoveStep(round.id, step.id, -1)}>↑</button>
 		<button class="tb" title="Move down" onclick={() => onMoveStep(round.id, step.id, 1)}>↓</button>
-		<button class="tb" title="Edit" onclick={() => onEditStep(round.id, step.id)}>✎</button>
+
+		<span class="tb-spacer"></span>
+
+		<!-- Reset / Remove -->
 		{#if step.sourceRef}
-			<button class="tb" title="Reset to source" onclick={() => onResetStep(round.id, step.id)}>↻</button>
+			<button class="tb-labeled" title="Reset to source" onclick={() => onResetStep(round.id, step.id)}>
+				<span class="tb-icon">↻</span><span class="tb-label">Reset</span>
+			</button>
 		{/if}
 		{#if step.inserted}
-			<button class="tb tb-danger" title="Remove" onclick={() => onRemoveStep(round.id, step.id)}>✕</button>
+			<button class="tb-labeled tb-danger" title="Remove" onclick={() => onRemoveStep(round.id, step.id)}>
+				<span class="tb-icon">✕</span><span class="tb-label">Remove</span>
+			</button>
 		{:else}
-			<button class="tb" title="Exclude" onclick={() => onToggleStep(round.id, step.id)}>⊘</button>
+			<button class="tb-labeled" title="Exclude" onclick={() => onToggleStep(round.id, step.id)}>
+				<span class="tb-icon">⊘</span><span class="tb-label">Exclude</span>
+			</button>
 		{/if}
 	</div>
 {/snippet}
@@ -779,12 +808,13 @@
 		z-index: 3;
 		display: flex;
 		align-items: center;
-		gap: 2px;
-		padding: 2px 4px;
-		background: rgba(18, 8, 16, 0.92);
-		backdrop-filter: blur(8px);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 0 4px 0 6px;
+		gap: 3px;
+		padding: 4px 8px;
+		background: rgba(18, 8, 16, 0.94);
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: 0 4px 0 8px;
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 		opacity: 0;
 		pointer-events: none;
 		transition: opacity 0.12s;
@@ -814,20 +844,19 @@
 	.cat-primary    { color: var(--teal); background: rgba(112, 200, 184, 0.12); }
 	.cat-supporting { color: var(--peach); background: rgba(232, 160, 112, 0.12); }
 	.cat-structural { color: var(--green); background: rgba(100, 180, 100, 0.12); }
-	.tb-override {
-		color: var(--orange-300);
-	}
+
+	/* Icon-only button (move up/down) */
 	.tb {
 		background: none;
 		border: none;
 		color: var(--text-secondary);
 		cursor: pointer;
 		font-size: 0.85rem;
-		padding: 0.25rem 0.4rem;
+		padding: 0.25rem 0.35rem;
 		border-radius: 4px;
 		line-height: 1;
-		min-width: 28px;
-		min-height: 28px;
+		min-width: 26px;
+		min-height: 26px;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -836,20 +865,47 @@
 		color: var(--text-primary);
 		background: rgba(255, 255, 255, 0.08);
 	}
-	.tb-active {
-		color: var(--mauve);
+
+	/* Labeled button (icon + text below) */
+	.tb-labeled {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1px;
+		background: none;
+		border: none;
+		color: var(--text-secondary);
+		cursor: pointer;
+		padding: 3px 6px;
+		border-radius: 4px;
+		transition: background 0.12s, color 0.12s;
 	}
-	.tb-danger:hover {
-		color: var(--red);
+	.tb-labeled:hover {
+		color: var(--text-primary);
+		background: rgba(255, 255, 255, 0.08);
 	}
-	.tb-badge {
-		font-size: 0.65rem;
+	.tb-icon {
+		font-size: 0.85rem;
 		line-height: 1;
 	}
+	.tb-label {
+		font-family: var(--font-mono);
+		font-size: 0.5rem;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		line-height: 1;
+		opacity: 0.7;
+	}
+
+	.tb-override { color: var(--orange-300); }
+	.tb-active { color: var(--mauve); }
+	.tb-danger:hover { color: var(--red); }
+	.tb-danger:hover .tb-label { opacity: 1; }
+
 	.tb-spacer {
 		width: 1px;
-		height: 12px;
-		background: rgba(255, 255, 255, 0.1);
+		height: 20px;
+		background: rgba(255, 255, 255, 0.08);
 		margin: 0 2px;
 	}
 
