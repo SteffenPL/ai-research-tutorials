@@ -2,6 +2,7 @@ import type { SessionView, DisplayNode, ToolInvocationResult } from '$lib/sessio
 import type { TraceState, TraceRound, TraceStep, DisplayMode } from './types';
 import type {
 	Step,
+	StepType,
 	TutorialRound,
 	AssistantStep,
 	ThinkingStep,
@@ -9,6 +10,7 @@ import type {
 	ToolResultStep,
 	WindowStep
 } from '$lib/data/tutorials';
+import { getDefaultMode } from '$lib/components/tutorial/step-colors';
 
 let _nextId = 0;
 function nextId(prefix: string): string {
@@ -62,8 +64,9 @@ function renderInlineCode(html: string): string {
 function nodeToSteps(node: DisplayNode, roundIdx: number, nodeIdx: number): TraceStep[] {
 	const ref = { roundIndex: roundIdx, nodeIndex: nodeIdx };
 
-	function makeStep(included: boolean, overrides: Record<string, unknown>, mode: DisplayMode = 'full'): TraceStep {
-		return { id: nextId('s'), sourceRef: ref, included, displayMode: mode, overrides };
+	function makeStep(included: boolean, overrides: Record<string, unknown>, mode?: DisplayMode): TraceStep {
+		const type = overrides.type as StepType;
+		return { id: nextId('s'), sourceRef: ref, included, displayMode: mode ?? getDefaultMode(type), overrides };
 	}
 
 	switch (node.kind) {
@@ -158,7 +161,7 @@ export function traceStepToTutorialStep(step: TraceStep): Step | null {
 
 	const o = step.overrides as Record<string, unknown>;
 	const type = o.type as string;
-	const isCompact = step.displayMode === 'compact';
+	const isCompact = step.displayMode !== 'normal' && step.displayMode !== 'full';
 	const isHidden = !!step.hidden;
 
 	switch (type) {

@@ -54,6 +54,11 @@
 					>Full</button>
 					<button
 						class="mode-btn"
+						class:active={editStep.displayMode === 'normal'}
+						onclick={() => { editStep.displayMode = 'normal'; bumpPreview(); }}
+					>Normal</button>
+					<button
+						class="mode-btn"
 						class:active={editStep.displayMode === 'compact'}
 						onclick={() => { editStep.displayMode = 'compact'; bumpPreview(); }}
 					>Compact</button>

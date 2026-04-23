@@ -3,6 +3,7 @@
 	import type { TraceState, TraceStep } from '$lib/trace/types';
 	import type { Step, WindowContentData } from '$lib/data/tutorials';
 	import { sessionViewToTraceState, resetStepFromSource } from '$lib/trace/convert';
+	import { getDefaultMode } from '$lib/components/tutorial/step-colors';
 	import Nav from '$lib/components/Nav.svelte';
 	import UnifiedTracePanel from '$lib/curate/components/UnifiedTracePanel.svelte';
 	import StepEditorModal from '$lib/curate/components/StepEditorModal.svelte';
@@ -85,7 +86,8 @@
 	const editStep = $derived(getEditingCurationStep());
 
 	function cycleDisplayMode(step: TraceStep) {
-		step.displayMode = step.displayMode === 'full' ? 'compact' : 'full';
+		const cycle = { compact: 'normal', normal: 'full', full: 'compact' } as const;
+		step.displayMode = cycle[step.displayMode] ?? 'normal';
 	}
 
 	function toggleHidden(step: TraceStep) {
@@ -160,7 +162,7 @@
 		const newStep: TraceStep = {
 			id: genId(),
 			included: true,
-			displayMode: 'full',
+			displayMode: getDefaultMode(step.type),
 			inserted: step
 		};
 		if (afterStepId === null) {

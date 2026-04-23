@@ -49,8 +49,12 @@ export function stepIconTitle(step: TraceStep): string {
 	return preview ? `${type}: ${preview.slice(0, 60)}` : type;
 }
 
-export function displayModeIcon(mode: 'compact' | 'full'): string {
-	return mode === 'compact' ? '▪' : '▣';
+export function displayModeIcon(mode: 'compact' | 'normal' | 'full'): string {
+	switch (mode) {
+		case 'compact': return '▪';
+		case 'normal': return '▨';
+		case 'full': return '▣';
+	}
 }
 
 export function includedCount(round: TraceRound): number {

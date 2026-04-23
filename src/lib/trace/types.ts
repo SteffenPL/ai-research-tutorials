@@ -5,7 +5,7 @@ export interface TraceStepRef {
 	nodeIndex: number;
 }
 
-export type DisplayMode = 'compact' | 'full';
+export type DisplayMode = 'compact' | 'normal' | 'full';
 
 export interface TraceStep {
 	id: string;

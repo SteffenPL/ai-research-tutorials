@@ -79,23 +79,19 @@ steps:
   - type: tool_call
     toolName: fiji · run_ij_macro
     code: |-
-      selectWindow("Osteosarcoma_01.tif");
-      run("Duplicate...", "title=nuclei_source");
-      run("Split Channels");
-      selectWindow("nuclei_source (red)");
-      close();
-      selectWindow("nuclei_source (green)");
-      close();
-      selectWindow("nuclei_source (blue)");
-      rename("nuclei_blue");
-      run("Gaussian Blur...", "sigma=2");
-      setAutoThreshold("Otsu dark");
-      run("Convert to Mask");
-      run("Open");
-      run("Watershed");
+      {
+        "code": "selectWindow(\"Osteosarcoma_01.tif\");\nrun(\"Duplicate...\", \"title=nuclei_source\");\nrun(\"Split Channels\");\nselectWindow(\"nuclei_source (red)\");\nclose();\nselectWindow(\"nuclei_source (green)\");\nclose();\nselectWindow(\"nuclei_source (blue)\");\nrename(\"nuclei_blue\");\nrun(\"Gaussian Blur...\", \"sigma=2\");\nsetAutoThreshold(\"Otsu dark\");\nrun(\"Convert to Mask\");\nrun(\"Open\");\nrun(\"Watershed\");"
+      }
     comment: >-
-      A <strong>long tool_call</strong> with 14 lines of code — auto-folds
-      to show the first 2 lines with a "show N more lines" toggle.
+      A <strong>JSON tool_call</strong> with an embedded code string — the
+      first key (<code>code</code>) becomes the subtitle, and the value
+      renders as a monospace code block, auto-folded to 5 lines.
+
+  - type: tool_result
+    text: '{"status":"completed","stdout":"","stderr":"","value":null,"error":null,"duration_ms":3416,"active_image":"Osteosarcoma_01.tif","dismissed_dialogs":[]}'
+    comment: >-
+      A <strong>tool_result</strong> with JSON text — parsed and rendered
+      as key-value fields. Empty/null values are filtered out.
 
   - type: tool_result
     text: |-

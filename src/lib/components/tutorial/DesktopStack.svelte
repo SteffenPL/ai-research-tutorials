@@ -264,7 +264,7 @@
 
 	.fiji-window.stack-1 {
 		opacity: 0.75;
-		transform: translate(30px, -25px) scale(0.95);
+		transform: translate(60px, -30px) scale(0.95);
 		z-index: 20;
 		filter: brightness(0.8);
 		box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
@@ -272,7 +272,7 @@
 
 	.fiji-window.stack-2 {
 		opacity: 0.5;
-		transform: translate(55px, -45px) scale(0.90);
+		transform: translate(130px, -55px) scale(0.90);
 		z-index: 10;
 		filter: brightness(0.65);
 		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
@@ -280,7 +280,7 @@
 
 	.fiji-window.stack-3 {
 		opacity: 0.3;
-		transform: translate(75px, -60px) scale(0.85);
+		transform: translate(210px, -75px) scale(0.85);
 		z-index: 5;
 		filter: brightness(0.5);
 		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);

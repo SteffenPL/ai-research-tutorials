@@ -4,7 +4,7 @@
 	import type { TraceState, TraceStep, TraceRound } from '$lib/trace/types';
 	import { traceStepToTutorialStep } from '$lib/trace/convert';
 	import { stepLabel, stepIcon, stepPreview, displayModeIcon, includedCount, totalCount } from './step-helpers';
-	import { getStepStyle, compactSummary as sharedCompactSummary } from '$lib/components/tutorial/step-colors';
+	import { getStepStyle, getCategory, getDefaultMode, categoryLabels, compactSummary as sharedCompactSummary } from '$lib/components/tutorial/step-colors';
 	import StepRenderer from '$lib/components/tutorial/StepRenderer.svelte';
 
 	let {
@@ -304,9 +304,13 @@
 {/snippet}
 
 {#snippet stepToolbar(round: TraceRound, step: TraceStep)}
+	{@const type = stepLabel(step)}
+	{@const cat = getCategory(type)}
+	{@const isOverridden = step.displayMode !== getDefaultMode(type)}
 	<div class="step-toolbar">
-		<span class="toolbar-type">{stepLabel(step)}</span>
-		<button class="tb" title={step.displayMode === 'full' ? 'Switch to compact' : 'Switch to full'} onclick={() => onCycleDisplayMode(step)}>{displayModeIcon(step.displayMode)}</button>
+		<span class="toolbar-type">{type}</span>
+		<span class="toolbar-cat" class:cat-primary={cat === 'primary'} class:cat-supporting={cat === 'supporting'} class:cat-structural={cat === 'structural'}>{categoryLabels[cat]}</span>
+		<button class="tb" class:tb-override={isOverridden} title="Mode: {step.displayMode} (default: {getDefaultMode(type)})" onclick={() => onCycleDisplayMode(step)}>{displayModeIcon(step.displayMode)}</button>
 		<button class="tb" class:tb-active={step.hidden} title={step.hidden ? 'Unhide' : 'Hide in tutorial'} onclick={() => onToggleHidden(step)}>{step.hidden ? '◌' : '●'}</button>
 		{#if !step.comment}
 			<button class="tb" title="Add comment" onclick={() => addComment(step)}>💬</button>
@@ -739,6 +743,21 @@
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
 		padding: 0 0.3rem;
+	}
+	.toolbar-cat {
+		font-size: 0.55rem;
+		font-weight: 600;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		padding: 1px 5px;
+		border-radius: 3px;
+		line-height: 1.4;
+	}
+	.cat-primary    { color: var(--teal); background: rgba(112, 200, 184, 0.12); }
+	.cat-supporting { color: var(--peach); background: rgba(232, 160, 112, 0.12); }
+	.cat-structural { color: var(--green); background: rgba(100, 180, 100, 0.12); }
+	.tb-override {
+		color: var(--orange-300);
 	}
 	.tb {
 		background: none;

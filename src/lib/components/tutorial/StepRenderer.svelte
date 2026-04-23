@@ -17,7 +17,7 @@
 	import WindowChrome from '$lib/components/windows/WindowChrome.svelte';
 	import WindowContent from '$lib/components/windows/WindowContent.svelte';
 
-	const CODE_FOLD_THRESHOLD = 5;
+	const FOLD_LINES = 5;
 
 	let {
 		step,
@@ -32,19 +32,91 @@
 	} = $props();
 
 	let codeExpanded = $state(false);
+	let resultExpanded = $state(false);
 
-	function shouldFoldCode(code: string): boolean {
-		return code.split('\n').length > CODE_FOLD_THRESHOLD;
+	/* ── JSON-aware tool call/result parsing ── */
+
+	type ParsedField = { key: string; value: string; isCode: boolean };
+	type ParsedJson = { subtitle: string; fields: ParsedField[] } | null;
+
+	function tryParseJson(raw: string): ParsedJson {
+		const trimmed = raw.trim();
+		if (!trimmed.startsWith('{')) return null;
+		try {
+			const obj = JSON.parse(trimmed);
+			if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) return null;
+			const keys = Object.keys(obj);
+			if (keys.length === 0) return null;
+			const subtitle = summarizeValue(keys[0], obj[keys[0]]);
+			const fields: ParsedField[] = keys.map(k => {
+				const v = obj[k];
+				const str = typeof v === 'string' ? v : JSON.stringify(v, null, 2);
+				const isCode = typeof v === 'string' && (str.includes('\n') || str.length > 120);
+				return { key: k, value: str, isCode };
+			});
+			return { subtitle, fields };
+		} catch {
+			return null;
+		}
 	}
 
-	function foldedCode(code: string): { preview: string; hiddenCount: number } {
-		const lines = code.split('\n');
-		return {
-			preview: lines.slice(0, 2).join('\n'),
-			hiddenCount: lines.length - 2
-		};
+	function summarizeValue(key: string, val: unknown): string {
+		if (typeof val === 'string') {
+			const short = val.replace(/\n/g, ' ').slice(0, 60);
+			return `${key}: ${short}${val.length > 60 ? '…' : ''}`;
+		}
+		return key;
+	}
+
+	function shouldFold(text: string): boolean {
+		return text.split('\n').length > FOLD_LINES;
+	}
+
+	function foldedPreview(text: string): { preview: string; hiddenCount: number } {
+		const lines = text.split('\n');
+		return { preview: lines.slice(0, FOLD_LINES).join('\n'), hiddenCount: lines.length - FOLD_LINES };
+	}
+
+	function tryParseJsonResult(raw: string): ParsedJson {
+		const trimmed = raw.trim();
+		if (!trimmed.startsWith('{')) return null;
+		try {
+			const obj = JSON.parse(trimmed);
+			if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) return null;
+			const keys = Object.keys(obj);
+			if (keys.length === 0) return null;
+			const subtitle = summarizeValue(keys[0], obj[keys[0]]);
+			const fields: ParsedField[] = [];
+			for (const k of keys) {
+				const v = obj[k];
+				if (v === null || v === '' || (Array.isArray(v) && v.length === 0)) continue;
+				const str = typeof v === 'string' ? v : JSON.stringify(v, null, 2);
+				const isCode = typeof v === 'string' && (str.includes('\n') || str.length > 120);
+				fields.push({ key: k, value: str, isCode });
+			}
+			return { subtitle, fields };
+		} catch {
+			return null;
+		}
 	}
 </script>
+
+{#snippet codeBlock(text: string, expanded: boolean, toggle: () => void)}
+	{#if shouldFold(text) && !expanded}
+		{@const folded = foldedPreview(text)}
+		<pre class="code-block">{folded.preview}</pre>
+		<button type="button" class="fold-toggle" onclick={toggle}>
+			▾ show {folded.hiddenCount} more lines
+		</button>
+	{:else}
+		<pre class="code-block">{text}</pre>
+		{#if shouldFold(text)}
+			<button type="button" class="fold-toggle" onclick={toggle}>
+				▴ collapse
+			</button>
+		{/if}
+	{/if}
+{/snippet}
 
 {#if step.compact}
 	{@const style = getStepStyle(step.type)}
@@ -87,27 +159,55 @@
 	</div>
 
 {:else if step.type === 'tool_call'}
+	{@const parsed = tryParseJson(step.code)}
 	<div class="tool-call">
-		<div class="tool-name">&#9889; {step.toolName}</div>
-		{#if shouldFoldCode(step.code) && !codeExpanded}
-			{@const folded = foldedCode(step.code)}
-			<code>{folded.preview}</code>
-			<button type="button" class="fold-toggle" onclick={() => codeExpanded = true}>
-				▾ show {folded.hiddenCount} more lines
-			</button>
+		<div class="tool-name">
+			<span>&#9889; {step.toolName}</span>
+			{#if parsed}<span class="tool-subtitle">{parsed.subtitle}</span>{/if}
+		</div>
+		{#if parsed}
+			<div class="tool-fields">
+				{#each parsed.fields as field}
+					{#if field.isCode}
+						<div class="tool-field">
+							<span class="field-key">{field.key}</span>
+							{@render codeBlock(field.value, codeExpanded, () => codeExpanded = !codeExpanded)}
+						</div>
+					{:else}
+						<div class="tool-field-inline">
+							<span class="field-key">{field.key}</span>
+							<span class="field-value">{field.value}</span>
+						</div>
+					{/if}
+				{/each}
+			</div>
 		{:else}
-			<code>{step.code}</code>
-			{#if shouldFoldCode(step.code)}
-				<button type="button" class="fold-toggle" onclick={() => codeExpanded = false}>
-					▴ collapse
-				</button>
-			{/if}
+			{@render codeBlock(step.code, codeExpanded, () => codeExpanded = !codeExpanded)}
 		{/if}
 	</div>
 
 {:else if step.type === 'tool_result'}
+	{@const parsed = tryParseJsonResult(step.text)}
 	<div class="tool-result">
-		{step.text}
+		{#if parsed}
+			<div class="tool-fields">
+				{#each parsed.fields as field}
+					{#if field.isCode}
+						<div class="tool-field">
+							<span class="field-key">{field.key}</span>
+							{@render codeBlock(field.value, resultExpanded, () => resultExpanded = !resultExpanded)}
+						</div>
+					{:else}
+						<div class="tool-field-inline">
+							<span class="field-key">{field.key}</span>
+							<span class="field-value">{field.value}</span>
+						</div>
+					{/if}
+				{/each}
+			</div>
+		{:else}
+			<span class="result-text">{step.text}</span>
+		{/if}
 	</div>
 
 {:else if step.type === 'permission'}
@@ -258,6 +358,7 @@
 		padding: 8px 14px;
 		margin: 8px 0;
 		font-size: 12px;
+		overflow: hidden;
 		transition: background 0.15s;
 	}
 
@@ -266,6 +367,9 @@
 	}
 
 	.tool-name {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
 		color: var(--text-secondary);
 		font-weight: 600;
 		font-size: 10px;
@@ -274,13 +378,64 @@
 		margin-bottom: 4px;
 	}
 
-	.tool-call code {
-		display: block;
+	.tool-subtitle {
+		font-weight: 400;
+		font-size: 11px;
+		text-transform: none;
+		letter-spacing: 0;
+		color: var(--text-tertiary);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		min-width: 0;
+	}
+
+	.tool-fields {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.tool-field {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.tool-field-inline {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		min-width: 0;
+	}
+
+	.field-key {
+		flex-shrink: 0;
+		color: var(--text-tertiary);
+		font-family: var(--font-mono);
+		font-size: 10px;
+		font-weight: 500;
+		letter-spacing: 0.3px;
+	}
+
+	.field-value {
 		color: var(--text-secondary);
-		white-space: pre-wrap;
-		word-break: break-all;
+		font-family: var(--font-mono);
+		font-size: 12px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		min-width: 0;
+	}
+
+	.code-block {
+		margin: 0;
+		color: var(--text-secondary);
+		font-family: var(--font-mono);
 		font-size: 12px;
 		line-height: 1.5;
+		white-space: pre-wrap;
+		overflow-wrap: break-word;
 	}
 
 	.fold-toggle {
@@ -308,6 +463,16 @@
 		font-size: 11px;
 		color: var(--text-secondary);
 		background: rgba(255, 255, 255, 0.015);
+		overflow: hidden;
+	}
+
+	.tool-result .tool-fields { gap: 2px; }
+	.tool-result .field-key { font-size: 9px; }
+	.tool-result .field-value { font-size: 11px; }
+	.tool-result .code-block { font-size: 11px; }
+
+	.result-text {
+		overflow-wrap: break-word;
 	}
 
 	/* ── Thinking ── */
@@ -610,7 +775,7 @@
 	/* ── Mobile overrides ── */
 	@media (max-width: 900px) {
 		.tool-call { padding: 8px 10px; font-size: 11px; }
-		.tool-call code { font-size: 11px; }
+		.tool-call .code-block { font-size: 11px; }
 		.tool-result { padding: 6px 10px; font-size: 10px; }
 		.results-table { font-size: 10px; }
 
