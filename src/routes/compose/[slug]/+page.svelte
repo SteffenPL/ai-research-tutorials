@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import Nav from '$lib/components/Nav.svelte';
-	import type { TutorialComposition, CompositionBlock, TraceBlock, HandAuthoredBlock } from '$lib/compose/types';
-	import type { Step, WindowContentData } from '$lib/data/tutorials';
+	import type { TutorialComposition, TraceBlock } from '$lib/compose/types';
 	import BlockSearchBar from '$lib/compose/BlockSearchBar.svelte';
 	import AssetPickerDialog from '$lib/components/AssetPickerDialog.svelte';
+	import TraceBlockEditor from '$lib/curate/components/TraceBlockEditor.svelte';
 
 	let { data } = $props();
 
@@ -24,6 +24,8 @@
 	let showBlockSearch = $state(false);
 	let expandedBlocks = $state<Set<number>>(new Set());
 	let showThumbnailPicker = $state(false);
+	let dirtyTraces = $state<Set<string>>(new Set());
+	let blockEditorRefs = $state<(TraceBlockEditor | null)[]>([]);
 
 	function thumbnailPreviewUrl(ref: string | undefined): string | undefined {
 		if (!ref) return undefined;
@@ -33,14 +35,6 @@
 	}
 
 	function addTraceBlock(block: TraceBlock) {
-		composition.blocks = [...composition.blocks, block];
-	}
-
-	function addHandAuthoredBlock() {
-		const block: HandAuthoredBlock = {
-			kind: 'round',
-			round: { kind: 'claude', prompt: '', steps: [] }
-		};
 		composition.blocks = [...composition.blocks, block];
 	}
 
@@ -69,6 +63,11 @@
 		saving = true;
 		statusMessage = '';
 		try {
+			// Save all dirty traces first
+			for (const ref of blockEditorRefs) {
+				if (ref?.isDirty()) await ref.save();
+			}
+
 			const res = await fetch(`/api/compose/${data.slug}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -76,6 +75,7 @@
 			});
 			const json = await res.json();
 			statusMessage = json.ok ? 'Saved' : 'Save failed';
+			dirtyTraces = new Set();
 		} catch {
 			statusMessage = 'Save error';
 		}
@@ -87,6 +87,11 @@
 		exporting = true;
 		statusMessage = '';
 		try {
+			// Save dirty traces before export
+			for (const ref of blockEditorRefs) {
+				if (ref?.isDirty()) await ref.save();
+			}
+
 			const res = await fetch(`/api/compose/${data.slug}/export`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -129,39 +134,14 @@
 		previewing = false;
 	}
 
-	function blockSummary(block: CompositionBlock): string {
-		if (block.kind === 'trace') {
-			const trace = data.availableTraces.find((t: { slug: string }) => t.slug === block.sourceSlug);
-			const rounds = block.rounds ? `${block.rounds.length} rounds` : 'all rounds';
-			return `${block.sourceSlug} (${rounds}${trace ? `, ${trace.roundCount} total` : ''})`;
-		}
-		return `Hand-authored: "${block.round.prompt.slice(0, 60)}${block.round.prompt.length > 60 ? '...' : ''}"`;
+	function blockSummary(block: TraceBlock): string {
+		const trace = data.availableTraces.find((t: { slug: string }) => t.slug === block.sourceSlug);
+		const rounds = block.rounds ? `${block.rounds.length} rounds selected` : 'all rounds';
+		return `${rounds}${trace ? ` · ${trace.roundCount} total` : ''}`;
 	}
 
-	function insertStep(blockIndex: number, step: Step) {
-		const block = composition.blocks[blockIndex];
-		if (block.kind !== 'round') return;
-		block.round.steps = [...block.round.steps, step];
-		composition.blocks = [...composition.blocks];
-	}
-
-	async function handleFileUpload(event: Event, blockIndex: number) {
-		const input = event.target as HTMLInputElement;
-		const file = input.files?.[0];
-		if (!file) return;
-
-		const formData = new FormData();
-		formData.append('file', file);
-
-		const res = await fetch(`/api/compose/${data.slug}/upload`, {
-			method: 'POST',
-			body: formData
-		});
-		const json = await res.json();
-		if (json.ok) {
-			statusMessage = `Uploaded: ${json.filename}`;
-			setTimeout(() => (statusMessage = ''), 3000);
-		}
+	function markTraceDirty(slug: string) {
+		dirtyTraces = new Set([...dirtyTraces, slug]);
 	}
 </script>
 
@@ -176,13 +156,16 @@
 <header class="toolbar">
 	<div class="toolbar-left">
 		<span class="toolbar-slug">{data.slug}</span>
+		{#if dirtyTraces.size > 0}
+			<span class="dirty-indicator">{dirtyTraces.size} unsaved trace{dirtyTraces.size > 1 ? 's' : ''}</span>
+		{/if}
 		{#if statusMessage}
 			<span class="toolbar-status">{statusMessage}</span>
 		{/if}
 	</div>
 	<div class="toolbar-actions">
 		<button class="btn" onclick={save} disabled={saving}>
-			{saving ? 'Saving...' : 'Save'}
+			{saving ? 'Saving...' : 'Save All'}
 		</button>
 		<button class="btn btn-primary" onclick={() => doExport()} disabled={exporting}>
 			{exporting ? 'Exporting...' : 'Export YAML'}
@@ -307,15 +290,14 @@
 		onclose={() => (showThumbnailPicker = false)}
 	/>
 
-	<!-- ═══ BLOCKS ═══ -->
+	<!-- ═══ TRACE BLOCKS ═══ -->
 	<section class="blocks-section">
 		<div class="section-header">
-			<h2>Composition Blocks</h2>
+			<h2>Trace Blocks</h2>
 			<div class="section-actions">
 				<button class="btn-sm btn-accent" onclick={() => (showBlockSearch = true)}>
-					+ Add Block
+					+ Add Trace
 				</button>
-				<button class="btn-sm" onclick={addHandAuthoredBlock}>+ Round</button>
 			</div>
 		</div>
 
@@ -328,37 +310,35 @@
 		{/if}
 
 		{#if composition.blocks.length === 0}
-			<p class="empty">No blocks yet. Add a trace or a hand-authored round.</p>
+			<p class="empty">No trace blocks yet. Add a trace to start composing.</p>
 		{:else}
 			<ol class="block-list">
 				{#each composition.blocks as block, i}
-					<li class="block-item" class:trace={block.kind === 'trace'} class:round={block.kind === 'round'}>
-						<div class="block-header">
-							<button class="block-expand" onclick={() => toggleExpand(i)}>
-								{expandedBlocks.has(i) ? '▾' : '▸'}
-							</button>
-							<span class="block-kind">{block.kind === 'trace' ? 'Trace' : 'Round'}</span>
-							<span class="block-summary">{blockSummary(block)}</span>
-							<div class="block-actions">
-								<button class="btn-icon" onclick={() => moveBlock(i, -1)} disabled={i === 0}>↑</button>
-								<button class="btn-icon" onclick={() => moveBlock(i, 1)} disabled={i === composition.blocks.length - 1}>↓</button>
-								{#if block.kind === 'trace'}
-									<a class="btn-icon" href="{base}/curate/{block.sourceSlug}" title="Edit trace">✎</a>
+					{#if block.kind === 'trace'}
+						<li class="block-item">
+							<div class="block-header">
+								<button class="block-expand" onclick={() => toggleExpand(i)}>
+									{expandedBlocks.has(i) ? '▾' : '▸'}
+								</button>
+								<span class="block-kind">Trace</span>
+								<span class="block-slug">{block.sourceSlug}</span>
+								<span class="block-summary">{blockSummary(block)}</span>
+								{#if dirtyTraces.has(block.sourceSlug)}
+									<span class="block-dirty">●</span>
 								{/if}
-								<button class="btn-icon danger" onclick={() => removeBlock(i)}>✕</button>
+								<div class="block-actions">
+									<button class="btn-icon" onclick={() => moveBlock(i, -1)} disabled={i === 0}>↑</button>
+									<button class="btn-icon" onclick={() => moveBlock(i, 1)} disabled={i === composition.blocks.length - 1}>↓</button>
+									<a class="btn-icon" href="{base}/curate/{block.sourceSlug}" title="Open in full curate view">↗</a>
+									<button class="btn-icon danger" onclick={() => removeBlock(i)}>✕</button>
+								</div>
 							</div>
-						</div>
 
-						{#if expandedBlocks.has(i)}
-							<div class="block-detail">
-								{#if block.kind === 'trace'}
-									<div class="form-grid compact">
+							{#if expandedBlocks.has(i)}
+								<div class="block-detail">
+									<div class="block-rounds-filter">
 										<label>
-											<span>Source slug</span>
-											<input type="text" bind:value={block.sourceSlug} />
-										</label>
-										<label>
-											<span>Rounds (comma-separated indices, empty = all)</span>
+											<span>Round filter (comma-separated indices, empty = all)</span>
 											<input
 												type="text"
 												value={block.rounds?.join(', ') ?? ''}
@@ -371,52 +351,27 @@
 													}
 													composition.blocks = [...composition.blocks];
 												}}
+												placeholder="e.g. 0, 1, 3"
 											/>
 										</label>
 									</div>
-								{:else}
-									<div class="form-grid compact">
-										<label>
-											<span>Kind</span>
-											<select bind:value={block.round.kind}>
-												<option value="claude">claude</option>
-												<option value="terminal">terminal</option>
-											</select>
-										</label>
-										<label>
-											<span>Prompt</span>
-											<textarea bind:value={block.round.prompt} rows="2"></textarea>
-										</label>
-									</div>
-									<div class="round-steps">
-										<span class="steps-label">{block.round.steps.length} steps</span>
-										<button class="btn-sm" onclick={() => insertStep(i, { type: 'assistant', html: '<p></p>' })}>+ Assistant</button>
-										<button class="btn-sm" onclick={() => insertStep(i, { type: 'tool_call', toolName: '', code: '' })}>+ Tool Call</button>
-										<button class="btn-sm" onclick={() => insertStep(i, { type: 'output', text: '' })}>+ Output</button>
-										<button class="btn-sm" onclick={() => insertStep(i, { type: 'status', text: '', variant: 'success' })}>+ Status</button>
-									</div>
-									{#each block.round.steps as step, si}
-										<div class="step-row">
-											<span class="step-type">{step.type}</span>
-											<button class="btn-icon danger" onclick={() => {
-												block.round.steps = block.round.steps.filter((_, j) => j !== si);
-												composition.blocks = [...composition.blocks];
-											}}>✕</button>
-										</div>
-									{/each}
-								{/if}
-							</div>
-						{/if}
-					</li>
+									<TraceBlockEditor
+										slug={block.sourceSlug}
+										tutorialSlug={data.slug}
+										roundIndices={block.rounds}
+										ondirty={() => markTraceDirty(block.sourceSlug)}
+										bind:this={blockEditorRefs[i]}
+									/>
+								</div>
+							{/if}
+						</li>
+					{/if}
 				{/each}
 			</ol>
 		{/if}
 
-		<!-- Insert between blocks -->
 		<div class="add-block-footer">
-			<button class="btn-sm btn-accent" onclick={() => (showBlockSearch = true)}>+ Add Block</button>
-			<button class="btn-sm" onclick={addHandAuthoredBlock}>+ Round</button>
-			<input type="file" class="upload-input" onchange={(e) => handleFileUpload(e, -1)} />
+			<button class="btn-sm btn-accent" onclick={() => (showBlockSearch = true)}>+ Add Trace</button>
 		</div>
 	</section>
 </main>
@@ -465,6 +420,14 @@
 		color: var(--teal);
 		animation: fadeIn 0.2s;
 	}
+	.dirty-indicator {
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		color: var(--orange-300);
+		background: rgba(233, 84, 32, 0.15);
+		padding: 0.15rem 0.5rem;
+		border-radius: 4px;
+	}
 	@keyframes fadeIn {
 		from { opacity: 0; }
 		to { opacity: 1; }
@@ -494,12 +457,6 @@
 		font-size: 0.75rem;
 		color: var(--orange-300);
 	}
-	.card h4 {
-		margin: 0.6rem 0.75rem 0.3rem;
-		font-size: 0.72rem;
-		color: var(--text-secondary);
-		font-weight: 500;
-	}
 
 	/* ─── Forms ─── */
 	.form-grid {
@@ -507,9 +464,6 @@
 		flex-direction: column;
 		gap: 0.5rem;
 		padding: 0.5rem 0.75rem;
-	}
-	.form-grid.compact {
-		padding: 0.4rem 0;
 	}
 	.form-grid label {
 		display: flex;
@@ -540,8 +494,6 @@
 		outline: none;
 		border-color: var(--orange-400);
 	}
-
-	/* ─── 2-column form layout ─── */
 	.form-row-2col {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -581,7 +533,6 @@
 		white-space: nowrap;
 	}
 
-
 	/* ─── Blocks section ─── */
 	.blocks-section {
 		border: 1px solid var(--border-subtle);
@@ -609,15 +560,14 @@
 		gap: 0.4rem;
 	}
 
-	/* ─── Block list ─���─ */
+	/* ─── Block list ─── */
 	.block-list {
 		list-style: none;
 		padding: 0;
 		margin: 0;
-		counter-reset: block;
 	}
 	.block-item {
-		border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 	}
 	.block-item:last-child {
 		border-bottom: none;
@@ -638,27 +588,34 @@
 	}
 	.block-kind {
 		font-family: var(--font-mono);
-		font-size: 0.65rem;
+		font-size: 0.6rem;
 		padding: 0.1rem 0.35rem;
 		border-radius: 3px;
 		font-weight: 600;
-	}
-	.block-item.trace .block-kind {
 		background: rgba(233, 84, 32, 0.15);
 		color: var(--orange-300);
+		flex-shrink: 0;
 	}
-	.block-item.round .block-kind {
-		background: rgba(100, 200, 180, 0.12);
-		color: var(--teal);
+	.block-slug {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		color: var(--text-primary);
+		font-weight: 500;
+		flex-shrink: 0;
 	}
 	.block-summary {
 		flex: 1;
 		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		color: var(--text-secondary);
+		font-size: 0.7rem;
+		color: var(--text-tertiary);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+	.block-dirty {
+		color: var(--orange-300);
+		font-size: 0.6rem;
+		flex-shrink: 0;
 	}
 	.block-actions {
 		display: flex;
@@ -666,31 +623,35 @@
 		flex-shrink: 0;
 	}
 	.block-detail {
-		padding: 0 0.75rem 0.6rem 2rem;
+		padding: 0 0.5rem 0.5rem;
 	}
-
-	.round-steps {
+	.block-rounds-filter {
+		padding: 0 0.25rem 0.5rem;
+	}
+	.block-rounds-filter label {
 		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-		margin-top: 0.4rem;
-		flex-wrap: wrap;
+		flex-direction: column;
+		gap: 0.2rem;
 	}
-	.steps-label {
+	.block-rounds-filter label > span {
 		font-family: var(--font-mono);
-		font-size: 0.65rem;
+		font-size: 0.58rem;
 		color: var(--text-tertiary);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
 	}
-	.step-row {
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-		padding: 0.2rem 0;
-	}
-	.step-type {
+	.block-rounds-filter input {
+		padding: 0.3rem 0.5rem;
+		background: rgba(0, 0, 0, 0.25);
+		border: 1px solid var(--border-subtle);
+		border-radius: 4px;
+		color: var(--text-primary);
 		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		color: var(--text-secondary);
+		font-size: 0.72rem;
+	}
+	.block-rounds-filter input:focus {
+		outline: none;
+		border-color: var(--orange-400);
 	}
 
 	/* ─── Footer ─── */
@@ -702,15 +663,9 @@
 		border-top: 1px solid var(--border-subtle);
 		background: rgba(0, 0, 0, 0.1);
 	}
-	.upload-input {
-		margin-left: auto;
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		color: var(--text-tertiary);
-	}
 
 	.empty {
-		padding: 1rem;
+		padding: 1.5rem;
 		color: var(--text-tertiary);
 		font-family: var(--font-mono);
 		font-size: 0.8rem;
@@ -762,10 +717,6 @@
 		background: rgba(255, 255, 255, 0.08);
 		color: var(--text-primary);
 	}
-	.btn-sm.danger {
-		color: var(--red);
-		border-color: rgba(220, 50, 50, 0.3);
-	}
 	.btn-accent {
 		border-color: var(--orange-500);
 		color: var(--orange-300);
@@ -792,7 +743,7 @@
 		cursor: not-allowed;
 	}
 
-	/* ─── Overlay / Dialog ���── */
+	/* ─── Overlay / Dialog ─── */
 	.overlay {
 		position: fixed;
 		inset: 0;
