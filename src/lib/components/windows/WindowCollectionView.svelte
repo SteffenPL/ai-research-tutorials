@@ -91,17 +91,20 @@
 	}
 
 	/* ── Sub-window maximize overlay ── */
-	/* Match DesktopStack's maximize: absolute to nearest positioned ancestor (.workspace) */
+	/* Fixed to viewport, offset by nav height (56px) to cover terminal + desktop */
 	.max-backdrop {
-		position: absolute;
+		position: fixed;
 		inset: 0;
 		background: rgba(0, 0, 0, 0.6);
 		z-index: 300;
 	}
 
 	.max-sub-window {
-		position: absolute;
-		inset: 18px 22px;
+		position: fixed;
+		top: 74px;
+		left: 22px;
+		right: 22px;
+		bottom: 22px;
 		z-index: 310;
 		display: flex;
 		flex-direction: column;
