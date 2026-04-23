@@ -3,6 +3,10 @@
 	in a flex-wrap flow. Clicking a chip expands it inline (radio-select:
 	one expanded at a time).
 
+	When a group has more than `collapseThreshold` chips (default 5), the
+	chips are hidden behind a single "N actions" summary bar that can be
+	clicked to reveal all chips.
+
 	Used by both the tutorial viewer (TerminalTranscript) and the trace
 	editor (UnifiedTracePanel), which wraps it with edit affordances.
 -->
@@ -10,6 +14,8 @@
 	import type { Step, WindowStep } from '$lib/data/tutorials';
 	import { getStepStyle, compactSummary } from './step-colors';
 	import StepRenderer from './StepRenderer.svelte';
+
+	const COLLAPSE_THRESHOLD = 5;
 
 	let {
 		steps,
@@ -20,40 +26,115 @@
 	} = $props();
 
 	let expandedIndex = $state<number | null>(null);
+	let groupRevealed = $state(false);
+
+	const shouldCollapse = $derived(steps.length > COLLAPSE_THRESHOLD);
 
 	function toggle(i: number) {
 		expandedIndex = expandedIndex === i ? null : i;
 	}
+
+	function typeCounts(items: Step[]): string {
+		const counts = new Map<string, number>();
+		for (const s of items) {
+			const label = s.type === 'tool_call' ? 'tool call' : s.type === 'tool_result' ? 'result' : s.type;
+			counts.set(label, (counts.get(label) ?? 0) + 1);
+		}
+		return [...counts.entries()].map(([k, v]) => `${v} ${k}${v > 1 ? 's' : ''}`).join(', ');
+	}
 </script>
 
-<div class="chip-flow">
-	{#each steps as step, i}
-		{@const style = getStepStyle(step.type)}
-		<button
-			type="button"
-			class="chip"
-			class:chip-expanded={expandedIndex === i}
-			style="--chip-accent: {style.accent}"
-			onclick={() => toggle(i)}
-			title={compactSummary(step)}
-		>
-			<span class="chip-icon">{style.icon}</span>
-			<span class="chip-text">{compactSummary(step)}</span>
+{#if shouldCollapse && !groupRevealed}
+	<button type="button" class="actions-summary" onclick={() => groupRevealed = true}>
+		<span class="actions-icon">⚡</span>
+		<span class="actions-text">{steps.length} actions</span>
+		<span class="actions-detail">{typeCounts(steps)}</span>
+		<span class="actions-chevron">▸</span>
+	</button>
+{:else}
+	{#if shouldCollapse}
+		<button type="button" class="actions-summary actions-summary-open" onclick={() => { groupRevealed = false; expandedIndex = null; }}>
+			<span class="actions-icon">⚡</span>
+			<span class="actions-text">{steps.length} actions</span>
+			<span class="actions-chevron">▾</span>
 		</button>
-	{/each}
-</div>
-{#if expandedIndex !== null && steps[expandedIndex]}
-	<div class="chip-expanded-content" style="--chip-accent: {getStepStyle(steps[expandedIndex].type).accent}">
-		<StepRenderer
-			step={{ ...steps[expandedIndex], compact: false }}
-			showClaudeLabel={steps[expandedIndex].type === 'assistant'}
-			isLast={false}
-			{onFocusWindow}
-		/>
+	{/if}
+	<div class="chip-flow">
+		{#each steps as step, i}
+			{@const style = getStepStyle(step.type)}
+			<button
+				type="button"
+				class="chip"
+				class:chip-expanded={expandedIndex === i}
+				style="--chip-accent: {style.accent}"
+				onclick={() => toggle(i)}
+				title={compactSummary(step)}
+			>
+				<span class="chip-icon">{style.icon}</span>
+				<span class="chip-text">{compactSummary(step)}</span>
+			</button>
+		{/each}
 	</div>
+	{#if expandedIndex !== null && steps[expandedIndex]}
+		<div class="chip-expanded-content" style="--chip-accent: {getStepStyle(steps[expandedIndex].type).accent}">
+			<StepRenderer
+				step={{ ...steps[expandedIndex], compact: false }}
+				showClaudeLabel={steps[expandedIndex].type === 'assistant'}
+				isLast={false}
+				{onFocusWindow}
+			/>
+		</div>
+	{/if}
 {/if}
 
 <style>
+	.actions-summary {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+		padding: 5px 14px;
+		margin: 4px 0;
+		background: none;
+		border: none;
+		border-left: 2px solid var(--border-subtle);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--text-tertiary);
+		cursor: pointer;
+		text-align: left;
+		transition: color 0.15s, border-color 0.15s;
+	}
+
+	.actions-summary:hover {
+		color: var(--text-secondary);
+		border-left-color: var(--peach);
+	}
+
+	.actions-summary-open {
+		border-left-color: var(--peach);
+		color: var(--text-secondary);
+		margin-bottom: 2px;
+	}
+
+	.actions-icon {
+		font-size: 12px;
+	}
+
+	.actions-text {
+		font-weight: 600;
+	}
+
+	.actions-detail {
+		color: var(--text-tertiary);
+		font-size: 10px;
+	}
+
+	.actions-chevron {
+		margin-left: auto;
+		font-size: 10px;
+	}
+
 	.chip-flow {
 		display: flex;
 		flex-wrap: wrap;

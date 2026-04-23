@@ -59,6 +59,42 @@ steps:
     compact: true
 
   - type: divider
+    label: Long compact run (>5 = collapsed)
+    comment: >-
+      When more than 5 compact steps appear in a row, they collapse into
+      a single "N actions" summary bar. Click to reveal all chips.
+
+  - type: tool_call
+    toolName: fiji · get_thumbnail
+    code: '{ "title": "approach_01_otsu" }'
+    compact: true
+  - type: tool_result
+    text: '{"path":"/tmp/thumb_01.png","width":800,"height":641}'
+    compact: true
+  - type: tool_call
+    toolName: fiji · get_thumbnail
+    code: '{ "title": "approach_02_triangle" }'
+    compact: true
+  - type: tool_result
+    text: '{"path":"/tmp/thumb_02.png","width":800,"height":641}'
+    compact: true
+  - type: tool_call
+    toolName: fiji · get_thumbnail
+    code: '{ "title": "approach_03_li" }'
+    compact: true
+  - type: tool_result
+    text: '{"path":"/tmp/thumb_03.png","width":800,"height":641}'
+    compact: true
+  - type: tool_call
+    toolName: Read
+    code: /tmp/thumb_01.png
+    compact: true
+  - type: tool_call
+    toolName: Read
+    code: /tmp/thumb_02.png
+    compact: true
+
+  - type: divider
     label: Tool flow
 
   - type: permission
