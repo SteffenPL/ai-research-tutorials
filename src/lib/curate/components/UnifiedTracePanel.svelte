@@ -275,18 +275,26 @@
 
 {#snippet insertMenu(roundId: string, afterStepId: string | null)}
 	<div class="insert-menu">
-		<button onclick={() => onInsertAssistantStep(roundId, afterStepId)}>Assistant</button>
-		<button onclick={() => onInsertStep(roundId, afterStepId, { type: 'tool_call', toolName: '', code: '' })}>Tool Call</button>
-		<button onclick={() => onInsertStep(roundId, afterStepId, { type: 'tool_result', text: '' })}>Tool Result</button>
-		<button onclick={() => onInsertOutputStep(roundId, afterStepId)}>Output</button>
-		<button onclick={() => onInsertStatusStep(roundId, afterStepId)}>Status</button>
-		<button onclick={() => onInsertDividerStep(roundId, afterStepId)}>Divider</button>
-		<span class="insert-sep">Windows:</span>
-		<button onclick={() => onInsertWindowStep(roundId, afterStepId, 'fiji-image')}>Fiji Image</button>
-		<button onclick={() => onInsertWindowStep(roundId, afterStepId, 'image')}>Image</button>
-		<button onclick={() => onInsertWindowStep(roundId, afterStepId, 'video')}>Video</button>
-		<button onclick={() => onInsertWindowStep(roundId, afterStepId, 'source')}>Source</button>
-		<button onclick={() => onInsertWindowStep(roundId, afterStepId, 'markdown')}>Markdown</button>
+		<div class="insert-row">
+			<span class="insert-cat">Primary</span>
+			<button onclick={() => onInsertAssistantStep(roundId, afterStepId)}>Assistant</button>
+			<button onclick={() => onInsertOutputStep(roundId, afterStepId)}>Output</button>
+			<button onclick={() => onInsertStatusStep(roundId, afterStepId)}>Status</button>
+			<button onclick={() => onInsertDividerStep(roundId, afterStepId)}>Divider</button>
+		</div>
+		<div class="insert-row">
+			<span class="insert-cat">Tool</span>
+			<button onclick={() => onInsertStep(roundId, afterStepId, { type: 'tool_call', toolName: '', code: '' })}>Tool Call</button>
+			<button onclick={() => onInsertStep(roundId, afterStepId, { type: 'tool_result', text: '' })}>Tool Result</button>
+		</div>
+		<div class="insert-row">
+			<span class="insert-cat">Content</span>
+			<button onclick={() => onInsertWindowStep(roundId, afterStepId, 'fiji-image')}>Fiji Image</button>
+			<button onclick={() => onInsertWindowStep(roundId, afterStepId, 'image')}>Image</button>
+			<button onclick={() => onInsertWindowStep(roundId, afterStepId, 'video')}>Video</button>
+			<button onclick={() => onInsertWindowStep(roundId, afterStepId, 'source')}>Source</button>
+			<button onclick={() => onInsertWindowStep(roundId, afterStepId, 'markdown')}>Markdown</button>
+		</div>
 	</div>
 {/snippet}
 
@@ -1257,13 +1265,29 @@
 	}
 	.insert-menu {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 0.3rem;
-		padding: 0.5rem;
+		flex-direction: column;
+		gap: 0.35rem;
+		padding: 0.55rem 0.65rem;
 		background: rgba(0, 0, 0, 0.45);
 		border: 1px solid rgba(255, 255, 255, 0.12);
 		border-radius: 6px;
 		margin: 0.25rem 0;
+	}
+	.insert-row {
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+		flex-wrap: wrap;
+	}
+	.insert-cat {
+		font-family: var(--font-mono);
+		font-size: 0.6rem;
+		font-weight: 600;
+		color: var(--text-tertiary);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		min-width: 56px;
+		flex-shrink: 0;
 	}
 	.insert-menu button {
 		padding: 0.25rem 0.6rem;
@@ -1272,20 +1296,14 @@
 		border-radius: 4px;
 		color: var(--text-primary);
 		font-family: var(--font-mono);
-		font-size: 0.75rem;
+		font-size: 0.72rem;
 		cursor: pointer;
+		transition: background 0.12s, color 0.12s, border-color 0.12s;
 	}
 	.insert-menu button:hover {
 		background: var(--accent-soft);
 		color: var(--orange-300);
 		border-color: var(--orange-500);
-	}
-	.insert-sep {
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		color: var(--text-secondary);
-		align-self: center;
-		margin: 0 0.25rem;
 	}
 
 	.add-round-actions {
