@@ -15,12 +15,14 @@
 	let {
 		welcome,
 		tags,
+		author,
 		hasFullLog,
 		onStart,
 		onDismiss
 	}: {
 		welcome: TutorialWelcome;
 		tags: string[];
+		author?: string;
 		hasFullLog: boolean;
 		onStart: (mode: 'simplified' | 'full') => void;
 		onDismiss: () => void;
@@ -37,6 +39,9 @@
 			{/each}
 		</div>
 		<h2 class="welcome-heading">{t(welcome.heading)}</h2>
+		{#if author}
+			<p class="welcome-author">by {author}</p>
+		{/if}
 		<p class="welcome-description">{t(welcome.description)}</p>
 		{#if welcome.learnings.length > 0}
 			<div class="welcome-learnings">
@@ -130,6 +135,13 @@
 		letter-spacing: -0.02em;
 		margin-bottom: 12px;
 		line-height: 1.25;
+	}
+
+	.welcome-author {
+		font-size: 0.78rem;
+		color: var(--text-tertiary);
+		margin-bottom: 8px;
+		font-family: var(--font-display);
 	}
 
 	.welcome-description {

@@ -3,6 +3,7 @@
 	import Nav from '$lib/components/Nav.svelte';
 	import type { TutorialComposition, CompositionBlock, TraceBlock, HandAuthoredBlock } from '$lib/compose/types';
 	import type { Step, WindowContentData } from '$lib/data/tutorials';
+	import BlockSearchBar from '$lib/compose/BlockSearchBar.svelte';
 
 	let { data } = $props();
 
@@ -19,12 +20,11 @@
 	let previewing = $state(false);
 	let statusMessage = $state('');
 	let showExportConfirm = $state<string[] | null>(null);
-	let showAddTrace = $state(false);
+	let showBlockSearch = $state(false);
 	let expandedBlocks = $state<Set<number>>(new Set());
 
-	function addTraceBlock(sourceSlug: string) {
-		composition.blocks = [...composition.blocks, { kind: 'trace', sourceSlug }];
-		showAddTrace = false;
+	function addTraceBlock(block: TraceBlock) {
+		composition.blocks = [...composition.blocks, block];
 	}
 
 	function addHandAuthoredBlock() {
@@ -230,6 +230,10 @@
 					/>
 				</label>
 				<label>
+					<span>Author</span>
+					<input type="text" value={composition.meta.author ?? 'Steffen Plunder'} oninput={(e) => { composition.meta.author = (e.target as HTMLInputElement).value; }} />
+				</label>
+				<label>
 					<span>Thumbnail</span>
 					<input type="text" bind:value={composition.meta.thumbnail} placeholder="filename.png" />
 				</label>
@@ -299,26 +303,19 @@
 		<div class="section-header">
 			<h2>Composition Blocks</h2>
 			<div class="section-actions">
-				<button class="btn-sm btn-accent" onclick={() => (showAddTrace = !showAddTrace)}>
-					+ Trace
+				<button class="btn-sm btn-accent" onclick={() => (showBlockSearch = true)}>
+					+ Add Block
 				</button>
 				<button class="btn-sm" onclick={addHandAuthoredBlock}>+ Round</button>
 			</div>
 		</div>
 
-		{#if showAddTrace}
-			<div class="trace-picker">
-				<p class="picker-label">Pick a trace:</p>
-				{#each data.availableTraces as trace}
-					<button class="picker-item" onclick={() => addTraceBlock(trace.slug)}>
-						<span class="picker-slug">{trace.slug}</span>
-						<span class="picker-meta">{trace.roundCount} rounds</span>
-					</button>
-				{/each}
-				{#if data.availableTraces.length === 0}
-					<p class="empty">No traces available. Create one from the dashboard.</p>
-				{/if}
-			</div>
+		{#if showBlockSearch}
+			<BlockSearchBar
+				availableTraces={data.availableTraces}
+				onAddBlock={addTraceBlock}
+				onClose={() => (showBlockSearch = false)}
+			/>
 		{/if}
 
 		{#if composition.blocks.length === 0}
@@ -408,7 +405,7 @@
 
 		<!-- Insert between blocks -->
 		<div class="add-block-footer">
-			<button class="btn-sm btn-accent" onclick={() => (showAddTrace = !showAddTrace)}>+ Trace</button>
+			<button class="btn-sm btn-accent" onclick={() => (showBlockSearch = true)}>+ Add Block</button>
 			<button class="btn-sm" onclick={addHandAuthoredBlock}>+ Round</button>
 			<input type="file" class="upload-input" onchange={(e) => handleFileUpload(e, -1)} />
 		</div>
@@ -421,12 +418,13 @@
 		inset: 0;
 		z-index: -1;
 		background:
+			radial-gradient(ellipse 80% 60% at 70% 15%, rgba(140, 160, 200, 0.08) 0%, transparent 60%),
 			radial-gradient(ellipse 75% 60% at 10% 90%, rgba(233, 84, 32, 0.38) 0%, transparent 70%),
 			radial-gradient(ellipse 50% 45% at 35% 80%, rgba(240, 120, 40, 0.2) 0%, transparent 55%),
-			radial-gradient(ellipse 60% 50% at 88% 12%, rgba(140, 60, 160, 0.2) 0%, transparent 60%),
-			radial-gradient(ellipse 90% 70% at 50% 50%, rgba(60, 15, 42, 0.6) 0%, transparent 70%),
-			linear-gradient(150deg, #2c001e 0%, #380a28 20%, #42122e 40%, #3a0e26 60%, #30051f 80%, #2c001e 100%);
-		filter: blur(40px) saturate(1.35);
+			radial-gradient(ellipse 60% 50% at 88% 12%, rgba(140, 60, 160, 0.22) 0%, transparent 60%),
+			radial-gradient(ellipse 90% 70% at 50% 50%, rgba(60, 15, 42, 0.5) 0%, transparent 70%),
+			linear-gradient(150deg, #32061f 0%, #3c0e2a 20%, #481832 40%, #40122a 60%, #360a22 80%, #32061f 100%);
+		filter: blur(40px) saturate(1.3);
 	}
 
 	.toolbar {
@@ -595,46 +593,6 @@
 	.section-actions {
 		display: flex;
 		gap: 0.4rem;
-	}
-
-	/* ─── Trace picker ─── */
-	.trace-picker {
-		padding: 0.5rem 0.75rem;
-		border-bottom: 1px solid var(--border-subtle);
-		background: rgba(0, 0, 0, 0.1);
-	}
-	.picker-label {
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
-		color: var(--text-tertiary);
-		margin: 0 0 0.4rem;
-	}
-	.picker-item {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		width: 100%;
-		padding: 0.4rem 0.5rem;
-		margin-bottom: 0.2rem;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid var(--border-subtle);
-		border-radius: 4px;
-		cursor: pointer;
-		transition: background 0.15s;
-	}
-	.picker-item:hover {
-		background: rgba(255, 255, 255, 0.06);
-		border-color: var(--orange-400);
-	}
-	.picker-slug {
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		color: var(--text-primary);
-	}
-	.picker-meta {
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		color: var(--text-tertiary);
 	}
 
 	/* ─── Block list ─���─ */

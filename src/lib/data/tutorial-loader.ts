@@ -125,6 +125,7 @@ function parseMeta(raw: string, slug: string): LoadedMeta {
 		tags: data.tags ?? [],
 		thumbnail: rewriteAssetPath(slug, data.thumbnail),
 		sessions: Array.isArray(data.sessions) ? data.sessions as SessionRef[] : undefined,
+		author: (data as Record<string, unknown>).author as string | undefined ?? 'Steffen Plunder',
 		welcome: data.welcome,
 		devOnly: data.devOnly === true
 	};
@@ -178,7 +179,8 @@ function buildTutorial(metaPath: string, metaYaml: string): Tutorial | null {
 			title: meta.title,
 			tags: meta.tags,
 			...(meta.thumbnail ? { thumbnail: meta.thumbnail } : {}),
-			...(meta.sessions ? { sessions: meta.sessions } : {})
+			...(meta.sessions ? { sessions: meta.sessions } : {}),
+			author: meta.author
 		},
 		...(meta.welcome ? { welcome: meta.welcome } : {}),
 		rounds,

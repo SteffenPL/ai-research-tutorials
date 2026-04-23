@@ -29,6 +29,9 @@
 	</div>
 	<div class="card__content">
 		<h3 class="card__title">{title}</h3>
+		{#if tutorial.meta.author}
+			<span class="card__author">by {tutorial.meta.author}</span>
+		{/if}
 		<div class="card__tags">
 			{#each tutorial.meta.tags as tag}
 				<Tag label={tag} />
@@ -106,6 +109,12 @@
 		letter-spacing: -0.01em;
 		color: var(--text-primary);
 		line-height: 1.3;
+	}
+
+	.card__author {
+		font-size: 0.75rem;
+		color: var(--text-tertiary);
+		font-family: var(--font-display);
 	}
 
 	.card:hover .card__title {

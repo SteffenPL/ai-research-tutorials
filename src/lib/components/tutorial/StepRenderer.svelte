@@ -29,9 +29,52 @@
 		isLast?: boolean;
 		onFocusWindow: (step: WindowStep) => void;
 	} = $props();
+
+	function compactIcon(type: string): string {
+		switch (type) {
+			case 'assistant': return '○';
+			case 'thinking': return '✧';
+			case 'tool_call': return '⚡';
+			case 'tool_result': return '←';
+			case 'permission': return '⚿';
+			case 'question': return '?';
+			case 'output': return '$';
+			case 'window': return '↗';
+			case 'table': return '☷';
+			case 'status': return '•';
+			default: return '•';
+		}
+	}
+
+	function compactSummary(s: Step): string {
+		switch (s.type) {
+			case 'assistant': return stripHtml(s.html).slice(0, 80) + (stripHtml(s.html).length > 80 ? '…' : '');
+			case 'thinking': return 'Thinking' + (s.duration ? ` (${s.duration})` : '');
+			case 'tool_call': return s.toolName;
+			case 'tool_result': return s.text.slice(0, 60) + (s.text.length > 60 ? '…' : '');
+			case 'permission': return `${s.tool} — ${s.granted ? 'allowed' : 'denied'}`;
+			case 'question': return stripHtml(s.html).slice(0, 60) + '…';
+			case 'output': return s.text.split('\n')[0].slice(0, 60) + '…';
+			case 'window': return s.windowTitle;
+			case 'table': return `Table: ${s.columns.join(', ')}`;
+			case 'status': return s.text;
+			case 'divider': return s.label;
+			default: return '';
+		}
+	}
+
+	function stripHtml(html: string): string {
+		return html.replace(/<[^>]*>/g, '').trim();
+	}
 </script>
 
-{#if step.type === 'assistant'}
+{#if step.compact}
+	<div class="compact-step">
+		<span class="compact-type">{compactIcon(step.type)}</span>
+		<span class="compact-text">{compactSummary(step)}</span>
+	</div>
+
+{:else if step.type === 'assistant'}
 	<div class="assistant-block" class:final={step.final}>
 		{#if showClaudeLabel}
 			<div class="assistant-label">Claude</div>
@@ -145,6 +188,32 @@
 {/if}
 
 <style>
+	/* ── Compact one-line summary ── */
+	.compact-step {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 3px 14px;
+		font-size: 11px;
+		color: var(--text-tertiary);
+		border-left: 2px solid var(--border-subtle);
+		margin: 2px 0;
+		opacity: 0.7;
+	}
+
+	.compact-type {
+		flex-shrink: 0;
+		width: 14px;
+		text-align: center;
+		font-size: 11px;
+	}
+
+	.compact-text {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
 	/* ── Assistant messages (default: plain) ── */
 	.assistant-block {
 		margin: 12px 0;

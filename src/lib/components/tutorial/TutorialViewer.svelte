@@ -386,6 +386,7 @@
 		<WelcomeOverlay
 			welcome={tutorial.welcome}
 			tags={tutorial.meta.tags}
+			author={tutorial.meta.author}
 			{hasFullLog}
 			onStart={(mode) => { logMode = mode; dismissWelcome(); }}
 			onDismiss={dismissWelcome}
@@ -401,6 +402,7 @@
 			{allSteps}
 			{spacerHeight}
 			{displayRoundIdx}
+			isFullLog={logMode === 'full'}
 			onFocusWindow={focusWindow}
 			bind:terminalBodyRef={terminalBody}
 		/>

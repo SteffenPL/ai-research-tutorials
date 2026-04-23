@@ -2,10 +2,9 @@
 	import type { PageProps } from './$types';
 	import type { TraceState, TraceStep } from '$lib/trace/types';
 	import type { Step, WindowContentData } from '$lib/data/tutorials';
-	import { sessionViewToTraceState } from '$lib/trace/convert';
+	import { sessionViewToTraceState, resetStepFromSource } from '$lib/trace/convert';
 	import Nav from '$lib/components/Nav.svelte';
-	import SourcePanel from '$lib/curate/components/SourcePanel.svelte';
-	import CuratedPanel from '$lib/curate/components/CuratedPanel.svelte';
+	import UnifiedTracePanel from '$lib/curate/components/UnifiedTracePanel.svelte';
 	import EditDrawer from '$lib/curate/components/EditDrawer.svelte';
 	import { onMount } from 'svelte';
 
@@ -82,6 +81,18 @@
 		step.displayMode = step.displayMode === 'full' ? 'compact' : 'full';
 	}
 
+	function toggleHidden(step: TraceStep) {
+		step.hidden = !step.hidden;
+	}
+
+	function toggleRound(roundId: string) {
+		if (!curation) return;
+		const round = curation.rounds.find((r) => r.id === roundId);
+		if (!round) return;
+		round.included = round.included === false ? true : false;
+		curation.rounds = [...curation.rounds];
+	}
+
 	function toggleStep(roundId: string, stepId: string) {
 		if (!curation) return;
 		const round = curation.rounds.find((r) => r.id === roundId);
@@ -89,30 +100,6 @@
 		const step = round.steps.find((s) => s.id === stepId);
 		if (!step) return;
 		step.included = !step.included;
-	}
-
-	function includeAllInRound(roundId: string) {
-		if (!curation) return;
-		const round = curation.rounds.find((r) => r.id === roundId);
-		if (!round) return;
-		round.steps.forEach((s) => (s.included = true));
-	}
-
-	function excludeAllInRound(roundId: string) {
-		if (!curation) return;
-		const round = curation.rounds.find((r) => r.id === roundId);
-		if (!round) return;
-		round.steps.forEach((s) => (s.included = false));
-	}
-
-	function includeToolsOnly(roundId: string) {
-		if (!curation) return;
-		const round = curation.rounds.find((r) => r.id === roundId);
-		if (!round) return;
-		round.steps.forEach((s) => {
-			const type = (s.overrides as Record<string, unknown>)?.type ?? s.inserted?.type;
-			s.included = type === 'tool_call' || type === 'tool_result';
-		});
 	}
 
 	function moveStep(roundId: string, stepId: string, direction: -1 | 1) {
@@ -288,11 +275,29 @@
 		}
 	}
 
-	const curatedRounds = $derived(
-		curation?.rounds.filter((r) => {
-			return r.steps.some((s) => s.included || s.inserted) || r.prompt;
-		}) ?? []
-	);
+	function resetStep(roundId: string, stepId: string) {
+		if (!curation || !view) return;
+		const round = curation.rounds.find((r) => r.id === roundId);
+		if (!round) return;
+		const step = round.steps.find((s) => s.id === stepId);
+		if (!step) return;
+		resetStepFromSource(step, view);
+		round.steps = [...round.steps];
+	}
+
+	function resetRound(roundId: string) {
+		if (!curation || !view) return;
+		const round = curation.rounds.find((r) => r.id === roundId);
+		if (!round) return;
+		if (round.sourceRoundIndex !== undefined) {
+			const sourceRound = view.rounds.find((r) => r.index - 1 === round.sourceRoundIndex);
+			if (sourceRound) round.prompt = sourceRound.prompt.text;
+		}
+		round.steps.forEach((s) => {
+			if (s.sourceRef) resetStepFromSource(s, view);
+		});
+		round.steps = [...round.steps];
+	}
 </script>
 
 <svelte:head>
@@ -372,30 +377,19 @@
 		</div>
 	</section>
 
-	<main class="curate-layout" class:single-panel={!view}>
-		{#if view}
-			<SourcePanel
-				{view}
-				{curation}
-				{editingStep}
-				onToggleStep={toggleStep}
-				onIncludeAll={includeAllInRound}
-				onExcludeAll={excludeAllInRound}
-				onIncludeToolsOnly={includeToolsOnly}
-				onCycleDisplayMode={cycleDisplayMode}
-				onEditStep={handleEditStep}
-			/>
-		{/if}
-
-		<CuratedPanel
+	<main class="curate-layout">
+		<UnifiedTracePanel
 			{curation}
-			{curatedRounds}
+			{view}
 			{editingStep}
 			bind:showInsertMenu
+			onToggleRound={toggleRound}
+			onToggleStep={toggleStep}
 			onMoveStep={moveStep}
 			onRemoveStep={removeStep}
 			onRemoveRound={removeRound}
 			onCycleDisplayMode={cycleDisplayMode}
+			onToggleHidden={toggleHidden}
 			onAddRound={addRound}
 			onInsertStep={insertStep}
 			onInsertWindowStep={insertWindowStep}
@@ -404,6 +398,8 @@
 			onInsertAssistantStep={insertAssistantStep}
 			onInsertDividerStep={insertDividerStep}
 			onEditStep={handleEditStep}
+			onResetStep={resetStep}
+			onResetRound={resetRound}
 		/>
 	</main>
 
@@ -424,12 +420,13 @@
 		inset: 0;
 		z-index: -1;
 		background:
+			radial-gradient(ellipse 80% 60% at 70% 15%, rgba(140, 160, 200, 0.08) 0%, transparent 60%),
 			radial-gradient(ellipse 75% 60% at 10% 90%, rgba(233, 84, 32, 0.38) 0%, transparent 70%),
 			radial-gradient(ellipse 50% 45% at 35% 80%, rgba(240, 120, 40, 0.2) 0%, transparent 55%),
-			radial-gradient(ellipse 60% 50% at 88% 12%, rgba(140, 60, 160, 0.2) 0%, transparent 60%),
-			radial-gradient(ellipse 90% 70% at 50% 50%, rgba(60, 15, 42, 0.6) 0%, transparent 70%),
-			linear-gradient(150deg, #2c001e 0%, #380a28 20%, #42122e 40%, #3a0e26 60%, #30051f 80%, #2c001e 100%);
-		filter: blur(40px) saturate(1.35);
+			radial-gradient(ellipse 60% 50% at 88% 12%, rgba(140, 60, 160, 0.22) 0%, transparent 60%),
+			radial-gradient(ellipse 90% 70% at 50% 50%, rgba(60, 15, 42, 0.5) 0%, transparent 70%),
+			linear-gradient(150deg, #32061f 0%, #3c0e2a 20%, #481832 40%, #40122a 60%, #360a22 80%, #32061f 100%);
+		filter: blur(40px) saturate(1.3);
 	}
 
 	.loading {
@@ -564,16 +561,9 @@
 
 	/* ─── Layout ──────────────────────────────── */
 	.curate-layout {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 1rem;
 		padding: 1rem 1rem 8rem;
-		max-width: 1600px;
-		margin: 0 auto;
-	}
-	.curate-layout.single-panel {
-		grid-template-columns: 1fr;
 		max-width: 900px;
+		margin: 0 auto;
 	}
 
 	/* ─── Title row ──────────────────────────── */

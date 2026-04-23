@@ -19,14 +19,14 @@
 
 	/* Semantic tokens */
 	--bg-primary: var(--aubergine-800);
-	--bg-secondary: #2b2028;
-	--bg-surface: rgba(28, 16, 23, 0.7);
-	--bg-hover: #3c2e38;
-	--text-primary: #ede0e5;
-	--text-secondary: #bda8b4;
-	--text-tertiary: #7a6572;
-	--border-color: #3d2233;
-	--border-subtle: #5a4555;
+	--bg-secondary: #332730;
+	--bg-surface: rgba(34, 22, 30, 0.75);
+	--bg-hover: #453540;
+	--text-primary: #f0e4ea;
+	--text-secondary: #c8b4c0;
+	--text-tertiary: #8d7a85;
+	--border-color: #4a3040;
+	--border-subtle: #655060;
 	--accent: var(--orange-500);
 	--accent-glow: rgba(233, 84, 32, 0.15);
 	--accent-soft: rgba(233, 84, 32, 0.08);

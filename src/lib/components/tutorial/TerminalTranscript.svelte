@@ -28,6 +28,7 @@
 		allSteps,
 		spacerHeight,
 		displayRoundIdx,
+		isFullLog = false,
 		onFocusWindow,
 		terminalBodyRef = $bindable<HTMLElement | null>(null)
 	}: {
@@ -36,10 +37,49 @@
 		allSteps: Step[];
 		spacerHeight: number;
 		displayRoundIdx: number;
+		isFullLog?: boolean;
 		onFocusWindow: (step: WindowStep) => void;
-		/** Bound by parent to observe scroll + measure layout */
 		terminalBodyRef?: HTMLElement | null;
 	} = $props();
+
+	type StepGroup =
+		| { kind: 'step'; step: Step; si: number; globalIndex: number }
+		| { kind: 'hidden'; steps: Step[]; startSi: number; count: number; globalIndex: number };
+
+	function groupSteps(steps: Step[], roundStart: number): StepGroup[] {
+		if (isFullLog) {
+			return steps.map((step, si) => ({ kind: 'step' as const, step, si, globalIndex: roundStart + si }));
+		}
+		const groups: StepGroup[] = [];
+		let hiddenRun: Step[] = [];
+		let hiddenStartSi = 0;
+
+		for (let si = 0; si < steps.length; si++) {
+			if (steps[si].hidden) {
+				if (hiddenRun.length === 0) hiddenStartSi = si;
+				hiddenRun.push(steps[si]);
+			} else {
+				if (hiddenRun.length > 0) {
+					groups.push({ kind: 'hidden', steps: hiddenRun, startSi: hiddenStartSi, count: hiddenRun.length, globalIndex: roundStart + hiddenStartSi });
+					hiddenRun = [];
+				}
+				groups.push({ kind: 'step', step: steps[si], si, globalIndex: roundStart + si });
+			}
+		}
+		if (hiddenRun.length > 0) {
+			groups.push({ kind: 'hidden', steps: hiddenRun, startSi: hiddenStartSi, count: hiddenRun.length, globalIndex: roundStart + hiddenStartSi });
+		}
+		return groups;
+	}
+
+	let expandedHiddenGroups = $state(new Set<string>());
+
+	function toggleHiddenGroup(key: string) {
+		const next = new Set(expandedHiddenGroups);
+		if (next.has(key)) next.delete(key);
+		else next.add(key);
+		expandedHiddenGroups = next;
+	}
 </script>
 
 <div class="terminal-container">
@@ -95,19 +135,51 @@
 								</div>
 							{/if}
 						</div>
-						{#each round.steps as step, si}
-							{@const i = roundStart + si}
-							<div
-								data-step={i}
-								class="step-block"
-							>
-								<StepRenderer
-									{step}
-									showClaudeLabel={step.type === 'assistant' && si === 0}
-									isLast={i === allSteps.length - 1}
-									{onFocusWindow}
-								/>
-							</div>
+						{#each groupSteps(round.steps, roundStart) as group}
+							{#if group.kind === 'step'}
+								<div
+									data-step={group.globalIndex}
+									class="step-block"
+								>
+									<StepRenderer
+										step={group.step}
+										showClaudeLabel={group.step.type === 'assistant' && group.si === 0}
+										isLast={group.globalIndex === allSteps.length - 1}
+										{onFocusWindow}
+									/>
+								</div>
+							{:else}
+								{@const groupKey = `${ri}-${group.startSi}`}
+								{@const expanded = expandedHiddenGroups.has(groupKey)}
+								<div
+									data-step={group.globalIndex}
+									class="step-block"
+								>
+									<button
+										type="button"
+										class="hidden-group-bar"
+										onclick={() => toggleHiddenGroup(groupKey)}
+									>
+										<span class="hidden-chevron" class:expanded>{expanded ? '▾' : '▸'}</span>
+										<span class="hidden-label">{group.count} step{group.count > 1 ? 's' : ''} hidden</span>
+									</button>
+									{#if expanded}
+										{#each group.steps as hStep, hsi}
+											<div
+												data-step={roundStart + group.startSi + hsi}
+												class="step-block hidden-step-revealed"
+											>
+												<StepRenderer
+													step={hStep}
+													showClaudeLabel={false}
+													isLast={false}
+													{onFocusWindow}
+												/>
+											</div>
+										{/each}
+									{/if}
+								</div>
+							{/if}
 						{/each}
 					</div>
 				{/each}
@@ -293,6 +365,47 @@
 
 	.round-prompt-block .prompt-block {
 		margin: 0;
+	}
+
+	/* ── Hidden step group ── */
+	.hidden-group-bar {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+		padding: 4px 14px;
+		margin: 4px 0;
+		background: none;
+		border: none;
+		border-left: 2px dashed var(--border-subtle);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--text-tertiary);
+		cursor: pointer;
+		transition: color 0.15s, background 0.15s;
+		text-align: left;
+	}
+
+	.hidden-group-bar:hover {
+		color: var(--text-secondary);
+		background: rgba(255, 255, 255, 0.02);
+	}
+
+	.hidden-chevron {
+		font-size: 10px;
+		flex-shrink: 0;
+		transition: transform 0.15s;
+	}
+
+	.hidden-label {
+		opacity: 0.7;
+	}
+
+	.hidden-step-revealed {
+		opacity: 0.6;
+		border-left: 1px dashed var(--border-subtle);
+		margin-left: 8px;
+		padding-left: 6px;
 	}
 
 	/* Center the mobile inline window within its step-block */

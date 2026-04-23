@@ -1,12 +1,16 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import Nav from '$lib/components/Nav.svelte';
+	import DropZone from '$lib/components/DropZone.svelte';
+	import AssetUploadDialog from '$lib/components/AssetUploadDialog.svelte';
 
 	let { data } = $props();
 
+	// Session import state
 	let showImport = $state(false);
-	let importPath = $state('');
 	let importSlug = $state('');
+	let importParent = $state('');
+	let importFile: File | null = $state(null);
 	let importStatus = $state('');
 	let importing = $state(false);
 
@@ -17,25 +21,15 @@
 	let copyToast = $state('');
 	let copyTimeout: ReturnType<typeof setTimeout> | undefined;
 
+	// Asset upload dialog state
+	let assetDialogOpen = $state(false);
+	let assetDialogSlug: string | undefined = $state(undefined);
+
 	async function copyAssetRef(ref: string) {
 		await navigator.clipboard.writeText(ref);
 		clearTimeout(copyTimeout);
 		copyToast = ref;
 		copyTimeout = setTimeout(() => (copyToast = ''), 1500);
-	}
-
-	async function uploadSharedAsset(event: Event) {
-		const input = event.target as HTMLInputElement;
-		const file = input.files?.[0];
-		if (!file) return;
-		const formData = new FormData();
-		formData.append('file', file);
-		const res = await fetch('/api/assets/upload', { method: 'POST', body: formData });
-		const json = await res.json();
-		if (json.ok) {
-			location.reload();
-		}
-		input.value = '';
 	}
 
 	function isImage(filename: string): boolean {
@@ -101,24 +95,39 @@
 		}
 	}
 
+	function handleSessionFile(files: File[]) {
+		const f = files[0];
+		importFile = f;
+		importStatus = '';
+		if (!importSlug) {
+			importSlug = f.name.replace(/\.jsonl$/, '').replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+		}
+	}
+
 	async function importSession() {
-		if (!importPath || !importSlug) return;
+		if (!importFile || !importSlug) return;
 		importing = true;
 		importStatus = '';
 		try {
-			const res = await fetch('/api/sessions/import', {
+			const formData = new FormData();
+			formData.append('file', importFile);
+			formData.append('slug', importSlug);
+			if (importParent) {
+				formData.append('parentSession', importParent);
+			}
+			const res = await fetch('/api/sessions/upload', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ sessionPath: importPath, slug: importSlug })
+				body: formData
 			});
 			const json = await res.json();
 			if (json.ok) {
-				importStatus = `Imported: ${json.kept} events kept, ${json.dropped} dropped, ${json.subagentCount} subagents`;
+				const parentNote = json.parentSession ? ` (subagent of ${json.parentSession})` : '';
+				importStatus = `Imported: ${json.kept} events kept, ${json.dropped} dropped${parentNote}`;
 				setTimeout(() => location.reload(), 1500);
 			} else {
 				importStatus = `Error: ${json.message ?? 'Import failed'}`;
 			}
-		} catch (e) {
+		} catch {
 			importStatus = 'Import error';
 		}
 		importing = false;
@@ -132,7 +141,7 @@
 		if (!newTutorialSlug) return;
 		const composition = {
 			slug: newTutorialSlug,
-			meta: { slug: newTutorialSlug, title: { en: newTutorialSlug }, tags: [] },
+			meta: { slug: newTutorialSlug, title: { en: newTutorialSlug }, tags: [], author: 'Steffen Plunder' },
 			blocks: []
 		};
 		const res = await fetch(`/api/compose/${newTutorialSlug}`, {
@@ -143,6 +152,15 @@
 		if (res.ok) {
 			window.location.href = `${base}/compose/${newTutorialSlug}`;
 		}
+	}
+
+	function openAssetDialog(slug?: string) {
+		assetDialogSlug = slug;
+		assetDialogOpen = true;
+	}
+
+	function handleAssetUploaded() {
+		setTimeout(() => location.reload(), 800);
 	}
 </script>
 
@@ -156,7 +174,7 @@
 
 <main class="dashboard">
 	<!-- ═══ SESSIONS ═══ -->
-	<section class="section">
+	<section class="section grid-sessions">
 		<div class="section-header">
 			<h2>Sessions</h2>
 			<button class="btn" onclick={() => (showImport = !showImport)}>
@@ -166,22 +184,35 @@
 
 		{#if showImport}
 			<div class="import-form">
-				<label>
-					<span>Session JSONL path</span>
-					<input type="text" bind:value={importPath} placeholder="~/.claude/projects/.../uuid.jsonl" />
-				</label>
-				<label>
-					<span>Slug</span>
-					<input type="text" bind:value={importSlug} placeholder="my-session" />
-				</label>
-				<div class="import-actions">
-					<button class="btn btn-primary" onclick={importSession} disabled={importing || !importPath || !importSlug}>
-						{importing ? 'Importing...' : 'Import'}
-					</button>
-					{#if importStatus}
-						<span class="status-msg">{importStatus}</span>
-					{/if}
-				</div>
+				<DropZone
+					accept=".jsonl"
+					label={importFile ? importFile.name : 'Drop .jsonl session file here'}
+					sublabel={importFile ? `${(importFile.size / 1024).toFixed(1)} KB — ready to import` : 'or click to browse'}
+					onfiles={handleSessionFile}
+				/>
+				{#if importFile}
+					<label>
+						<span>Slug</span>
+						<input type="text" bind:value={importSlug} placeholder="my-session" />
+					</label>
+					<label>
+						<span>Subagent of (optional)</span>
+						<select bind:value={importParent}>
+							<option value="">None (standalone session)</option>
+							{#each data.sessions as session}
+								<option value={session.slug}>{session.slug}</option>
+							{/each}
+						</select>
+					</label>
+					<div class="import-actions">
+						<button class="btn btn-primary" onclick={importSession} disabled={importing || !importSlug}>
+							{importing ? 'Importing...' : 'Import'}
+						</button>
+						{#if importStatus}
+							<span class="status-msg">{importStatus}</span>
+						{/if}
+					</div>
+				{/if}
 			</div>
 		{/if}
 
@@ -208,7 +239,7 @@
 	</section>
 
 	<!-- ═══ TRACES ═══ -->
-	<section class="section">
+	<section class="section grid-traces">
 		<div class="section-header">
 			<h2>Traces</h2>
 		</div>
@@ -237,7 +268,7 @@
 	</section>
 
 	<!-- ═══ TUTORIALS ═══ -->
-	<section class="section">
+	<section class="section grid-tutorials">
 		<div class="section-header">
 			<h2>Tutorials</h2>
 			<button class="btn" onclick={() => (showNewTutorial = !showNewTutorial)}>
@@ -290,13 +321,10 @@
 	</section>
 
 	<!-- ═══ ASSETS ═══ -->
-	<section class="section">
+	<section class="section grid-assets">
 		<div class="section-header">
 			<h2>Assets</h2>
-			<label class="btn upload-label">
-				Upload Shared
-				<input type="file" accept="image/*,video/*" onchange={uploadSharedAsset} hidden />
-			</label>
+			<button class="btn" onclick={() => openAssetDialog()}>Upload Asset</button>
 		</div>
 
 		{#if copyToast}
@@ -407,27 +435,69 @@
 	{/if}
 </main>
 
+<AssetUploadDialog
+	open={assetDialogOpen}
+	tutorialSlug={assetDialogSlug}
+	onclose={() => (assetDialogOpen = false)}
+	onuploaded={handleAssetUploaded}
+/>
+
 <style>
 	.page-bg {
 		position: fixed;
 		inset: 0;
 		z-index: -1;
 		background:
+			radial-gradient(ellipse 80% 60% at 70% 15%, rgba(140, 160, 200, 0.08) 0%, transparent 60%),
 			radial-gradient(ellipse 75% 60% at 10% 90%, rgba(233, 84, 32, 0.38) 0%, transparent 70%),
 			radial-gradient(ellipse 50% 45% at 35% 80%, rgba(240, 120, 40, 0.2) 0%, transparent 55%),
-			radial-gradient(ellipse 60% 50% at 88% 12%, rgba(140, 60, 160, 0.2) 0%, transparent 60%),
-			radial-gradient(ellipse 90% 70% at 50% 50%, rgba(60, 15, 42, 0.6) 0%, transparent 70%),
-			linear-gradient(150deg, #2c001e 0%, #380a28 20%, #42122e 40%, #3a0e26 60%, #30051f 80%, #2c001e 100%);
-		filter: blur(40px) saturate(1.35);
+			radial-gradient(ellipse 60% 50% at 88% 12%, rgba(140, 60, 160, 0.22) 0%, transparent 60%),
+			radial-gradient(ellipse 90% 70% at 50% 50%, rgba(60, 15, 42, 0.5) 0%, transparent 70%),
+			linear-gradient(150deg, #32061f 0%, #3c0e2a 20%, #481832 40%, #40122a 60%, #360a22 80%, #32061f 100%);
+		filter: blur(40px) saturate(1.3);
 	}
 
 	.dashboard {
-		max-width: 860px;
+		max-width: 1100px;
 		margin: 80px auto 0;
 		padding: 24px;
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-areas:
+			"sessions traces"
+			"tutorials tutorials"
+			"assets assets"
+			"trash trash";
+		gap: 1rem;
+	}
+
+	.grid-sessions { grid-area: sessions; }
+	.grid-traces { grid-area: traces; }
+	.grid-tutorials { grid-area: tutorials; }
+	.grid-assets { grid-area: assets; }
+	:global(.trash-section) { grid-area: trash; }
+
+	.grid-sessions,
+	.grid-traces {
+		max-height: 500px;
+		overflow-y: auto;
+	}
+
+	@media (max-width: 768px) {
+		.dashboard {
+			grid-template-columns: 1fr;
+			grid-template-areas:
+				"sessions"
+				"traces"
+				"tutorials"
+				"assets"
+				"trash";
+		}
+
+		.grid-sessions,
+		.grid-traces {
+			max-height: none;
+		}
 	}
 
 	.section {
@@ -626,11 +696,22 @@
 		color: rgb(220, 100, 100);
 	}
 
-	/* ─── Assets panel ─── */
-	.upload-label {
-		cursor: pointer;
+	.import-form select {
+		padding: 0.35rem 0.5rem;
+		background: rgba(0, 0, 0, 0.3);
+		border: 1px solid var(--border-subtle);
+		border-radius: 4px;
+		color: var(--text-primary);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
 	}
 
+	.import-form select:focus {
+		outline: none;
+		border-color: var(--orange-400);
+	}
+
+	/* ─── Assets panel ─── */
 	.copy-toast {
 		padding: 0.35rem 1rem;
 		font-family: var(--font-mono);

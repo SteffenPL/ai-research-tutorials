@@ -68,6 +68,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 	metaObj.title = composition.meta.title;
 	metaObj.tags = composition.meta.tags;
 	if (composition.meta.thumbnail) metaObj.thumbnail = composition.meta.thumbnail;
+	if (composition.meta.author) metaObj.author = composition.meta.author;
 	if (composition.welcome) metaObj.welcome = composition.welcome;
 	if (composition.briefing) metaObj.briefing = composition.briefing;
 

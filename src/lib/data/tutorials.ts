@@ -25,6 +25,7 @@ export interface TutorialMeta {
 	tags: string[];
 	thumbnail?: string;
 	sessions?: SessionRef[];
+	author?: string;
 }
 
 /**
@@ -61,6 +62,8 @@ export interface StepBase {
 	comment?: string | { en: string; ja?: string };
 	/** When true, render as a compact one-line summary instead of full content. */
 	compact?: boolean;
+	/** When true, collapse into a grouped "N steps hidden" placeholder. */
+	hidden?: boolean;
 }
 
 /* ─── Chat Steps ──────────────────────────── */
