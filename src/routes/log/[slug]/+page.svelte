@@ -1,44 +1,34 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 	import type {
-		DisplayNode,
 		PromptKind,
 		Round,
-		SubagentView,
-		ToolInvocationResult
+		SubagentView
 	} from '$lib/session/viewmodel';
+	import type { WindowStep } from '$lib/data/tutorials';
 	import {
 		settings,
-		visibilityFor,
-		DETAIL_LEVELS,
-		type DetailLevel
+		DETAIL_LEVELS
 	} from '$lib/session/settings.svelte';
 	import Nav from '$lib/components/Nav.svelte';
 	import WindowChrome from '$lib/components/windows/WindowChrome.svelte';
+	import StepRenderer from '$lib/components/tutorial/StepRenderer.svelte';
+	import CompactChipFlow from '$lib/components/tutorial/CompactChipFlow.svelte';
+	import { displayNodesToSteps, groupSteps } from '$lib/session/to-steps';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { browser } from '$app/environment';
 	import { base } from '$app/paths';
 
 	let { data }: PageProps = $props();
 	const view = $derived(data.view);
-	const vis = $derived(visibilityFor(settings.detailLevel));
 
-	/** Pretty tool name: mcp__fiji-mcp__run_ij_macro → "fiji · run_ij_macro". */
-	function prettyToolName(name: string): string {
-		const m = name.match(/^mcp__([^_]+)-mcp__(.+)$/) ?? name.match(/^mcp__(.+?)__(.+)$/);
-		return m ? `${m[1]} · ${m[2]}` : name;
-	}
+	const convertOpts = $derived({
+		detailLevel: settings.detailLevel,
+		hideThinking: settings.hideThinking,
+		hideToolResults: settings.hideToolResults
+	});
 
-	function primaryInputText(name: string, input: Record<string, unknown>): string | null {
-		if (name === 'Bash' && typeof input.command === 'string') return input.command;
-		if (name.endsWith('run_ij_macro') && typeof input.macro === 'string') return input.macro;
-		if (name.endsWith('run_script') && typeof input.script === 'string') return input.script;
-		return null;
-	}
-
-	function dataUrl(mime: string, data: string): string {
-		return `data:${mime};base64,${data}`;
-	}
+	function noopFocusWindow(_step: WindowStep) {}
 
 	function promptPreview(text: string, max = 70): string {
 		const clean = text.replace(/\s+/g, ' ').trim();
@@ -74,6 +64,16 @@
 	function toggleRound(anchor: string) {
 		if (collapsed.has(anchor)) collapsed.delete(anchor);
 		else collapsed.add(anchor);
+	}
+
+	/* ─── Hidden step group expand state ──────────────────────────── */
+	let expandedHiddenGroups = $state(new Set<string>());
+
+	function toggleHiddenGroup(key: string) {
+		const next = new Set(expandedHiddenGroups);
+		if (next.has(key)) next.delete(key);
+		else next.add(key);
+		expandedHiddenGroups = next;
 	}
 
 	/* ─── Active round detection via IntersectionObserver ─────────── */
@@ -236,19 +236,23 @@
 		</div>
 
 		{#if view.preamble.length > 0}
-			<section class="preamble">
-				<div class="section-label">preamble (before first prompt)</div>
-				{#each view.preamble as node (node.uuid + '-' + nodeKey(node))}
-					{@render renderNode(node, 0)}
-				{/each}
-			</section>
+			{@const preambleSteps = displayNodesToSteps(view.preamble, convertOpts)}
+			{@const preambleGroups = groupSteps(preambleSteps)}
+			{#if preambleGroups.length > 0}
+				<section class="preamble">
+					<div class="section-label">preamble (before first prompt)</div>
+					{#each preambleGroups as group (group.index)}
+						{@render renderGroup(group)}
+					{/each}
+				</section>
+			{/if}
 		{/if}
 
 		{#each visibleRounds as round (round.anchor)}
 			{@render renderRoundWindow(round)}
 		{/each}
 
-		{#if view.orphanSubagents.length > 0 && vis.showSubagentBody}
+		{#if view.orphanSubagents.length > 0 && settings.detailLevel >= 3}
 			<div class="orphans-label">orphan subagents</div>
 			{#each view.orphanSubagents as sub (sub.agentId)}
 				{@render renderOrphanWindow(sub)}
@@ -299,6 +303,8 @@
 {#snippet renderRoundWindow(round: Round)}
 	{@const isMin = collapsed.has(round.anchor)}
 	{@const isInjection = round.prompt.kind !== 'normal'}
+	{@const steps = displayNodesToSteps(round.nodes, convertOpts)}
+	{@const groups = groupSteps(steps)}
 	<article
 		class="round-window"
 		class:slash={round.prompt.kind === 'slash'}
@@ -320,7 +326,7 @@
 		{#if !isMin}
 			<div class="round-body">
 				{#if isInjection}
-					<details class="injected-prompt" open={vis.injectedPromptOpen}>
+					<details class="injected-prompt" open={settings.detailLevel >= 3}>
 						<summary>
 							<span class="kind-tag">{kindLabel(round.prompt.kind)}</span>
 							<span class="kind-meta">{round.prompt.text.length.toLocaleString()} chars</span>
@@ -330,8 +336,8 @@
 				{:else}
 					<pre class="prompt-text">{round.prompt.text}</pre>
 				{/if}
-				{#each round.nodes as node (node.uuid + '-' + nodeKey(node))}
-					{@render renderNode(node, 0)}
+				{#each groups as group (group.index)}
+					{@render renderGroup(group)}
 				{/each}
 			</div>
 		{/if}
@@ -340,6 +346,8 @@
 
 <!-- ───────────────────── Orphan subagent window ──────────── -->
 {#snippet renderOrphanWindow(sub: SubagentView)}
+	{@const steps = displayNodesToSteps(sub.nodes, convertOpts)}
+	{@const groups = groupSteps(steps)}
 	<article class="round-window orphan-window">
 		<WindowChrome
 			title={`subagent · ${sub.agentType}`}
@@ -348,181 +356,55 @@
 			variant="primary"
 		/>
 		<div class="round-body">
-			{#each sub.nodes as child (child.uuid + '-' + nodeKey(child))}
-				{@render renderNode(child, 0)}
+			{#each groups as group (group.index)}
+				{@render renderGroup(group)}
 			{/each}
 		</div>
 	</article>
 {/snippet}
 
-<!-- ───────────────────── Node dispatcher ──────────────────── -->
-{#snippet renderNode(node: DisplayNode, depth: number)}
-	{#if node.kind === 'user-text'}
-		{#if vis.showUserText}
-			<article class="node user-text" style="--depth: {depth}">
-				<div class="gutter">user</div>
-				<pre>{node.text}</pre>
-			</article>
-		{/if}
-	{:else if node.kind === 'assistant-text'}
-		{#if vis.showAllAssistant || node.isFinal}
-			<article class="node assistant-text" class:final={node.isFinal} style="--depth: {depth}">
-				<div class="head">
-					<span class="label">{node.isFinal ? 'assistant · final' : 'assistant'}</span>
-					{#if node.model}<span class="id">{node.model}</span>{/if}
-				</div>
-				<pre>{node.text}</pre>
-			</article>
-		{/if}
-	{:else if node.kind === 'thinking'}
-		{#if vis.showThinking && !settings.hideThinking}
-			{#if node.text.length > 0}
-				<details class="node thinking" style="--depth: {depth}">
-					<summary>extended thinking ({node.text.length} chars)</summary>
-					<pre>{node.text}</pre>
-				</details>
-			{:else}
-				<div
-					class="node thinking-marker"
-					style="--depth: {depth}"
-					title="Claude used extended thinking here — content is not stored in plaintext"
-				>
-					⋯ extended thinking
-				</div>
-			{/if}
-		{/if}
-	{:else if node.kind === 'tool-invocation'}
-		{#if vis.showTools}
-			{@render renderToolInvocation(node, depth)}
-		{/if}
-	{:else if node.kind === 'compact'}
-		<div class="node compact" style="--depth: {depth}">
-			<span>
-				— context compacted{node.trigger ? ` (${node.trigger})` : ''}{node.preTokens
-					? ` · ${node.preTokens.toLocaleString()} tokens before`
-					: ''} —
-			</span>
+<!-- ───────────────────── Step group rendering ─────────────── -->
+{#snippet renderGroup(group: import('$lib/session/to-steps').StepGroup)}
+	{#if group.kind === 'step'}
+		<div class="step-block">
+			<StepRenderer
+				step={group.step}
+				showClaudeLabel={false}
+				isLast={false}
+				onFocusWindow={noopFocusWindow}
+			/>
 		</div>
-	{/if}
-{/snippet}
-
-<!-- ───────────────────── Tool invocation ──────────────────── -->
-{#snippet renderToolInvocation(
-	node: Extract<DisplayNode, { kind: 'tool-invocation' }>,
-	depth: number
-)}
-	<details
-		class="node tool"
-		class:error={node.result?.isError}
-		open={vis.toolBodyOpen}
-		style="--depth: {depth}"
-	>
-		<summary class="tool-summary">
-			<span class="status">
-				{#if node.result?.isError}✗{:else if node.result}✓{:else}⋯{/if}
-			</span>
-			<span class="tool-name">{prettyToolName(node.name)}</span>
-			<span class="tool-brief">{toolBrief(node.name, node.input)}</span>
-			{#if node.subagent && vis.showSubagentBadge}
-				<span class="subagent-badge">↳ subagent {node.subagent.nodes.length}</span>
-			{/if}
-		</summary>
-		<div class="tool-body">
-			<div class="pane">
-				<div class="pane-label">input</div>
-				<pre class="code">{primaryInputText(node.name, node.input) ??
-						JSON.stringify(node.input, null, 2)}</pre>
-			</div>
-			{#if node.result && (!settings.hideToolResults || node.result.isError)}
-				<div class="pane" class:err={node.result.isError}>
-					<div class="pane-label">{node.result.isError ? 'error' : 'output'}</div>
-					{@render renderResultContent(node.result.content)}
-				</div>
-			{/if}
-			{#if node.subagent && vis.showSubagentBody}
-				{@render renderSubagent(node.subagent, depth + 1)}
-			{/if}
+	{:else if group.kind === 'compact'}
+		<div class="step-block">
+			<CompactChipFlow steps={group.steps} onFocusWindow={noopFocusWindow} />
 		</div>
-	</details>
-{/snippet}
-
-{#snippet renderResultContent(content: ToolInvocationResult['content'])}
-	{#if typeof content === 'string'}
-		<pre>{content}</pre>
 	{:else}
-		{#each content as part, i (i)}
-			{#if part.type === 'text'}
-				<pre>{part.text}</pre>
-			{:else if part.type === 'image'}
-				<img
-					class="tool-image"
-					src={dataUrl(part.source.media_type, part.source.data)}
-					alt="tool output"
-					loading="lazy"
-				/>
-			{:else if part.type === 'tool_reference'}
-				<div class="tool-ref">→ tool <code>{part.tool_name}</code></div>
+		{@const groupKey = `hidden-${group.index}`}
+		{@const expanded = expandedHiddenGroups.has(groupKey)}
+		<div class="step-block">
+			<button
+				type="button"
+				class="hidden-group-bar"
+				onclick={() => toggleHiddenGroup(groupKey)}
+			>
+				<span class="hidden-chevron" class:expanded>{expanded ? '▾' : '▸'}</span>
+				<span class="hidden-label">{group.count} step{group.count > 1 ? 's' : ''} hidden</span>
+			</button>
+			{#if expanded}
+				{#each group.steps as hStep, hsi (hsi)}
+					<div class="step-block hidden-step-revealed">
+						<StepRenderer
+							step={{ ...hStep, hidden: false }}
+							showClaudeLabel={false}
+							isLast={false}
+							onFocusWindow={noopFocusWindow}
+						/>
+					</div>
+				{/each}
 			{/if}
-		{/each}
+		</div>
 	{/if}
 {/snippet}
-
-{#snippet renderSubagent(sub: SubagentView, depth: number)}
-	<details class="subagent" open style="--depth: {depth}">
-		<summary class="subagent-summary">
-			<span class="label">subagent</span>
-			<span class="tool-name">{sub.agentType}</span>
-			<span class="desc">{sub.description}</span>
-			<span class="id">{sub.nodes.length} nodes</span>
-		</summary>
-		<div class="subagent-body">
-			{#each sub.nodes as child (child.uuid + '-' + nodeKey(child))}
-				{@render renderNode(child, depth)}
-			{/each}
-		</div>
-	</details>
-{/snippet}
-
-<script lang="ts" module>
-	import type { DisplayNode as DN } from '$lib/session/viewmodel';
-
-	export function nodeKey(node: DN): string {
-		switch (node.kind) {
-			case 'tool-invocation':
-				return `tu-${node.toolUseId}`;
-			case 'assistant-text':
-				return `at-${node.text.length}-${node.text.slice(0, 8)}`;
-			case 'thinking':
-				return `th-${node.text.length}`;
-			default:
-				return node.kind;
-		}
-	}
-
-	export function toolBrief(name: string, input: Record<string, unknown>): string {
-		const get = (k: string) => (typeof input[k] === 'string' ? (input[k] as string) : undefined);
-		if (name === 'Read' || name === 'Edit' || name === 'Write' || name === 'NotebookEdit') {
-			const p = get('file_path');
-			return p ? trimPath(p) : '';
-		}
-		if (name === 'Bash') return (get('command') ?? '').slice(0, 60);
-		if (name === 'Grep') return `"${get('pattern') ?? ''}"`;
-		if (name === 'Glob') return get('pattern') ?? '';
-		if (name === 'Agent') return get('description') ?? '';
-		if (name.endsWith('run_ij_macro') || name.endsWith('run_script')) {
-			const src = get('macro') ?? get('script') ?? '';
-			return src.split('\n')[0].slice(0, 60);
-		}
-		const d = get('description') ?? get('query') ?? '';
-		return d.slice(0, 60);
-	}
-
-	function trimPath(p: string): string {
-		if (p.length <= 60) return p;
-		const parts = p.split('/');
-		return '…/' + parts.slice(-3).join('/');
-	}
-</script>
 
 <style>
 	/* ─── Page background (wallpaper) ────────────────────────── */
@@ -952,216 +834,46 @@
 		line-height: 1.5;
 	}
 
-	/* ─── Nodes ──────────────────────────────────────────────── */
-	.node {
-		border-radius: 5px;
-		padding: 0.5rem 0.7rem;
-		background: rgba(0, 0, 0, 0.2);
-		border: 1px solid var(--border-color);
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		margin-left: calc(var(--depth, 0) * 1.3rem);
-	}
-	.node pre {
-		margin: 0;
-		white-space: pre-wrap;
-		word-break: break-word;
-		color: var(--text-primary);
-		line-height: 1.45;
-	}
-	.head {
-		display: flex;
-		align-items: baseline;
-		gap: 0.5rem;
-		margin-bottom: 0.3rem;
-		font-size: 0.68rem;
-	}
-	.label {
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--text-tertiary);
-	}
-	.tool-name {
-		color: var(--orange-300);
-		font-weight: 500;
-	}
-	.id {
-		font-size: 0.64rem;
-		color: var(--text-tertiary);
-		margin-left: auto;
-	}
-	.desc {
-		color: var(--text-secondary);
-	}
-	.user-text {
-		border-left: 3px solid var(--mauve);
-		display: flex;
-		gap: 0.5rem;
-	}
-	.user-text .gutter {
-		color: var(--mauve);
-	}
-	.assistant-text {
-		border-left: 3px solid var(--teal);
-	}
-	.assistant-text.final {
-		border-left-width: 4px;
-		background: rgba(112, 200, 184, 0.06);
-	}
-	.assistant-text.final .label {
-		color: var(--teal);
+	/* ─── Step blocks (shared component wrappers) ────────────── */
+	.step-block {
+		display: block;
 	}
 
-	.thinking {
-		border-left: 3px solid var(--aubergine-400);
-		background: rgba(122, 69, 104, 0.1);
-	}
-	.thinking summary {
-		cursor: pointer;
-		color: var(--text-secondary);
-		font-size: 0.74rem;
-	}
-	.thinking pre {
-		margin-top: 0.45rem;
-		color: var(--text-secondary);
-		font-size: 0.74rem;
-	}
-	.thinking-marker {
-		padding: 0.2rem 0.65rem;
-		background: transparent;
+	/* ─── Hidden step group ─────────────────────────────────── */
+	.hidden-group-bar {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+		padding: 4px 14px;
+		margin: 4px 0;
+		background: none;
 		border: none;
-		border-left: 3px solid var(--aubergine-400);
-		color: var(--text-tertiary);
-		font-size: 0.7rem;
-		font-style: italic;
-		letter-spacing: 0.02em;
-		cursor: help;
-	}
-
-	/* ─── Tool invocation ───────────────────────────────────── */
-	.tool {
-		border-left: 3px solid var(--peach);
-		padding: 0;
-		overflow: hidden;
-	}
-	.tool.error {
-		border-left-color: var(--red);
-	}
-	.tool-summary {
-		display: flex;
-		gap: 0.5rem;
-		align-items: baseline;
-		padding: 0.45rem 0.75rem;
-		cursor: pointer;
-		font-size: 0.76rem;
-	}
-	.tool[open] .tool-summary {
-		border-bottom: 1px dashed var(--border-subtle);
-	}
-	.status {
-		color: var(--peach);
-		font-size: 0.7rem;
-		width: 0.9rem;
-		text-align: center;
-	}
-	.tool.error .status {
-		color: var(--red);
-	}
-	.tool-brief {
-		color: var(--text-secondary);
-		font-size: 0.72rem;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		flex: 1;
-	}
-	.subagent-badge {
-		font-size: 0.66rem;
-		color: var(--orange-300);
-		background: var(--accent-soft);
-		padding: 0.08rem 0.35rem;
-		border-radius: 3px;
-	}
-	.tool-body {
-		padding: 0.5rem 0.75rem 0.6rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-	.pane .pane-label {
+		border-left: 2px dashed var(--border-subtle);
 		font-family: var(--font-mono);
-		font-size: 0.62rem;
+		font-size: 11px;
 		color: var(--text-tertiary);
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		margin-bottom: 0.25rem;
-	}
-	.pane.err .pane-label {
-		color: var(--red);
-	}
-	.pane pre,
-	.code {
-		background: rgba(0, 0, 0, 0.35);
-		padding: 0.4rem 0.55rem;
-		border-radius: 4px;
-		font-size: 0.73rem;
-		margin: 0;
-		max-height: 20rem;
-		overflow: auto;
-		white-space: pre-wrap;
-		word-break: break-word;
-	}
-	.tool-image {
-		max-width: 100%;
-		border-radius: 4px;
-	}
-	.tool-ref {
-		font-size: 0.73rem;
-		color: var(--text-secondary);
-	}
-
-	.compact {
-		text-align: center;
-		color: var(--text-tertiary);
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
-		padding: 0.4rem 0;
-		border: none;
-		background: transparent;
-	}
-	.compact span {
-		display: inline-block;
-		padding: 0.3rem 0.75rem 0;
-		border-top: 1px dashed var(--border-subtle);
-	}
-
-	/* ─── Subagent (nested) ──────────────────────────────────── */
-	.subagent {
-		margin-top: 0.4rem;
-		margin-left: calc(var(--depth, 0) * 1.3rem);
-		border: 1px solid var(--border-subtle);
-		border-radius: 6px;
-		background: rgba(0, 0, 0, 0.25);
-	}
-	.subagent-summary {
-		display: flex;
-		gap: 0.45rem;
-		align-items: baseline;
-		padding: 0.35rem 0.6rem;
 		cursor: pointer;
-		font-size: 0.72rem;
+		transition: color 0.15s, background 0.15s;
+		text-align: left;
 	}
-	.subagent-summary .label {
-		color: var(--orange-300);
+	.hidden-group-bar:hover {
+		color: var(--text-secondary);
+		background: rgba(255, 255, 255, 0.02);
 	}
-	.subagent[open] .subagent-summary {
-		border-bottom: 1px dashed var(--border-subtle);
+	.hidden-chevron {
+		font-size: 10px;
+		flex-shrink: 0;
+		transition: transform 0.15s;
 	}
-	.subagent-body {
-		padding: 0.45rem 0.55rem 0.55rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.45rem;
+	.hidden-label {
+		opacity: 0.7;
+	}
+	.hidden-step-revealed {
+		opacity: 0.6;
+		border-left: 1px dashed var(--border-subtle);
+		margin-left: 8px;
+		padding-left: 6px;
 	}
 
 	/* ─── Bottom round toolbar ───────────────────────────────── */
