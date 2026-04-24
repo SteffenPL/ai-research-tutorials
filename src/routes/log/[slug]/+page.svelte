@@ -144,7 +144,7 @@
 
 <div class="page-bg" aria-hidden="true"></div>
 
-<Nav showBack pageTitle={view.customTitle ?? view.slug} />
+<Nav pageTitle={view.customTitle ?? view.slug} />
 
 <main class="page">
 	<!-- ─── Sticky settings panel ───────────────────────────────── -->

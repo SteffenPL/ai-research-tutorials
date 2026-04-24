@@ -91,7 +91,8 @@
             "_isError": false
           },
           "comment": {
-            "en": "From a single sentence prompt, Claude wrote a complete, self-contained HTML file with CSS, a canvas-based renderer, and interactive controls. Notice we did not specify any implementation details -- Claude chose double-buffering, toroidal wrapping, and <code>requestAnimationFrame</code> on its own."
+            "en": "From a single sentence prompt, Claude wrote a complete, self-contained HTML file with CSS, a canvas-based renderer, and interactive controls. Notice we did not specify any implementation details -- Claude chose double-buffering, toroidal wrapping, and <code>requestAnimationFrame</code> on its own.",
+            "ja": "一文のプロンプトから、Claude はCSS、Canvas ベースのレンダラー、インタラクティブなコントロールを含む完全な HTML ファイルを生成しました。実装の詳細は一切指定していませんが、Claude が自らダブルバッファリング、トロイダルラッピング、<code>requestAnimationFrame</code> を選択しています。"
           }
         },
         {
@@ -123,7 +124,8 @@
             "final": true
           },
           "comment": {
-            "en": "Claude explains the design decisions it made and tells us how to run the result. This is typical of Claude Code's workflow: it writes the code, explains key choices, and suggests next steps -- all in one turn."
+            "en": "Claude explains the design decisions it made and tells us how to run the result. This is typical of Claude Code's workflow: it writes the code, explains key choices, and suggests next steps -- all in one turn.",
+            "ja": "Claude は自身の設計判断を説明し、結果の実行方法を案内しています。これは Claude Code の典型的なワークフローです。コードを書き、重要な選択を説明し、次のステップを提案する ── すべてを一つのターンで行います。"
           }
         }
       ]
@@ -148,7 +150,8 @@
             "code": "open /Users/SteffenPlunder/Documents/Workspace/ping-pong/game-of-life.html"
           },
           "comment": {
-            "en": "Claude can run shell commands on your machine via its Bash tool. Here it uses macOS's <code>open</code> command to launch the HTML file in your default browser. You will be asked for permission before any command runs."
+            "en": "Claude can run shell commands on your machine via its Bash tool. Here it uses macOS's <code>open</code> command to launch the HTML file in your default browser. You will be asked for permission before any command runs.",
+            "ja": "Claude は Bash ツールを通じてマシン上でシェルコマンドを実行できます。ここでは macOS の <code>open</code> コマンドを使い、HTML ファイルをデフォルトブラウザで開いています。コマンドの実行前には必ず許可を求められます。"
           }
         },
         {
@@ -179,7 +182,7 @@
             },
             "comment": {
               "en": "And here is the result -- a fully working Game of Life, built and opened in under a minute. The page runs entirely from the local filesystem with no server or build step. From installation to a running application in three prompts: that is the Claude Code experience.",
-              "ja": "ページは <code>file://</code> でファイルシステムから直接読み込まれます — サーバーもビルドも不要です。グライダーがグリッド上を進み、コントロールで ランダムな盤面の初期化やフレームレートの調整ができます。"
+              "ja": "これが結果です。完全に動作する Game of Life が1分以内に作成・表示されました。ページはサーバーもビルドステップも不要で、ローカルファイルシステムからそのまま実行されています。インストールから動くアプリケーションまでわずか3つのプロンプト ── これが Claude Code の体験です。"
             }
           }
         },

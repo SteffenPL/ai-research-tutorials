@@ -51,14 +51,16 @@
 	} = $props();
 
 	function stackStyle(depth: number, chromeless: boolean): string {
-		if (depth < 0) return '';
+		if (depth < 0) {
+			return 'opacity:0;transform:translateY(6px) scale(0.98);pointer-events:none';
+		}
 		const tx = chromeless ? 0 : depth * 50;
 		const ty = chromeless ? 0 : depth * -22;
 		const scale = chromeless ? 1 : Math.max(0.7, 1 - depth * 0.04);
 		const opacity = chromeless ? 1 : Math.max(0.1, 1 - depth * 0.18);
 		const brightness = chromeless ? 1 : Math.max(0.35, 1 - depth * 0.12);
 		const z = Math.max(1, 30 - depth * 5);
-		return `--stack-opacity:${opacity};--stack-tx:${tx}px;--stack-ty:${ty}px;--stack-scale:${scale};--stack-brightness:${brightness};--stack-z:${z}`;
+		return `opacity:${opacity};transform:translate(${tx}px,${ty}px) scale(${scale});filter:brightness(${brightness});z-index:${z};pointer-events:auto;box-shadow:var(--shadow-window-1)`;
 	}
 
 	let hasVisibleWindows = $derived(windowSteps.some(w => w.index <= currentStep));
@@ -112,7 +114,6 @@
 		<div
 			class="fiji-window window"
 			class:chromeless
-			class:visible={depth >= 0}
 			class:focused-hidden={isFocused}
 			style="{stackStyle(depth, chromeless)};--enter-delay:{enterDelay}ms"
 		>
@@ -289,29 +290,11 @@
 		max-width: min(440px, 85%);
 		max-height: calc(100% - 16px);
 		--enter-delay: 0ms;
-		--stack-opacity: 0;
-		--stack-tx: 0px;
-		--stack-ty: 0px;
-		--stack-scale: 1;
-		--stack-brightness: 1;
-		--stack-z: 1;
 		transition: transform 50ms ease-out var(--enter-delay),
 		            opacity 50ms ease-out var(--enter-delay),
 		            filter 50ms ease-out var(--enter-delay),
 		            box-shadow 50ms ease-out var(--enter-delay);
 		transform-origin: center left;
-		opacity: 0;
-		transform: translateY(6px) scale(0.98);
-		pointer-events: none;
-	}
-
-	.fiji-window.visible {
-		pointer-events: auto;
-		opacity: var(--stack-opacity);
-		transform: translate(var(--stack-tx), var(--stack-ty)) scale(var(--stack-scale));
-		filter: brightness(var(--stack-brightness));
-		z-index: var(--stack-z);
-		box-shadow: var(--shadow-window-1);
 	}
 
 	.fiji-window:hover:not(.chromeless) {

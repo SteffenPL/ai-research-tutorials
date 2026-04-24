@@ -315,7 +315,7 @@
 
 <div class="page-bg" aria-hidden="true"></div>
 
-<Nav showBack pageTitle="Curate · {data.slug}" />
+<Nav pageTitle="Curate · {data.slug}" />
 
 {#if !curation}
 	<main class="loading">Loading curation state...</main>

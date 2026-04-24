@@ -4,12 +4,11 @@
 	import ThemePicker from '$lib/components/ThemePicker.svelte';
 
 	interface Props {
-		showBack?: boolean;
 		pageTitle?: string;
 		editHref?: string;
 	}
 
-	let { showBack = false, pageTitle, editHref }: Props = $props();
+	let { pageTitle, editHref }: Props = $props();
 	let showTheme = $state(false);
 </script>
 
@@ -18,15 +17,6 @@
 <nav class="nav" aria-label="Main navigation">
 	<div class="nav__inner">
 		<div class="nav__left">
-			{#if showBack}
-				<a href="{base}/" class="nav__back">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M19 12H5m7-7-7 7 7 7" />
-					</svg>
-					{t({ en: 'All Tutorials', ja: 'すべてのチュートリアル' })}
-				</a>
-				<div class="nav__sep" aria-hidden="true"></div>
-			{/if}
 			<a href="{base}/" class="nav__logo">
 				<div class="nav__logo-mark">A</div>
 				<span class="nav__logo-text">
@@ -109,28 +99,6 @@
 		display: flex;
 		align-items: center;
 		gap: 16px;
-	}
-
-	.nav__back {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		font-family: var(--font-display);
-		font-size: 0.78rem;
-		font-weight: 500;
-		color: var(--text-tertiary);
-		text-decoration: none;
-		transition: color 0.2s ease;
-	}
-
-	.nav__back:hover {
-		color: var(--accent);
-		text-decoration: none;
-	}
-
-	.nav__back svg {
-		width: 14px;
-		height: 14px;
 	}
 
 	.nav__sep {

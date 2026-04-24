@@ -151,7 +151,7 @@
 
 <div class="page-bg" aria-hidden="true"></div>
 
-<Nav showBack pageTitle="Edit · {data.slug}" />
+<Nav pageTitle="Edit · {data.slug}" />
 
 <header class="toolbar">
 	<div class="toolbar-left">

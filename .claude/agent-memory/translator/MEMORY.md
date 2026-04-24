@@ -1,0 +1,1 @@
+- [install-claude-code glossary](glossary_install-claude-code.md) — JA translation terms for CLI install, auth, and Game of Life tutorial

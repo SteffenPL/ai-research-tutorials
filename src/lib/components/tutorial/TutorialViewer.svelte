@@ -395,7 +395,7 @@
 <div class="desktop">
 	<Wallpaper />
 	<!-- Top Panel -->
-	<Nav showBack pageTitle={title} editHref="{base}/compose/{tutorial.meta.slug}" />
+	<Nav pageTitle={title} editHref="{base}/compose/{tutorial.meta.slug}" />
 
 	<!-- Workspace -->
 	<div class="workspace">
@@ -513,6 +513,12 @@
 
 	@media (max-width: 900px) {
 		:global(body.tutorial-active) { overflow: visible !important; overflow-y: auto !important; }
+
+		.desktop :global(.nav) {
+			position: sticky;
+			top: 0;
+			z-index: 100;
+		}
 
 		.desktop {
 			height: auto;
