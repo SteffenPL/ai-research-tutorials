@@ -17,38 +17,33 @@
 		<div class="about__content">
 			<p>
 				{t({
-					en: 'AI agents are transforming how researchers work. From writing code and analyzing images to building mathematical models, searching literature, and processing data — AI assistants can now participate as active collaborators in the research workflow.',
-					ja: 'AI エージェントは研究者の働き方を変えつつあります。コードの作成、画像解析、数理モデルの構築、文献検索、データ処理まで — AI アシスタントは研究ワークフローに積極的な協力者として参加できるようになりました。'
+					en: 'Teaching AI coding requires new tools to show how high-level instructions create content. With our webpage we break that communication barrier with terminal-to-content style tutorials.',
+					ja: 'AI コーディングの教育には、高レベルの指示がどのようにコンテンツを生み出すかを示す新しいツールが必要です。このウェブページでは、ターミナルからコンテンツへのスタイルのチュートリアルで、そのコミュニケーションの壁を打ち破ります。'
 				})}
 			</p>
 			<p>
 				{t({
-					en: 'This site collects interactive tutorials that show how AI coding agents (like Claude Code) can be used for real research tasks. Each tutorial is presented as a step-by-step trace — you see exactly what the researcher asked, what the AI did, and what the results look like.',
-					ja: 'このサイトでは、AI リサーチエージェント（Claude Code など）を実際の研究タスクに活用する方法を示すインタラクティブなチュートリアルを紹介します。各チュートリアルはステップごとのトレースとして提示され、研究者が何を尋ね、AI が何を行い、どのような結果が得られたかを正確に確認できます。'
+					en: 'The tutorials aim to cover areas like bioimage analysis, data analysis, mathematical modelling, and scientific coding.',
+					ja: 'チュートリアルはバイオイメージ解析、データ解析、数理モデリング、科学計算などの分野をカバーすることを目指しています。'
 				})}
 			</p>
 			<p>
-				{t({
-					en: 'The tutorials cover a range of research applications:',
-					ja: 'チュートリアルは多様な研究応用をカバーしています:'
-				})}
-			</p>
-			<ul>
-				<li>{t({ en: 'Bioimage analysis — segmentation, tracking, quantification with tools like Fiji and napari', ja: 'バイオイメージ解析 — Fiji や napari を用いたセグメンテーション、トラッキング、定量化' })}</li>
-				<li>{t({ en: 'Data analysis — pandas, visualization, statistical testing', ja: 'データ解析 — pandas、可視化、統計検定' })}</li>
-				<li>{t({ en: 'Mathematical modelling — ODEs, simulations, parameter fitting', ja: '数理モデリング — 常微分方程式、シミュレーション、パラメータフィッティング' })}</li>
-				<li>{t({ en: 'Literature research — searching, summarizing, extracting key findings', ja: '文献調査 — 検索、要約、重要な知見の抽出' })}</li>
-				<li>{t({ en: 'Scientific coding — Python, R, Julia workflows for research', ja: '科学計算 — 研究のための Python、R、Julia ワークフロー' })}</li>
-			</ul>
-			<p>
-				{t({ en: 'Created by Steffen Plunder (', ja: '作成: Steffen Plunder (' })}<a
+				{t({ en: 'Created by ', ja: '作成: ' })}<a
 					href="https://steffenpl.github.io"
 					target="_blank"
-					rel="noopener noreferrer">{t({ en: 'webpage', ja: 'ウェブページ' })}</a
-				>{t({
-					en: ') · ASHBi (Institute for the Advanced Study of Human Biology), Kyoto University.',
-					ja: ') · 京都大学 高等研究院 ヒト生物学高等研究拠点 (ASHBi)'
+					rel="noopener noreferrer">Steffen Plunder</a>{t({
+					en: ' with Claude · ASHBi, Kyoto University.',
+					ja: ' と Claude · 京都大学 ASHBi'
 				})}
+			</p>
+			<p>
+				{t({
+					en: 'Want to contribute tutorials? PRs are welcome on ',
+					ja: 'チュートリアルを寄稿しませんか？PR を歓迎します: '
+				})}<a
+					href="https://github.com/steffenpl/ai-research-tutorials"
+					target="_blank"
+					rel="noopener noreferrer">GitHub</a>.
 			</p>
 		</div>
 	</div>
