@@ -134,7 +134,9 @@
 
 			ctx.clearRect(0, 0, w, h);
 
-			const r = 233, g = 84, b = 32;
+			const style = getComputedStyle(document.documentElement);
+			const raw = style.getPropertyValue('--rain-color').trim() || '233,84,32';
+			const [r, g, b] = raw.split(',').map(Number);
 			ctx.font = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
 			ctx.textBaseline = 'top';
 

@@ -56,15 +56,15 @@
 
 	.wallpaper-gradient--mesh-forest {
 		background:
-			radial-gradient(ellipse 75% 60% at 10% 90%, rgba(32, 150, 70, 0.44) 0%, transparent 70%),
-			radial-gradient(ellipse 50% 45% at 35% 80%, rgba(60, 170, 50, 0.28) 0%, transparent 55%),
-			radial-gradient(ellipse 50% 60% at 30% 55%, rgba(30, 110, 70, 0.22) 0%, transparent 65%),
-			radial-gradient(ellipse 60% 50% at 88% 12%, rgba(80, 170, 100, 0.30) 0%, transparent 60%),
-			radial-gradient(ellipse 80% 30% at 65% 70%, rgba(50, 140, 90, 0.22) 0%, transparent 60%),
-			radial-gradient(ellipse 45% 55% at 80% 85%, rgba(25, 90, 55, 0.22) 0%, transparent 55%),
-			radial-gradient(ellipse 55% 50% at 85% 10%, rgba(70, 190, 90, 0.40) 0%, transparent 60%),
-			radial-gradient(ellipse 40% 35% at 95% 5%, rgba(130, 210, 110, 0.32) 0%, transparent 65%),
-			radial-gradient(ellipse 90% 70% at 50% 50%, rgba(15, 40, 25, 0.50) 0%, transparent 70%),
+			radial-gradient(ellipse 75% 60% at 10% 90%, rgba(210, 60, 120, 0.46) 0%, transparent 70%),
+			radial-gradient(ellipse 50% 45% at 35% 80%, rgba(230, 90, 150, 0.30) 0%, transparent 55%),
+			radial-gradient(ellipse 50% 60% at 30% 55%, rgba(180, 50, 100, 0.22) 0%, transparent 65%),
+			radial-gradient(ellipse 60% 50% at 88% 12%, rgba(220, 100, 160, 0.30) 0%, transparent 60%),
+			radial-gradient(ellipse 80% 30% at 65% 70%, rgba(190, 70, 130, 0.24) 0%, transparent 60%),
+			radial-gradient(ellipse 45% 55% at 80% 85%, rgba(160, 40, 90, 0.22) 0%, transparent 55%),
+			radial-gradient(ellipse 55% 50% at 85% 10%, rgba(240, 110, 170, 0.42) 0%, transparent 60%),
+			radial-gradient(ellipse 40% 35% at 95% 5%, rgba(250, 160, 200, 0.34) 0%, transparent 65%),
+			radial-gradient(ellipse 90% 70% at 50% 50%, rgba(60, 15, 35, 0.50) 0%, transparent 70%),
 			var(--wallpaper-gradient);
 	}
 

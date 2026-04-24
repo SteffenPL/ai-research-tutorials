@@ -138,7 +138,7 @@
 		background: linear-gradient(135deg, #0a2040 0%, #3898d8 50%, #104060 100%);
 	}
 	.wp-preview--mesh-forest {
-		background: linear-gradient(135deg, #0a2010 0%, #48a858 50%, #103020 100%);
+		background: linear-gradient(135deg, #3a0820 0%, #d05888 50%, #501030 100%);
 	}
 	.wp-preview--mesh-sunset {
 		background: linear-gradient(135deg, #3a1808 0%, #d88830 50%, #5a2810 100%);

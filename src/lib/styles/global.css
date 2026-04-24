@@ -101,6 +101,8 @@
 	--shadow-window-3: 0 4px 16px rgba(0, 0, 0, 0.6);
 	--shadow-window-4: 0 2px 10px rgba(0, 0, 0, 0.6);
 
+	--rain-color: 233,84,32;
+
 	--wallpaper-base: #2C001E;
 	--wallpaper-gradient: linear-gradient(150deg, #3a0626 0%, #461230 20%, #521a3a 40%, #481530 60%, #380a28 80%, #320822 100%);
 	--page-gradient: linear-gradient(150deg, #2C001E 0%, #380a28 20%, #42122e 40%, #3a0e26 60%, #30051f 80%, #2C001E 100%);
@@ -193,6 +195,8 @@
 	--shadow-window-2: 0 6px 24px rgba(0, 0, 0, 0.7);
 	--shadow-window-3: 0 4px 16px rgba(0, 0, 0, 0.7);
 	--shadow-window-4: 0 2px 10px rgba(0, 0, 0, 0.7);
+
+	--rain-color: 160,140,210;
 
 	--wallpaper-base: #151518;
 	--wallpaper-gradient: linear-gradient(150deg, #101014 0%, #181820 20%, #1e1e28 40%, #181820 60%, #131318 80%, #0e0e14 100%);
@@ -292,6 +296,8 @@
 	--shadow-window-3: 0 4px 16px rgba(0, 0, 0, 0.08);
 	--shadow-window-4: 0 2px 10px rgba(0, 0, 0, 0.08);
 
+	--rain-color: 180,80,30;
+
 	--wallpaper-base: #f0e8e4;
 	--wallpaper-gradient: linear-gradient(150deg, #e8ddd8 0%, #f0e8e4 20%, #f4eeea 40%, #efe6e0 60%, #e8ddd8 80%, #e4d8d2 100%);
 	--page-gradient: linear-gradient(150deg, #f0e8e4 0%, #e8ddd8 20%, #ddd0ca 40%, #e4d8d2 60%, #ece2dc 80%, #f0e8e4 100%);
@@ -304,11 +310,31 @@
    Theme controls everything else.
    ═══════════════════════════════════════════ */
 
-/* Aubergine wallpaper: keep default accent (orange for warm, purple for dark, etc.) */
+/* Aubergine: warm keeps default. Dark gets orange to match warm's vibe. */
+[data-theme="dark"][data-wallpaper="mesh-aubergine"] {
+	--rain-color: 233,100,40;
+	--accent: #e06030;
+	--orange-500: #e06030;
+	--orange-400: #e87848;
+	--orange-300: #f09060;
+	--orange-200: #f0a880;
+	--accent-glow: rgba(224, 96, 48, 0.18);
+	--accent-soft: rgba(224, 96, 48, 0.10);
+	--accent-muted: rgba(224, 96, 48, 0.05);
+	--accent-border: rgba(224, 96, 48, 0.28);
+	--accent-hover: rgba(224, 96, 48, 0.14);
+	--step-prompt-bg: rgba(224, 96, 48, 0.10);
+	--step-prompt-answer: rgba(224, 96, 48, 0.05);
+	--step-prompt-glow: rgba(224, 96, 48, 0.14);
+	--step-prompt-border: rgba(232, 120, 72, 0.20);
+	--tag-text: var(--orange-300);
+	--card-shadow-hover: 0 6px 24px rgba(224, 96, 48, 0.12), 0 2px 8px rgba(0, 0, 0, 0.5);
+}
 
-/* Ocean wallpaper → blue accent (dark themes) */
+/* ─── Ocean ─── */
 [data-theme="warm"][data-wallpaper="mesh-ocean"],
 [data-theme="dark"][data-wallpaper="mesh-ocean"] {
+	--rain-color: 56,152,216;
 	--accent: #3898d8;
 	--orange-500: #3898d8;
 	--orange-400: #50a8e0;
@@ -327,70 +353,91 @@
 	--card-shadow-hover: 0 6px 24px rgba(56, 152, 216, 0.12), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Ocean wallpaper → darker blue for light theme */
 [data-theme="light"][data-wallpaper="mesh-ocean"] {
-	--accent: #1870a8;
-	--orange-500: #1870a8;
-	--orange-400: #2080b8;
-	--orange-300: #105888;
-	--orange-200: #0e4870;
-	--accent-glow: rgba(24, 112, 168, 0.14);
-	--accent-soft: rgba(24, 112, 168, 0.07);
-	--accent-muted: rgba(24, 112, 168, 0.03);
-	--accent-border: rgba(24, 112, 168, 0.22);
-	--accent-hover: rgba(24, 112, 168, 0.10);
-	--step-prompt-bg: rgba(24, 112, 168, 0.08);
-	--step-prompt-answer: rgba(24, 112, 168, 0.04);
-	--step-prompt-glow: rgba(24, 112, 168, 0.12);
-	--step-prompt-border: rgba(32, 128, 184, 0.2);
+	--rain-color: 20,90,150;
+	--accent: #146090;
+	--orange-500: #146090;
+	--orange-400: #1870a8;
+	--orange-300: #104870;
+	--orange-200: #0c3858;
+	--accent-glow: rgba(20, 96, 144, 0.14);
+	--accent-soft: rgba(20, 96, 144, 0.07);
+	--accent-muted: rgba(20, 96, 144, 0.03);
+	--accent-border: rgba(20, 96, 144, 0.22);
+	--accent-hover: rgba(20, 96, 144, 0.10);
+	--step-prompt-bg: rgba(20, 96, 144, 0.08);
+	--step-prompt-answer: rgba(20, 96, 144, 0.04);
+	--step-prompt-glow: rgba(20, 96, 144, 0.12);
+	--step-prompt-border: rgba(24, 112, 160, 0.2);
 	--tag-text: var(--orange-300);
-	--card-shadow-hover: 0 6px 24px rgba(24, 112, 168, 0.10), 0 2px 8px rgba(0, 0, 0, 0.08);
+	--card-shadow-hover: 0 6px 24px rgba(20, 96, 144, 0.10), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Forest wallpaper → green accent (dark themes) */
-[data-theme="warm"][data-wallpaper="mesh-forest"],
+/* ─── Rose: rose-pink accent on all themes ─── */
 [data-theme="dark"][data-wallpaper="mesh-forest"] {
-	--accent: #48a858;
-	--orange-500: #48a858;
-	--orange-400: #60b868;
-	--orange-300: #78c880;
-	--orange-200: #98d8a0;
-	--accent-glow: rgba(72, 168, 88, 0.15);
-	--accent-soft: rgba(72, 168, 88, 0.08);
-	--accent-muted: rgba(72, 168, 88, 0.04);
-	--accent-border: rgba(72, 168, 88, 0.25);
-	--accent-hover: rgba(72, 168, 88, 0.12);
-	--step-prompt-bg: rgba(72, 168, 88, 0.10);
-	--step-prompt-answer: rgba(72, 168, 88, 0.04);
-	--step-prompt-glow: rgba(72, 168, 88, 0.15);
-	--step-prompt-border: rgba(96, 184, 104, 0.2);
+	--rain-color: 210,80,140;
+	--accent: #d85890;
+	--orange-500: #d85890;
+	--orange-400: #e070a8;
+	--orange-300: #e888b8;
+	--orange-200: #f0a0c8;
+	--accent-glow: rgba(216, 88, 144, 0.18);
+	--accent-soft: rgba(216, 88, 144, 0.10);
+	--accent-muted: rgba(216, 88, 144, 0.05);
+	--accent-border: rgba(216, 88, 144, 0.28);
+	--accent-hover: rgba(216, 88, 144, 0.14);
+	--step-prompt-bg: rgba(216, 88, 144, 0.10);
+	--step-prompt-answer: rgba(216, 88, 144, 0.05);
+	--step-prompt-glow: rgba(216, 88, 144, 0.14);
+	--step-prompt-border: rgba(224, 112, 160, 0.20);
 	--tag-text: var(--orange-300);
-	--card-shadow-hover: 0 6px 24px rgba(72, 168, 88, 0.12), 0 2px 8px rgba(0, 0, 0, 0.3);
+	--card-shadow-hover: 0 6px 24px rgba(216, 88, 144, 0.12), 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* Forest wallpaper → darker green for light theme */
+[data-theme="warm"][data-wallpaper="mesh-forest"] {
+	--rain-color: 200,80,130;
+	--accent: #d05888;
+	--orange-500: #d05888;
+	--orange-400: #d870a0;
+	--orange-300: #e088b0;
+	--orange-200: #e8a0c0;
+	--accent-glow: rgba(208, 88, 136, 0.15);
+	--accent-soft: rgba(208, 88, 136, 0.08);
+	--accent-muted: rgba(208, 88, 136, 0.04);
+	--accent-border: rgba(208, 88, 136, 0.25);
+	--accent-hover: rgba(208, 88, 136, 0.12);
+	--step-prompt-bg: rgba(208, 88, 136, 0.10);
+	--step-prompt-answer: rgba(208, 88, 136, 0.04);
+	--step-prompt-glow: rgba(208, 88, 136, 0.15);
+	--step-prompt-border: rgba(216, 112, 160, 0.2);
+	--tag-text: var(--orange-300);
+	--card-shadow-hover: 0 6px 24px rgba(208, 88, 136, 0.12), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 [data-theme="light"][data-wallpaper="mesh-forest"] {
-	--accent: #287838;
-	--orange-500: #287838;
-	--orange-400: #308840;
-	--orange-300: #1e6028;
-	--orange-200: #185020;
-	--accent-glow: rgba(40, 120, 56, 0.14);
-	--accent-soft: rgba(40, 120, 56, 0.07);
-	--accent-muted: rgba(40, 120, 56, 0.03);
-	--accent-border: rgba(40, 120, 56, 0.22);
-	--accent-hover: rgba(40, 120, 56, 0.10);
-	--step-prompt-bg: rgba(40, 120, 56, 0.08);
-	--step-prompt-answer: rgba(40, 120, 56, 0.04);
-	--step-prompt-glow: rgba(40, 120, 56, 0.12);
-	--step-prompt-border: rgba(48, 136, 64, 0.2);
+	--rain-color: 150,40,80;
+	--accent: #a83060;
+	--orange-500: #a83060;
+	--orange-400: #b84070;
+	--orange-300: #882048;
+	--orange-200: #701838;
+	--accent-glow: rgba(168, 48, 96, 0.14);
+	--accent-soft: rgba(168, 48, 96, 0.07);
+	--accent-muted: rgba(168, 48, 96, 0.03);
+	--accent-border: rgba(168, 48, 96, 0.22);
+	--accent-hover: rgba(168, 48, 96, 0.10);
+	--step-prompt-bg: rgba(168, 48, 96, 0.08);
+	--step-prompt-answer: rgba(168, 48, 96, 0.04);
+	--step-prompt-glow: rgba(168, 48, 96, 0.12);
+	--step-prompt-border: rgba(184, 64, 112, 0.2);
 	--tag-text: var(--orange-300);
-	--card-shadow-hover: 0 6px 24px rgba(40, 120, 56, 0.10), 0 2px 8px rgba(0, 0, 0, 0.08);
+	--card-shadow-hover: 0 6px 24px rgba(168, 48, 96, 0.10), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Sunset wallpaper → warm amber accent (dark themes) */
+/* ─── Sunset ─── */
 [data-theme="warm"][data-wallpaper="mesh-sunset"],
 [data-theme="dark"][data-wallpaper="mesh-sunset"] {
+	--rain-color: 216,136,48;
 	--accent: #d88830;
 	--orange-500: #d88830;
 	--orange-400: #e0a048;
@@ -409,34 +456,74 @@
 	--card-shadow-hover: 0 6px 24px rgba(216, 136, 48, 0.12), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Sunset wallpaper → darker amber for light theme */
 [data-theme="light"][data-wallpaper="mesh-sunset"] {
-	--accent: #a86810;
-	--orange-500: #a86810;
-	--orange-400: #b87818;
-	--orange-300: #905008;
-	--orange-200: #784408;
-	--accent-glow: rgba(168, 104, 16, 0.14);
-	--accent-soft: rgba(168, 104, 16, 0.07);
-	--accent-muted: rgba(168, 104, 16, 0.03);
-	--accent-border: rgba(168, 104, 16, 0.22);
-	--accent-hover: rgba(168, 104, 16, 0.10);
-	--step-prompt-bg: rgba(168, 104, 16, 0.08);
-	--step-prompt-answer: rgba(168, 104, 16, 0.04);
-	--step-prompt-glow: rgba(168, 104, 16, 0.12);
-	--step-prompt-border: rgba(184, 120, 24, 0.2);
+	--rain-color: 150,80,10;
+	--accent: #a06008;
+	--orange-500: #a06008;
+	--orange-400: #b07010;
+	--orange-300: #884c06;
+	--orange-200: #704008;
+	--accent-glow: rgba(160, 96, 8, 0.14);
+	--accent-soft: rgba(160, 96, 8, 0.07);
+	--accent-muted: rgba(160, 96, 8, 0.03);
+	--accent-border: rgba(160, 96, 8, 0.22);
+	--accent-hover: rgba(160, 96, 8, 0.10);
+	--step-prompt-bg: rgba(160, 96, 8, 0.08);
+	--step-prompt-answer: rgba(160, 96, 8, 0.04);
+	--step-prompt-glow: rgba(160, 96, 8, 0.12);
+	--step-prompt-border: rgba(176, 112, 16, 0.2);
 	--tag-text: var(--orange-300);
-	--card-shadow-hover: 0 6px 24px rgba(168, 104, 16, 0.10), 0 2px 8px rgba(0, 0, 0, 0.08);
+	--card-shadow-hover: 0 6px 24px rgba(160, 96, 8, 0.10), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Color wallpaper → vibrant theme-fitting solid tints */
+/* ─── Solid theme: dark gets matrix green ─── */
+[data-theme="dark"][data-wallpaper="solid-theme"] {
+	--rain-color: 40,200,80;
+	--accent: #30c060;
+	--orange-500: #30c060;
+	--orange-400: #48d078;
+	--orange-300: #60e090;
+	--orange-200: #80e8a8;
+	--accent-glow: rgba(48, 192, 96, 0.18);
+	--accent-soft: rgba(48, 192, 96, 0.10);
+	--accent-muted: rgba(48, 192, 96, 0.05);
+	--accent-border: rgba(48, 192, 96, 0.28);
+	--accent-hover: rgba(48, 192, 96, 0.14);
+	--step-prompt-bg: rgba(48, 192, 96, 0.10);
+	--step-prompt-answer: rgba(48, 192, 96, 0.05);
+	--step-prompt-glow: rgba(48, 192, 96, 0.14);
+	--step-prompt-border: rgba(72, 208, 120, 0.20);
+	--tag-text: var(--orange-300);
+	--card-shadow-hover: 0 6px 24px rgba(48, 192, 96, 0.12), 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Color (solid) ─── */
 [data-theme="warm"][data-wallpaper="solid-color"] {
+	--rain-color: 200,60,160;
 	--wallpaper-base: #3d1440;
 }
 [data-theme="dark"][data-wallpaper="solid-color"] {
-	--wallpaper-base: #101830;
+	--rain-color: 40,200,80;
+	--wallpaper-base: #0a1410;
+	--accent: #30c060;
+	--orange-500: #30c060;
+	--orange-400: #48d078;
+	--orange-300: #60e090;
+	--orange-200: #80e8a8;
+	--accent-glow: rgba(48, 192, 96, 0.18);
+	--accent-soft: rgba(48, 192, 96, 0.10);
+	--accent-muted: rgba(48, 192, 96, 0.05);
+	--accent-border: rgba(48, 192, 96, 0.28);
+	--accent-hover: rgba(48, 192, 96, 0.14);
+	--step-prompt-bg: rgba(48, 192, 96, 0.10);
+	--step-prompt-answer: rgba(48, 192, 96, 0.05);
+	--step-prompt-glow: rgba(48, 192, 96, 0.14);
+	--step-prompt-border: rgba(72, 208, 120, 0.20);
+	--tag-text: var(--orange-300);
+	--card-shadow-hover: 0 6px 24px rgba(48, 192, 96, 0.12), 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 [data-theme="light"][data-wallpaper="solid-color"] {
+	--rain-color: 20,90,150;
 	--wallpaper-base: #c8ddf0;
 	--accent: #1868a8;
 	--orange-500: #1868a8;

@@ -23,6 +23,12 @@
 			</p>
 			<p>
 				{t({
+					en: 'Every tutorial is built from a real Claude Code session — not a simplified walkthrough or cherry-picked demo. You see the actual prompts, tool calls, reasoning, and results exactly as they happened, giving you full insight into how AI-assisted workflows play out in practice.',
+					ja: 'すべてのチュートリアルは実際の Claude Code セッションから作成されています。簡略化されたウォークスルーや都合の良い部分だけを切り取ったデモではありません。実際のプロンプト、ツール呼び出し、推論、結果をそのままご覧いただけるため、AI を活用したワークフローが実際にどのように展開されるかを完全に把握できます。'
+				})}
+			</p>
+			<p>
+				{t({
 					en: 'The tutorials aim to cover areas like bioimage analysis, data analysis, mathematical modelling, and scientific coding.',
 					ja: 'チュートリアルはバイオイメージ解析、データ解析、数理モデリング、科学計算などの分野をカバーすることを目指しています。'
 				})}

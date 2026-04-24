@@ -13,7 +13,7 @@ export const COLOR_THEMES: { id: ColorTheme; label: string; swatch: string }[] =
 export const WALLPAPERS: { id: WallpaperName; label: string; category: 'gradient' | 'solid' }[] = [
 	{ id: 'mesh-aubergine', label: 'Aubergine', category: 'gradient' },
 	{ id: 'mesh-ocean', label: 'Ocean', category: 'gradient' },
-	{ id: 'mesh-forest', label: 'Forest', category: 'gradient' },
+	{ id: 'mesh-forest', label: 'Rose', category: 'gradient' },
 	{ id: 'mesh-sunset', label: 'Sunset', category: 'gradient' },
 	{ id: 'solid-theme', label: 'Solid', category: 'solid' },
 	{ id: 'solid-color', label: 'Color', category: 'solid' }
