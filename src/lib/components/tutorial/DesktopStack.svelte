@@ -52,7 +52,7 @@
 
 	function stackStyle(depth: number, chromeless: boolean): string {
 		if (depth < 0) {
-			return 'opacity:0;transform:translateY(6px) scale(0.98);pointer-events:none';
+			return 'opacity:0;transform:translate(-50%,-50%) translateY(6px) scale(0.98);pointer-events:none';
 		}
 		if (chromeless) {
 			const tx = depth * 50;
@@ -61,7 +61,7 @@
 			const brightness = Math.max(0.35, 1 - depth * 0.12);
 			const opacity = Math.max(0.1, 1 - depth * 0.18);
 			const z = Math.max(2, 30 - depth * 5);
-			return `opacity:${opacity};transform:translate(${tx}px,${ty}px) scale(${scale});filter:brightness(${brightness});z-index:${z};pointer-events:auto`;
+			return `opacity:${opacity};transform:translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) scale(${scale});filter:brightness(${brightness});z-index:${z};pointer-events:auto`;
 		}
 		const tx = depth * 50;
 		const ty = depth * -22;
@@ -69,7 +69,7 @@
 		const opacity = Math.max(0.1, 1 - depth * 0.18);
 		const brightness = Math.max(0.35, 1 - depth * 0.12);
 		const z = Math.max(2, 30 - depth * 5);
-		return `opacity:${opacity};transform:translate(${tx}px,${ty}px) scale(${scale});filter:brightness(${brightness});z-index:${z};pointer-events:auto;box-shadow:var(--shadow-window-1)`;
+		return `opacity:${opacity};transform:translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) scale(${scale});filter:brightness(${brightness});z-index:${z};pointer-events:auto;box-shadow:var(--shadow-window-1)`;
 	}
 
 	let hasVisibleWindows = $derived(windowSteps.some(w => w.index <= currentStep));
@@ -293,8 +293,8 @@
 
 	.fiji-window {
 		position: absolute;
-		bottom: 8px;
-		left: 8px;
+		left: 50%;
+		top: 50%;
 		width: auto;
 		max-width: min(440px, 85%);
 		max-height: calc(100% - 16px);
@@ -303,7 +303,7 @@
 		            opacity 50ms ease-out var(--enter-delay),
 		            filter 50ms ease-out var(--enter-delay),
 		            box-shadow 50ms ease-out var(--enter-delay);
-		transform-origin: center left;
+		transform-origin: center center;
 	}
 
 	.fiji-window:hover:not(.chromeless) {
@@ -325,8 +325,8 @@
 	}
 
 	.fiji-window.chromeless {
-		left: 0;
-		bottom: 0;
+		left: 50%;
+		top: 50%;
 		width: 100%;
 		height: 100%;
 		max-width: 100%;
