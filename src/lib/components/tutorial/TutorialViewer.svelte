@@ -377,13 +377,11 @@
 
 	let hasVisibleWindows = $derived(windowSteps.some(w => w.index <= currentStep));
 
-	function getStackClass(winIndex: number): string {
+	function getStackDepth(winIndex: number): number {
 		const visibleWindows = windowSteps.filter((x) => x.index <= currentStep);
 		const visIdx = visibleWindows.findIndex((x) => x.index === windowSteps[winIndex].index);
-		if (visIdx < 0) return '';
-		const depth = visibleWindows.length - 1 - visIdx;
-		if (depth > 3) return 'stack-3';
-		return `stack-${depth}`;
+		if (visIdx < 0) return -1;
+		return visibleWindows.length - 1 - visIdx;
 	}
 </script>
 
@@ -429,7 +427,7 @@
 				meta={tutorial.meta}
 				description={tutorial.description}
 				requirements={tutorial.requirements}
-				{getStackClass}
+				{getStackDepth}
 				{getEnterDelay}
 				onFocus={focusWindow}
 				onRestore={restoreFocus}
@@ -456,7 +454,7 @@
 	</div>
 
 	<!-- Bottom Taskbar -->
-	<Taskbar {windowSteps} {currentStep} {getStackClass} onJump={jumpToStep} />
+	<Taskbar {windowSteps} {currentStep} {getStackDepth} onJump={jumpToStep} />
 </div>
 
 <style>

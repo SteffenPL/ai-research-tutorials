@@ -14,7 +14,7 @@
 </script>
 
 <div class="theme-picker">
-	<!-- Dark/Light toggle pill -->
+	<span class="picker-label">Mode</span>
 	<div class="mode-switch" role="group">
 		<button
 			class="mode-btn"
@@ -32,7 +32,7 @@
 		</button>
 	</div>
 
-	<!-- Accent choices -->
+	<span class="picker-label">Color</span>
 	<div class="accent-row">
 		{#each options as opt}
 			<button
@@ -54,6 +54,15 @@
 		display: flex;
 		flex-direction: column;
 		gap: 6px;
+	}
+
+	.picker-label {
+		font-family: var(--font-display);
+		font-size: 10px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.8px;
+		color: var(--text-tertiary);
 	}
 
 	/* ─── Dark / Light toggle ─── */

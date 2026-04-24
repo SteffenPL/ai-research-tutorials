@@ -222,6 +222,7 @@ export function traceStateToTutorialRounds(state: TraceState): TutorialRound[] {
 	return state.rounds.map((round) => {
 		const steps: Step[] = [];
 		for (const ts of round.steps) {
+			if (!ts.included) continue;
 			const step = traceStepToTutorialStep(ts);
 			if (step) steps.push(step);
 		}

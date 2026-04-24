@@ -31,7 +31,7 @@
 		meta,
 		description,
 		requirements,
-		getStackClass,
+		getStackDepth,
 		getEnterDelay,
 		onFocus,
 		onRestore,
@@ -43,12 +43,23 @@
 		meta: TutorialMeta;
 		description?: string;
 		requirements?: string;
-		getStackClass: (winIndex: number) => string;
+		getStackDepth: (winIndex: number) => number;
 		getEnterDelay: (winIndex: number) => number;
 		onFocus: (step: WindowStep) => void;
 		onRestore: () => void;
 		onJump: (stepIndex: number) => void;
 	} = $props();
+
+	function stackStyle(depth: number, chromeless: boolean): string {
+		if (depth < 0) return '';
+		const tx = chromeless ? 0 : depth * 50;
+		const ty = chromeless ? 0 : depth * -22;
+		const scale = Math.max(0.7, 1 - depth * 0.04);
+		const opacity = Math.max(0.1, 1 - depth * 0.18);
+		const brightness = Math.max(0.35, 1 - depth * 0.12);
+		const z = Math.max(1, 30 - depth * 5);
+		return `--stack-opacity:${opacity};--stack-tx:${tx}px;--stack-ty:${ty}px;--stack-scale:${scale};--stack-brightness:${brightness};--stack-z:${z}`;
+	}
 
 	let hasVisibleWindows = $derived(windowSteps.some(w => w.index <= currentStep));
 
@@ -97,16 +108,13 @@
 		{@const isFocused = focusedWindow === win.step}
 		{@const chromeless = isChromeless(win.step.content)}
 		{@const enterDelay = getEnterDelay(idx)}
+		{@const depth = win.index <= currentStep ? getStackDepth(idx) : -1}
 		<div
 			class="fiji-window window"
 			class:chromeless
-			class:visible={win.index <= currentStep}
+			class:visible={depth >= 0}
 			class:focused-hidden={isFocused}
-			class:stack-0={win.index <= currentStep && getStackClass(idx) === 'stack-0'}
-			class:stack-1={win.index <= currentStep && getStackClass(idx) === 'stack-1'}
-			class:stack-2={win.index <= currentStep && getStackClass(idx) === 'stack-2'}
-			class:stack-3={win.index <= currentStep && getStackClass(idx) === 'stack-3'}
-			style:--enter-delay="{enterDelay}ms"
+			style="{stackStyle(depth, chromeless)};--enter-delay:{enterDelay}ms"
 		>
 			{#if !chromeless}
 				<WindowChrome
@@ -281,10 +289,16 @@
 		max-width: min(440px, 85%);
 		max-height: calc(100% - 16px);
 		--enter-delay: 0ms;
-		transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1) var(--enter-delay),
-		            opacity 0.4s ease-out var(--enter-delay),
-		            filter 0.45s ease-out var(--enter-delay),
-		            box-shadow 0.35s ease-out var(--enter-delay);
+		--stack-opacity: 0;
+		--stack-tx: 0px;
+		--stack-ty: 0px;
+		--stack-scale: 1;
+		--stack-brightness: 1;
+		--stack-z: 1;
+		transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--enter-delay),
+		            opacity 0.7s ease-out var(--enter-delay),
+		            filter 0.6s ease-out var(--enter-delay),
+		            box-shadow 0.5s ease-out var(--enter-delay);
 		transform-origin: center left;
 		opacity: 0;
 		transform: translateX(-40px) translateY(20px) scale(0.92);
@@ -293,45 +307,17 @@
 
 	.fiji-window.visible {
 		pointer-events: auto;
+		opacity: var(--stack-opacity);
+		transform: translate(var(--stack-tx), var(--stack-ty)) scale(var(--stack-scale));
+		filter: brightness(var(--stack-brightness));
+		z-index: var(--stack-z);
+		box-shadow: var(--shadow-window-1);
 	}
 
 	.fiji-window:hover:not(.chromeless) {
 		box-shadow: var(--shadow-window-0) !important;
 	}
 
-	/* Stack depth — 0 is frontmost (bottom-left), 3 is deepest (toward top-right) */
-	.fiji-window.stack-0 {
-		opacity: 1;
-		transform: translate(0, 0) scale(1);
-		z-index: 30;
-		box-shadow: var(--shadow-window-1);
-	}
-
-	.fiji-window.stack-1 {
-		opacity: 0.75;
-		transform: translate(60px, -30px) scale(0.95);
-		z-index: 20;
-		filter: brightness(0.8);
-		box-shadow: var(--shadow-window-2);
-	}
-
-	.fiji-window.stack-2 {
-		opacity: 0.5;
-		transform: translate(130px, -55px) scale(0.90);
-		z-index: 10;
-		filter: brightness(0.65);
-		box-shadow: var(--shadow-window-3);
-	}
-
-	.fiji-window.stack-3 {
-		opacity: 0.3;
-		transform: translate(210px, -75px) scale(0.85);
-		z-index: 5;
-		filter: brightness(0.5);
-		box-shadow: var(--shadow-window-4);
-	}
-
-	/* Hide the stack entry while its content is shown in the max overlay */
 	.fiji-window.focused-hidden {
 		opacity: 0 !important;
 		pointer-events: none;
@@ -354,26 +340,6 @@
 		max-width: 100%;
 		max-height: 100%;
 		transform-origin: center center;
-	}
-
-	.fiji-window.chromeless.stack-0 {
-		transform: none;
-		box-shadow: none !important;
-	}
-
-	.fiji-window.chromeless.stack-1 {
-		transform: scale(0.95);
-		box-shadow: none !important;
-	}
-
-	.fiji-window.chromeless.stack-2 {
-		transform: scale(0.90);
-		box-shadow: none !important;
-	}
-
-	.fiji-window.chromeless.stack-3 {
-		transform: scale(0.85);
-		box-shadow: none !important;
 	}
 
 	/* ─── Maximize overlay ─── */

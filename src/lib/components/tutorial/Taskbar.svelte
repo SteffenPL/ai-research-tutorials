@@ -13,12 +13,12 @@
 	let {
 		windowSteps,
 		currentStep,
-		getStackClass,
+		getStackDepth,
 		onJump
 	}: {
 		windowSteps: { step: WindowStep; index: number }[];
 		currentStep: number;
-		getStackClass: (winIndex: number) => string;
+		getStackDepth: (winIndex: number) => number;
 		onJump: (stepIndex: number) => void;
 	} = $props();
 
@@ -73,7 +73,7 @@
 	function snapPageToActive() {
 		const activeIdx = allItems.findIndex(item => {
 			if (item.kind === 'terminal') return false;
-			return item.win.index <= currentStep && getStackClass(item.idx) === 'stack-0';
+			return item.win.index <= currentStep && getStackDepth(item.idx) === 0;
 		});
 		if (activeIdx >= 0 && (activeIdx < pageStart || activeIdx >= pageStart + PAGE_SIZE)) {
 			pageStart = Math.max(0, Math.min(activeIdx - Math.floor(PAGE_SIZE / 2), totalItems - PAGE_SIZE));
@@ -122,7 +122,7 @@
 					class="taskbar-item"
 					class:icon-only={mode !== 'full'}
 					class:visible-item={item.win.index <= currentStep}
-					class:active={item.win.index <= currentStep && getStackClass(item.idx) === 'stack-0'}
+					class:active={item.win.index <= currentStep && getStackDepth(item.idx) === 0}
 					onclick={() => onJump(item.win.index)}
 					title={mode !== 'full' ? item.win.step.windowTitle : undefined}
 				>
