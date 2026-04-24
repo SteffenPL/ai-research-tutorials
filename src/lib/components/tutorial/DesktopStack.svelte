@@ -119,7 +119,7 @@
 		{@const isFocused = focusedWindow === win.step}
 		{@const chromeless = isChromeless(win.step.content)}
 		{@const enterDelay = getEnterDelay(idx)}
-		{@const depth = win.index <= currentStep ? getStackDepth(idx) : -1}
+		{@const depth = getStackDepth(idx)}
 		<div
 			class="fiji-window window"
 			class:chromeless

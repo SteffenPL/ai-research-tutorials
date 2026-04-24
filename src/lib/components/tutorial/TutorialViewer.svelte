@@ -284,41 +284,82 @@
 
 	onMount(() => {
 		document.body.classList.add('tutorial-active');
-		return () => document.body.classList.remove('tutorial-active');
+		return () => {
+			document.body.classList.remove('tutorial-active');
+			if (revealTimer) clearTimeout(revealTimer);
+		};
 	});
 
 	/* ─── Scroll-driven timeline ─────────────── */
 	let scrollDriven = $state(true);
 
-	/* ─── Stagger tracking for window entrance animations ─── */
-	let windowEnterDelays = $state<Map<number, number>>(new Map());
-	let prevVisibleSet = new Set<number>();
+	/* ─── Sequential window reveal queue ─── */
+	let revealedWindows = $state<Set<number>>(new Set());
+	let revealQueue: number[] = [];
+	let revealTimer: ReturnType<typeof setTimeout> | null = null;
+	const REVEAL_INTERVAL_MS = 800;
 
-	const ENTER_DELAY_MS = 150;
+	function processRevealQueue() {
+		if (revealQueue.length === 0) {
+			revealTimer = null;
+			return;
+		}
+		const next = revealQueue.shift()!;
+		revealedWindows = new Set([...revealedWindows, next]);
+		if (revealQueue.length > 0) {
+			revealTimer = setTimeout(processRevealQueue, REVEAL_INTERVAL_MS);
+		} else {
+			revealTimer = null;
+		}
+	}
+
+	let prevShouldBeVisible = new Set<number>();
 
 	$effect(() => {
-		const nowVisible = new Set(windowSteps.filter(w => w.index <= currentStep).map(w => w.index));
+		const shouldBeVisible = new Set(windowSteps.filter(w => w.index <= currentStep).map(w => w.index));
+
+		// Going back: instantly remove windows that are no longer needed
+		const removed: number[] = [];
+		for (const idx of prevShouldBeVisible) {
+			if (!shouldBeVisible.has(idx)) removed.push(idx);
+		}
+		if (removed.length > 0) {
+			// Cancel pending queue items that are no longer needed
+			revealQueue = revealQueue.filter(idx => shouldBeVisible.has(idx));
+			if (revealQueue.length === 0 && revealTimer) {
+				clearTimeout(revealTimer);
+				revealTimer = null;
+			}
+			// Instantly remove from revealed set
+			const next = new Set(revealedWindows);
+			for (const idx of removed) next.delete(idx);
+			revealedWindows = next;
+		}
+
+		// Going forward: queue new windows
 		const newlyVisible: number[] = [];
-		for (const idx of nowVisible) {
-			if (!prevVisibleSet.has(idx)) newlyVisible.push(idx);
+		for (const idx of shouldBeVisible) {
+			if (!revealedWindows.has(idx) && !revealQueue.includes(idx)) {
+				newlyVisible.push(idx);
+			}
 		}
 		if (newlyVisible.length > 0) {
-			const updated = new Map(windowEnterDelays);
-			for (const idx of newlyVisible) {
-				updated.set(idx, ENTER_DELAY_MS);
+			newlyVisible.sort((a, b) => a - b);
+			revealQueue.push(...newlyVisible);
+			if (!revealTimer) {
+				const first = revealQueue.shift()!;
+				revealedWindows = new Set([...revealedWindows, first]);
+				if (revealQueue.length > 0) {
+					revealTimer = setTimeout(processRevealQueue, REVEAL_INTERVAL_MS);
+				}
 			}
-			windowEnterDelays = updated;
-			setTimeout(() => {
-				const cleared = new Map(windowEnterDelays);
-				for (const idx of newlyVisible) cleared.set(idx, 0);
-				windowEnterDelays = cleared;
-			}, ENTER_DELAY_MS + 200);
 		}
-		prevVisibleSet = nowVisible;
+
+		prevShouldBeVisible = shouldBeVisible;
 	});
 
-	function getEnterDelay(winIndex: number): number {
-		return windowEnterDelays.get(windowSteps[winIndex]?.index ?? -1) ?? 0;
+	function getEnterDelay(_winIndex: number): number {
+		return 0;
 	}
 
 	onMount(() => {
@@ -386,10 +427,10 @@
 		};
 	});
 
-	let hasVisibleWindows = $derived(windowSteps.some(w => w.index <= currentStep));
+	let hasVisibleWindows = $derived(windowSteps.some(w => revealedWindows.has(w.index)));
 
 	function getStackDepth(winIndex: number): number {
-		const visibleWindows = windowSteps.filter((x) => x.index <= currentStep);
+		const visibleWindows = windowSteps.filter((x) => revealedWindows.has(x.index));
 		const visIdx = visibleWindows.findIndex((x) => x.index === windowSteps[winIndex].index);
 		if (visIdx < 0) return -1;
 		return visibleWindows.length - 1 - visIdx;
