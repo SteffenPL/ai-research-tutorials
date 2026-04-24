@@ -17,7 +17,6 @@
 	that step (same behavior as the taskbar item).
 -->
 <script lang="ts">
-	import { base } from '$app/paths';
 	import { getWindowIcon, isChromeless, type WindowStep, type TutorialMeta, type TutorialWelcome } from '$lib/data/tutorials';
 	import { getTutorialTitle } from '$lib/data/tutorials';
 	import WindowChrome from '$lib/components/windows/WindowChrome.svelte';
@@ -67,23 +66,12 @@
 	});
 
 	let title = $derived(getTutorialTitle(meta, langStore.current));
-	let thumbnailUrl = $derived(meta.thumbnail ? `${base}/${meta.thumbnail}` : undefined);
-	let isVideoThumb = $derived(!!meta.thumbnail && /\.(mp4|mov|webm)$/i.test(meta.thumbnail));
 </script>
 
 <div class="fiji-area">
 	{#if !hasVisibleWindows}
 		<div class="welcome-card-wrap">
 			<div class="welcome-card">
-				{#if thumbnailUrl}
-					<div class="welcome-thumb">
-						{#if isVideoThumb}
-							<video src={thumbnailUrl} autoplay loop muted playsinline></video>
-						{:else}
-							<img src={thumbnailUrl} alt={title} />
-						{/if}
-					</div>
-				{/if}
 				<div class="welcome-tags">
 					{#each meta.tags as tag}
 						<span class="welcome-tag">{tag}</span>
@@ -206,22 +194,6 @@
 		border-radius: 14px;
 		padding: 28px 28px 24px;
 		text-align: center;
-	}
-
-	.welcome-thumb {
-		width: 100%;
-		border-radius: 8px;
-		overflow: hidden;
-		margin-bottom: 16px;
-		max-height: 200px;
-	}
-
-	.welcome-thumb img,
-	.welcome-thumb video {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		display: block;
 	}
 
 	.welcome-tags {
