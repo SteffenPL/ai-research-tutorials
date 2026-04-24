@@ -1,35 +1,49 @@
 <script lang="ts">
-	import { themeStore, COLOR_THEMES, WALLPAPERS } from '$lib/stores/theme.svelte';
+	import { themeStore, THEMES, themesForMode, type ThemeMode } from '$lib/stores/theme.svelte';
+
+	const currentMode = $derived(themeStore.mode);
+	const options = $derived(themesForMode(currentMode));
+
+	function toggleMode() {
+		const newMode: ThemeMode = currentMode === 'dark' ? 'light' : 'dark';
+		const sameColor = themeStore.theme.replace(/^(dark|light)-/, '');
+		const match = THEMES.find(t => t.mode === newMode && t.id.endsWith(sameColor));
+		const fallback = themesForMode(newMode)[0];
+		themeStore.theme = (match ?? fallback).id;
+	}
 </script>
 
 <div class="theme-picker">
-	<span class="picker-label">Theme</span>
-	<div class="theme-swatches">
-		{#each COLOR_THEMES as theme}
-			<button
-				class="swatch"
-				class:active={themeStore.colorTheme === theme.id}
-				style="--swatch-color: {theme.swatch}"
-				title={theme.label}
-				onclick={() => (themeStore.colorTheme = theme.id)}
-			>
-				<span class="swatch-dot"></span>
-				<span class="swatch-label">{theme.label}</span>
-			</button>
-		{/each}
+	<!-- Dark/Light toggle pill -->
+	<div class="mode-switch" role="group">
+		<button
+			class="mode-btn"
+			class:active={currentMode === 'dark'}
+			onclick={() => { if (currentMode !== 'dark') toggleMode(); }}
+		>
+			<span class="mode-icon">☾</span> Dark
+		</button>
+		<button
+			class="mode-btn"
+			class:active={currentMode === 'light'}
+			onclick={() => { if (currentMode !== 'light') toggleMode(); }}
+		>
+			<span class="mode-icon">☀</span> Light
+		</button>
 	</div>
 
-	<span class="picker-label">Wallpaper</span>
-	<div class="wallpaper-grid">
-		{#each WALLPAPERS as wp}
+	<!-- Accent choices -->
+	<div class="accent-row">
+		{#each options as opt}
 			<button
-				class="wp-thumb"
-				class:active={themeStore.wallpaper === wp.id}
-				title={wp.label}
-				onclick={() => (themeStore.wallpaper = wp.id)}
+				class="accent-btn"
+				class:active={themeStore.theme === opt.id}
+				style="--swatch: {opt.swatch}"
+				title={opt.label}
+				onclick={() => (themeStore.theme = opt.id)}
 			>
-				<span class="wp-preview wp-preview--{wp.id}"></span>
-				<span class="wp-name">{wp.label}</span>
+				<span class="accent-dot"></span>
+				<span class="accent-label">{opt.label}</span>
 			</button>
 		{/each}
 	</div>
@@ -39,29 +53,63 @@
 	.theme-picker {
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
+		gap: 6px;
 	}
 
-	.picker-label {
-		display: block;
-		font-family: var(--font-display);
-		font-size: 10px;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.8px;
+	/* ─── Dark / Light toggle ─── */
+	.mode-switch {
+		display: flex;
+		background: var(--overlay-subtle);
+		border-radius: 6px;
+		padding: 2px;
+		gap: 2px;
+	}
+
+	.mode-btn {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 4px;
+		padding: 5px 8px;
+		border: none;
+		border-radius: 4px;
+		background: transparent;
 		color: var(--text-tertiary);
+		font-family: var(--font-display);
+		font-size: 11px;
+		font-weight: 500;
+		cursor: pointer;
+		transition: background 0.15s, color 0.15s;
 	}
 
-	.theme-swatches {
+	.mode-btn:hover {
+		color: var(--text-secondary);
+	}
+
+	.mode-btn.active {
+		background: var(--bg-hover);
+		color: var(--text-primary);
+	}
+
+	.mode-icon {
+		font-size: 12px;
+		line-height: 1;
+	}
+
+	/* ─── Accent buttons ─── */
+	.accent-row {
 		display: flex;
 		gap: 4px;
 	}
 
-	.swatch {
+	.accent-btn {
+		flex: 1;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: 5px;
-		padding: 4px 8px;
+		padding: 5px 6px;
 		border: 1px solid var(--border-color);
 		border-radius: 6px;
 		background: transparent;
@@ -72,81 +120,21 @@
 		transition: border-color 0.15s, background 0.15s;
 	}
 
-	.swatch:hover {
+	.accent-btn:hover {
 		background: var(--bg-hover);
 	}
 
-	.swatch.active {
+	.accent-btn.active {
 		border-color: var(--accent);
 		background: var(--accent-soft);
 	}
 
-	.swatch-dot {
-		width: 12px;
-		height: 12px;
+	.accent-dot {
+		width: 10px;
+		height: 10px;
 		border-radius: 50%;
-		background: var(--swatch-color);
+		background: var(--swatch);
 		border: 1px solid var(--border-subtle);
-	}
-
-	.wallpaper-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 4px;
-	}
-
-	.wp-thumb {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 3px;
-		padding: 4px;
-		border: 1px solid var(--border-color);
-		border-radius: 6px;
-		background: transparent;
-		cursor: pointer;
-		transition: border-color 0.15s, background 0.15s;
-	}
-
-	.wp-thumb:hover {
-		background: var(--bg-hover);
-	}
-
-	.wp-thumb.active {
-		border-color: var(--accent);
-		background: var(--accent-soft);
-	}
-
-	.wp-preview {
-		width: 40px;
-		height: 26px;
-		border-radius: 3px;
-		overflow: hidden;
-	}
-
-	.wp-name {
-		font-family: var(--font-display);
-		font-size: 9px;
-		color: var(--text-tertiary);
-		white-space: nowrap;
-	}
-
-	.wp-preview--mesh-aubergine {
-		background: linear-gradient(135deg, #3a0626 0%, #E95420 50%, #521a3a 100%);
-	}
-	.wp-preview--mesh-ocean {
-		background: linear-gradient(135deg, #0a2040 0%, #3898d8 50%, #104060 100%);
-	}
-	.wp-preview--mesh-forest {
-		background: linear-gradient(135deg, #3a0820 0%, #d05888 50%, #501030 100%);
-	}
-	.wp-preview--mesh-sunset {
-		background: linear-gradient(135deg, #3a1808 0%, #d88830 50%, #5a2810 100%);
-	}
-	.wp-preview--solid-theme {
-		background: #111111;
-	}
-	.wp-preview--solid-color {
-		background: linear-gradient(135deg, #e84040 0%, #e8a020 25%, #40b848 50%, #3090d8 75%, #8848c0 100%);
+		flex-shrink: 0;
 	}
 </style>

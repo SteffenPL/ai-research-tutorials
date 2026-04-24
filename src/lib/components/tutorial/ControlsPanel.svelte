@@ -43,9 +43,11 @@
 	<div class="comment-panel">
 		{#if currentStep >= 0}
 			<div class="comment-header">Tutorial</div>
-			<div class="comment-text">
-				{@html commentHtml}
-			</div>
+			{#key commentHtml}
+				<div class="comment-text comment-fade">
+					{@html commentHtml}
+				</div>
+			{/key}
 		{/if}
 	</div>
 
@@ -355,6 +357,15 @@
 		font-size: 15px;
 		line-height: 1.7;
 		color: var(--text-secondary);
+	}
+
+	.comment-fade {
+		animation: commentFadeIn 0.35s ease-out;
+	}
+
+	@keyframes commentFadeIn {
+		from { opacity: 0; transform: translateY(4px); }
+		to { opacity: 1; transform: translateY(0); }
 	}
 
 	.comment-text :global(strong) {

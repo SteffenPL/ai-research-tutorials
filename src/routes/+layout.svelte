@@ -6,7 +6,7 @@
 	let { children }: { children: Snippet } = $props();
 
 	// Ensure theme store is initialized on app load (triggers DOM attribute setting)
-	void themeStore.colorTheme;
+	void themeStore.theme;
 </script>
 
 {@render children()}

@@ -280,6 +280,36 @@
 	/* ─── Scroll-driven timeline ─────────────── */
 	let scrollDriven = $state(true);
 
+	/* ─── Stagger tracking for window entrance animations ─── */
+	let windowEnterDelays = $state<Map<number, number>>(new Map());
+	let prevVisibleSet = new Set<number>();
+
+	$effect(() => {
+		const nowVisible = new Set(windowSteps.filter(w => w.index <= currentStep).map(w => w.index));
+		const newlyVisible: number[] = [];
+		for (const idx of nowVisible) {
+			if (!prevVisibleSet.has(idx)) newlyVisible.push(idx);
+		}
+		if (newlyVisible.length > 0) {
+			const updated = new Map(windowEnterDelays);
+			newlyVisible.sort((a, b) => a - b);
+			for (let i = 0; i < newlyVisible.length; i++) {
+				updated.set(newlyVisible[i], i * 80);
+			}
+			windowEnterDelays = updated;
+			setTimeout(() => {
+				const cleared = new Map(windowEnterDelays);
+				for (const idx of newlyVisible) cleared.set(idx, 0);
+				windowEnterDelays = cleared;
+			}, 600);
+		}
+		prevVisibleSet = nowVisible;
+	});
+
+	function getEnterDelay(winIndex: number): number {
+		return windowEnterDelays.get(windowSteps[winIndex]?.index ?? -1) ?? 0;
+	}
+
 	onMount(() => {
 		const updateSpacerHeight = () => {
 			if (!terminalBody) return;
@@ -294,8 +324,24 @@
 
 		const isMobileQuery = window.matchMedia('(max-width: 900px)');
 
+		let scrollThrottleId: ReturnType<typeof requestAnimationFrame> | null = null;
+		let lastScrollUpdate = 0;
+		const SCROLL_THROTTLE_MS = 60;
+
 		const handleScroll = () => {
 			if (!terminalBody || playing || !scrollDriven) return;
+
+			const now = performance.now();
+			if (now - lastScrollUpdate < SCROLL_THROTTLE_MS) {
+				if (!scrollThrottleId) {
+					scrollThrottleId = requestAnimationFrame(() => {
+						scrollThrottleId = null;
+						handleScroll();
+					});
+				}
+				return;
+			}
+			lastScrollUpdate = now;
 
 			if (isMobileQuery.matches) {
 				const positionLine = (rightColumn?.getBoundingClientRect().top ?? window.innerHeight) - 20;
@@ -323,6 +369,7 @@
 		window.addEventListener('scroll', handleScroll, { passive: true });
 		return () => {
 			resizeObs.disconnect();
+			if (scrollThrottleId) cancelAnimationFrame(scrollThrottleId);
 			terminalBody?.removeEventListener('scroll', handleScroll);
 			window.removeEventListener('scroll', handleScroll);
 		};
@@ -383,6 +430,7 @@
 				description={tutorial.description}
 				requirements={tutorial.requirements}
 				{getStackClass}
+				{getEnterDelay}
 				onFocus={focusWindow}
 				onRestore={restoreFocus}
 				onJump={jumpToStep}

@@ -32,6 +32,7 @@
 		description,
 		requirements,
 		getStackClass,
+		getEnterDelay,
 		onFocus,
 		onRestore,
 		onJump
@@ -43,6 +44,7 @@
 		description?: string;
 		requirements?: string;
 		getStackClass: (winIndex: number) => string;
+		getEnterDelay: (winIndex: number) => number;
 		onFocus: (step: WindowStep) => void;
 		onRestore: () => void;
 		onJump: (stepIndex: number) => void;
@@ -94,6 +96,7 @@
 	{#each windowSteps as win, idx}
 		{@const isFocused = focusedWindow === win.step}
 		{@const chromeless = isChromeless(win.step.content)}
+		{@const enterDelay = getEnterDelay(idx)}
 		<div
 			class="fiji-window window"
 			class:chromeless
@@ -103,6 +106,7 @@
 			class:stack-1={win.index <= currentStep && getStackClass(idx) === 'stack-1'}
 			class:stack-2={win.index <= currentStep && getStackClass(idx) === 'stack-2'}
 			class:stack-3={win.index <= currentStep && getStackClass(idx) === 'stack-3'}
+			style:--enter-delay="{enterDelay}ms"
 		>
 			{#if !chromeless}
 				<WindowChrome
@@ -276,13 +280,14 @@
 		width: auto;
 		max-width: min(440px, 85%);
 		max-height: calc(100% - 16px);
-		transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-		            opacity 0.35s ease-out,
-		            filter 0.4s ease-out,
-		            box-shadow 0.3s ease-out;
-		transform-origin: bottom left;
+		--enter-delay: 0ms;
+		transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1) var(--enter-delay),
+		            opacity 0.4s ease-out var(--enter-delay),
+		            filter 0.45s ease-out var(--enter-delay),
+		            box-shadow 0.35s ease-out var(--enter-delay);
+		transform-origin: center left;
 		opacity: 0;
-		transform: translateY(30px) scale(0.9);
+		transform: translateX(-40px) translateY(20px) scale(0.92);
 		pointer-events: none;
 	}
 

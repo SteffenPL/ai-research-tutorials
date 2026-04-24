@@ -1,84 +1,80 @@
 import { browser } from '$app/environment';
 
-export type ColorTheme = 'warm' | 'dark' | 'light';
-export type WallpaperName = 'mesh-aubergine' | 'mesh-ocean' | 'mesh-forest' | 'mesh-sunset'
-	| 'solid-theme' | 'solid-color';
+export type ThemeId = 'dark-aubergine' | 'dark-matrix' | 'dark-ocean'
+	| 'light-aubergine' | 'light-sky' | 'light-sunset';
 
-export const COLOR_THEMES: { id: ColorTheme; label: string; swatch: string }[] = [
-	{ id: 'warm', label: 'Warm', swatch: '#2C001E' },
-	{ id: 'dark', label: 'Dark', swatch: '#151518' },
-	{ id: 'light', label: 'Light', swatch: '#f0e8e4' }
-];
+export type ThemeMode = 'dark' | 'light';
 
-export const WALLPAPERS: { id: WallpaperName; label: string; category: 'gradient' | 'solid' }[] = [
-	{ id: 'mesh-aubergine', label: 'Aubergine', category: 'gradient' },
-	{ id: 'mesh-ocean', label: 'Ocean', category: 'gradient' },
-	{ id: 'mesh-forest', label: 'Rose', category: 'gradient' },
-	{ id: 'mesh-sunset', label: 'Sunset', category: 'gradient' },
-	{ id: 'solid-theme', label: 'Solid', category: 'solid' },
-	{ id: 'solid-color', label: 'Color', category: 'solid' }
-];
-
-const STORAGE_KEY = 'ai-tutorials-theme';
-
-interface ThemePrefs {
-	colorTheme: ColorTheme;
-	wallpaper: WallpaperName;
+export interface ThemeOption {
+	id: ThemeId;
+	label: string;
+	mode: ThemeMode;
+	swatch: string;
 }
 
-const DEFAULTS: ThemePrefs = {
-	colorTheme: 'warm',
-	wallpaper: 'mesh-aubergine'
-};
+export const THEMES: ThemeOption[] = [
+	{ id: 'dark-aubergine', label: 'Aubergine', mode: 'dark', swatch: '#E95420' },
+	{ id: 'dark-matrix', label: 'Matrix', mode: 'dark', swatch: '#30c060' },
+	{ id: 'dark-ocean', label: 'Ocean', mode: 'dark', swatch: '#3898d8' },
+	{ id: 'light-aubergine', label: 'Aubergine', mode: 'light', swatch: '#c84810' },
+	{ id: 'light-sky', label: 'Sky', mode: 'light', swatch: '#1868a8' },
+	{ id: 'light-sunset', label: 'Sunset', mode: 'light', swatch: '#a06008' },
+];
 
-function load(): ThemePrefs {
-	if (!browser) return DEFAULTS;
+export function getMode(id: ThemeId): ThemeMode {
+	return id.startsWith('light-') ? 'light' : 'dark';
+}
+
+export function themesForMode(mode: ThemeMode): ThemeOption[] {
+	return THEMES.filter(t => t.mode === mode);
+}
+
+const STORAGE_KEY = 'ai-tutorials-theme';
+const DEFAULT: ThemeId = 'dark-aubergine';
+
+function load(): ThemeId {
+	if (!browser) return DEFAULT;
 	try {
 		const raw = localStorage.getItem(STORAGE_KEY);
-		if (!raw) return DEFAULTS;
-		const parsed = JSON.parse(raw) as Partial<ThemePrefs>;
-		return {
-			colorTheme: COLOR_THEMES.some(t => t.id === parsed.colorTheme) ? parsed.colorTheme! : DEFAULTS.colorTheme,
-			wallpaper: WALLPAPERS.some(w => w.id === parsed.wallpaper) ? parsed.wallpaper! : DEFAULTS.wallpaper
-		};
+		if (!raw) return DEFAULT;
+		const parsed = JSON.parse(raw);
+		const id = parsed.theme ?? parsed.colorTheme ?? raw;
+		if (THEMES.some(t => t.id === id)) return id as ThemeId;
+		return DEFAULT;
 	} catch {
-		return DEFAULTS;
+		return DEFAULT;
 	}
 }
 
-function persist(prefs: ThemePrefs) {
+function persist(id: ThemeId) {
 	if (!browser) return;
 	try {
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+		localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme: id }));
 	} catch { /* ignore */ }
 }
 
-function applyToDOM(prefs: ThemePrefs) {
+function applyToDOM(id: ThemeId) {
 	if (!browser) return;
-	document.documentElement.setAttribute('data-theme', prefs.colorTheme);
-	document.documentElement.setAttribute('data-wallpaper', prefs.wallpaper);
+	document.documentElement.setAttribute('data-theme', id);
 }
 
 function createThemeStore() {
 	const initial = load();
-	let colorTheme = $state<ColorTheme>(initial.colorTheme);
-	let wallpaper = $state<WallpaperName>(initial.wallpaper);
+	let theme = $state<ThemeId>(initial);
 
 	applyToDOM(initial);
 
 	$effect.root(() => {
 		$effect(() => {
-			const prefs = { colorTheme, wallpaper };
-			applyToDOM(prefs);
-			persist(prefs);
+			applyToDOM(theme);
+			persist(theme);
 		});
 	});
 
 	return {
-		get colorTheme() { return colorTheme; },
-		set colorTheme(v: ColorTheme) { colorTheme = v; },
-		get wallpaper() { return wallpaper; },
-		set wallpaper(v: WallpaperName) { wallpaper = v; }
+		get theme() { return theme; },
+		set theme(v: ThemeId) { theme = v; },
+		get mode(): ThemeMode { return getMode(theme); }
 	};
 }
 
