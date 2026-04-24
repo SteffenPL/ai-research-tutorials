@@ -6,6 +6,7 @@
 	import ControlsPanel from '$lib/components/tutorial/ControlsPanel.svelte';
 	import TerminalTranscript from '$lib/components/tutorial/TerminalTranscript.svelte';
 	import DesktopStack from '$lib/components/tutorial/DesktopStack.svelte';
+	import MobileWelcome from '$lib/components/tutorial/MobileWelcome.svelte';
 	import { base } from '$app/paths';
 	import { browser } from '$app/environment';
 	import { onMount, tick } from 'svelte';
@@ -326,6 +327,8 @@
 		};
 	});
 
+	let hasVisibleWindows = $derived(windowSteps.some(w => w.index <= currentStep));
+
 	function getStackClass(winIndex: number): string {
 		const visibleWindows = windowSteps.filter((x) => x.index <= currentStep);
 		const visIdx = visibleWindows.findIndex((x) => x.index === windowSteps[winIndex].index);
@@ -348,6 +351,15 @@
 
 	<!-- Workspace -->
 	<div class="workspace">
+		<!-- Mobile welcome (above terminal, hidden on desktop) -->
+		{#if !hasVisibleWindows}
+			<MobileWelcome
+				meta={tutorial.meta}
+				description={tutorial.description}
+				requirements={tutorial.requirements}
+			/>
+		{/if}
+
 		<!-- Terminal Window -->
 		<TerminalTranscript
 			{activeRounds}

@@ -21,6 +21,7 @@
 	import type { TutorialRound, Step, WindowStep } from '$lib/data/tutorials';
 	import WindowChrome from '$lib/components/windows/WindowChrome.svelte';
 	import StepRenderer from './StepRenderer.svelte';
+	import { langStore } from '$lib/stores/lang.svelte';
 	let {
 		activeRounds,
 		roundBoundaries,
@@ -39,10 +40,42 @@
 		terminalBodyRef?: HTMLElement | null;
 	} = $props();
 
-	type StepGroup = { kind: 'step'; step: Step; si: number; globalIndex: number };
+	type StepEntry = { kind: 'step'; step: Step; si: number; globalIndex: number };
+	type CommentEntry = { kind: 'comment'; text: string };
+	type Segment = { kind: 'steps'; entries: StepEntry[] } | CommentEntry;
 
-	function groupSteps(steps: Step[], roundStart: number): StepGroup[] {
+	function groupSteps(steps: Step[], roundStart: number): StepEntry[] {
 		return steps.map((step, si) => ({ kind: 'step' as const, step, si, globalIndex: roundStart + si }));
+	}
+
+	function segmentSteps(steps: Step[], roundStart: number): Segment[] {
+		const segments: Segment[] = [];
+		let currentBatch: StepEntry[] = [];
+		for (let si = 0; si < steps.length; si++) {
+			const step = steps[si];
+			const entry: StepEntry = { kind: 'step', step, si, globalIndex: roundStart + si };
+			currentBatch.push(entry);
+			const comment = resolveComment(step.comment);
+			if (comment) {
+				segments.push({ kind: 'steps', entries: currentBatch });
+				segments.push({ kind: 'comment', text: comment });
+				currentBatch = [];
+			}
+		}
+		if (currentBatch.length > 0) {
+			segments.push({ kind: 'steps', entries: currentBatch });
+		}
+		return segments;
+	}
+
+	function resolveComment(c: unknown): string | undefined {
+		if (!c) return undefined;
+		if (typeof c === 'string') return c;
+		if (typeof c === 'object' && 'en' in (c as object)) {
+			const obj = c as { en: string; ja?: string };
+			return langStore.current === 'ja' && obj.ja ? obj.ja : obj.en;
+		}
+		return undefined;
 	}
 
 </script>
@@ -84,34 +117,53 @@
 					{@const isTerminal = round.kind === 'terminal'}
 					{@const roundStart = roundBoundaries[ri]}
 					<div class="round-block">
-						<div
-							data-step="{roundStart}-prompt"
-							class="step-block round-prompt-block"
-						>
-							{#if isTerminal}
-								<div class="prompt-block terminal-prompt">
-									{#if round.cwd}<div class="terminal-cwd">{round.cwd}</div>{/if}
-									<div class="terminal-cmd"><span class="terminal-percent">%</span> {round.prompt}</div>
+						{#each segmentSteps(round.steps, roundStart) as segment, segIdx}
+							{#if segment.kind === 'steps'}
+								<div class="terminal-segment">
+									<div class="segment-titlebar">
+										<span class="segment-dot segment-dot--red"></span>
+										<span class="segment-dot segment-dot--yellow"></span>
+										<span class="segment-dot segment-dot--green"></span>
+										<span class="segment-title">claude — Round {ri + 1}</span>
+									</div>
+									{#if segIdx === 0}
+										<div
+											data-step="{roundStart}-prompt"
+											class="step-block round-prompt-block"
+										>
+											{#if isTerminal}
+												<div class="prompt-block terminal-prompt">
+													{#if round.cwd}<div class="terminal-cwd">{round.cwd}</div>{/if}
+													<div class="terminal-cmd"><span class="terminal-percent">%</span> {round.prompt}</div>
+												</div>
+											{:else}
+												<div class="prompt-block">
+													<span class="prompt-chevron">&#8250;</span>
+													<div class="prompt-text">{round.prompt}</div>
+												</div>
+											{/if}
+										</div>
+									{/if}
+									{#each segment.entries as group}
+										<div
+											data-step={group.globalIndex}
+											class="step-block"
+										>
+											<StepRenderer
+												step={group.step}
+												showClaudeLabel={group.step.type === 'assistant' && group.si === 0}
+												isLast={group.globalIndex === allSteps.length - 1}
+												{onFocusWindow}
+											/>
+										</div>
+									{/each}
 								</div>
 							{:else}
-								<div class="prompt-block">
-									<span class="prompt-chevron">&#8250;</span>
-									<div class="prompt-text">{round.prompt}</div>
+								<div class="inline-comment">
+									<div class="inline-comment__label">Tutorial</div>
+									<div class="inline-comment__text">{@html segment.text}</div>
 								</div>
 							{/if}
-						</div>
-						{#each groupSteps(round.steps, roundStart) as group}
-								<div
-									data-step={group.globalIndex}
-									class="step-block"
-								>
-									<StepRenderer
-										step={group.step}
-										showClaudeLabel={group.step.type === 'assistant' && group.si === 0}
-										isLast={group.globalIndex === allSteps.length - 1}
-										{onFocusWindow}
-									/>
-								</div>
 						{/each}
 					</div>
 				{/each}
@@ -311,8 +363,107 @@
 		text-align: center;
 	}
 
+	/* ─── Mobile-only elements (hidden on desktop) ── */
+	.segment-titlebar {
+		display: none;
+	}
+
+	.inline-comment {
+		display: none;
+	}
+
 	/* ─── Mobile: inline document flow ── */
 	@media (max-width: 900px) {
+		.terminal-segment {
+			background: #241a20;
+			border-radius: 12px;
+			margin: 8px 0;
+			overflow: hidden;
+			border: 1px solid var(--border-subtle);
+		}
+
+		.terminal-segment .step-block:last-child {
+			padding-bottom: 12px;
+		}
+
+		.segment-titlebar {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			padding: 8px 12px;
+			background: var(--bg-hover);
+			border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+		}
+
+		.segment-dot {
+			width: 10px;
+			height: 10px;
+			border-radius: 50%;
+		}
+
+		.segment-dot--red { background: #ff5f57; opacity: 0.4; }
+		.segment-dot--yellow { background: #febc2e; opacity: 0.4; }
+		.segment-dot--green { background: #28c840; opacity: 0.4; }
+
+		.segment-title {
+			font-family: var(--font-mono);
+			font-size: 11px;
+			font-weight: 500;
+			color: var(--text-tertiary);
+			margin-left: 4px;
+		}
+
+		.inline-comment {
+			display: block;
+			margin: 8px 0;
+			padding: 16px 20px;
+			background: rgba(28, 16, 23, 0.7);
+			backdrop-filter: blur(16px);
+			-webkit-backdrop-filter: blur(16px);
+			border-radius: 12px;
+			border: 1px solid var(--border-color);
+		}
+
+		.inline-comment__label {
+			font-size: 9px;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			color: var(--orange-300);
+			margin-bottom: 6px;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.inline-comment__label::after {
+			content: '';
+			flex: 1;
+			height: 1px;
+			background: linear-gradient(90deg, var(--orange-300), transparent);
+			opacity: 0.2;
+		}
+
+		.inline-comment__text {
+			font-family: var(--font-display);
+			font-size: 13px;
+			line-height: 1.6;
+			color: var(--text-secondary);
+		}
+
+		.inline-comment__text :global(strong) {
+			color: var(--text-primary);
+			font-weight: 700;
+		}
+
+		.inline-comment__text :global(code) {
+			font-family: var(--font-mono);
+			font-size: 12px;
+			background: var(--accent-soft);
+			color: var(--peach);
+			padding: 1px 5px;
+			border-radius: 3px;
+		}
 		.terminal-container {
 			width: 100%;
 			min-width: 0;
@@ -324,6 +475,7 @@
 			border: none;
 			box-shadow: none;
 			flex: 0 0 auto;
+			background: transparent !important;
 		}
 
 		.terminal-window > :global(.window-header) { display: none; }
@@ -338,15 +490,21 @@
 
 		.terminal-body-wrap {
 			flex: 0 0 auto;
+			background: transparent;
 		}
 
 		/* Content flows naturally — no internal scroll container */
 		.terminal-body {
-			padding: 14px;
+			padding: 8px 20px;
 			font-size: 12px;
 			line-height: 1.6;
 			overflow: visible;
 			flex: 0 0 auto;
+			background: transparent;
+		}
+
+		.step-block {
+			padding: 0 14px;
 		}
 
 		/* Hide spacers — content flows naturally */
@@ -354,6 +512,6 @@
 	}
 
 	@media (max-width: 480px) {
-		.terminal-body { padding: 10px; font-size: 11px; line-height: 1.55; }
+		.terminal-body { padding: 6px 12px; font-size: 11px; line-height: 1.55; }
 	}
 </style>

@@ -402,15 +402,7 @@
 		.settings-btn svg { width: 14px; height: 14px; }
 
 		.comment-panel {
-			padding: 8px 14px;
-			border-radius: 0;
-			border-left: none;
-			border-right: none;
-			max-height: none;
-			background: rgba(28, 16, 23, 0.92);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border-top: 1px solid var(--border-color);
+			display: none;
 		}
 		.comment-header { margin-bottom: 4px; }
 		.comment-text { font-size: 12px; line-height: 1.5; }
