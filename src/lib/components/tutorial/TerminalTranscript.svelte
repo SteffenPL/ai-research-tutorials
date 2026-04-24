@@ -116,16 +116,20 @@
 				{#each activeRounds as round, ri}
 					{@const isTerminal = round.kind === 'terminal'}
 					{@const roundStart = roundBoundaries[ri]}
+					{@const segments = segmentSteps(round.steps, roundStart)}
 					<div class="round-block">
-						{#each segmentSteps(round.steps, roundStart) as segment, segIdx}
+						{#each segments as segment, segIdx}
 							{#if segment.kind === 'steps'}
-								<div class="terminal-segment">
-									<div class="segment-titlebar">
-										<span class="segment-dot segment-dot--red"></span>
-										<span class="segment-dot segment-dot--yellow"></span>
-										<span class="segment-dot segment-dot--green"></span>
-										<span class="segment-title">claude — Round {ri + 1}</span>
-									</div>
+								{@const isLast = segIdx === segments.length - 1}
+								<div class="terminal-segment" class:segment-continuation={segIdx > 0} class:segment-continues={!isLast}>
+									{#if segIdx === 0}
+										<div class="segment-titlebar">
+											<span class="segment-dot segment-dot--red"></span>
+											<span class="segment-dot segment-dot--yellow"></span>
+											<span class="segment-dot segment-dot--green"></span>
+											<span class="segment-title">claude — Round {ri + 1}</span>
+										</div>
+									{/if}
 									{#if segIdx === 0}
 										<div
 											data-step="{roundStart}-prompt"
@@ -377,13 +381,73 @@
 		.terminal-segment {
 			background: #241a20;
 			border-radius: 12px;
-			margin: 8px 0;
+			margin: 12px 0;
 			overflow: hidden;
 			border: 1px solid var(--border-subtle);
 		}
 
+		.terminal-segment.segment-continuation {
+			border-radius: 0 0 12px 12px;
+			margin-top: 40px;
+			border-top: none;
+			overflow: visible;
+			position: relative;
+		}
+
+		.terminal-segment.segment-continues {
+			border-radius: 12px 12px 0 0;
+			margin-bottom: 40px;
+			border-bottom: none;
+			overflow: visible;
+			position: relative;
+		}
+
+		.terminal-segment.segment-continuation.segment-continues {
+			border-radius: 0;
+		}
+
+		.terminal-segment .step-block:first-child {
+			padding-top: 14px;
+		}
+
 		.terminal-segment .step-block:last-child {
 			padding-bottom: 12px;
+		}
+
+		.terminal-segment.segment-continues .step-block:last-child {
+			padding-bottom: 0;
+		}
+
+		.terminal-segment.segment-continuation .step-block:first-child {
+			padding-top: 0;
+		}
+
+		.terminal-segment.segment-continues::after {
+			content: '';
+			position: absolute;
+			bottom: -24px;
+			left: -1px;
+			right: -1px;
+			height: 24px;
+			background: linear-gradient(to bottom, #241a20, transparent);
+			border-left: 1px solid var(--border-subtle);
+			border-right: 1px solid var(--border-subtle);
+			pointer-events: none;
+			z-index: 1;
+		}
+
+		.terminal-segment.segment-continuation::before {
+			content: '';
+			position: absolute;
+			top: -24px;
+			left: -1px;
+			right: -1px;
+			height: 24px;
+			background: linear-gradient(to top, #241a20, transparent);
+			border-left: 1px solid var(--border-subtle);
+			border-right: 1px solid var(--border-subtle);
+			pointer-events: none;
+			z-index: 1;
 		}
 
 		.segment-titlebar {
@@ -391,6 +455,7 @@
 			align-items: center;
 			gap: 6px;
 			padding: 8px 12px;
+			margin-bottom: 10px;
 			background: var(--bg-hover);
 			border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 		}
@@ -415,7 +480,7 @@
 
 		.inline-comment {
 			display: block;
-			margin: 8px 0;
+			margin: 16px 12px;
 			padding: 16px 20px;
 			background: rgba(28, 16, 23, 0.7);
 			backdrop-filter: blur(16px);
