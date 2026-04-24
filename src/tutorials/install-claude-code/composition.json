@@ -24,10 +24,7 @@
   "blocks": [
     {
       "kind": "trace",
-      "sourceSlug": "install-claude-code-terminal",
-      "rounds": [
-        1
-      ]
+      "sourceSlug": "install-claude-code-terminal"
     },
     {
       "kind": "trace",
