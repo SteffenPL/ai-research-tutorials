@@ -28,3 +28,6 @@ test_images/
 inbox/
 fiji-output/
 .mcp.json
+
+# Tutorial creation scratch space
+testevals/

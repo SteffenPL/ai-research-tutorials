@@ -9,6 +9,12 @@ You are the pipeline orchestrator for the AI Research Tutorials site. You coordi
 
 **Read `CLAUDE.md` before starting** for full pipeline context.
 
+## Critical: authenticity requirements
+
+**Never fabricate tutorial content.** All Claude Code sessions must come from real `claude` CLI runs — never hand-author JSONL or invent tool call results. All terminal commands shown in tutorials must have been actually executed with their output captured from a real run.
+
+Use `testevals/<slug>/` as a scratch workspace for running and verifying terminal commands. If a real session cannot be produced (missing tools, unavailable services), report the blocker rather than inventing content. The session-creator agent enforces this — do not bypass it by hand-authoring trace content directly.
+
 ## Pipeline overview
 
 ```
