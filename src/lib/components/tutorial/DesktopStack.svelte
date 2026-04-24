@@ -176,14 +176,13 @@
 		border: 1px solid var(--border-color);
 		border-radius: 14px;
 		padding: 28px 28px 24px;
-		text-align: center;
+		text-align: left;
 		overflow-y: auto;
 	}
 
 	.welcome-tags {
 		display: flex;
 		gap: 6px;
-		justify-content: center;
 		margin-bottom: 12px;
 		flex-wrap: wrap;
 	}
@@ -229,7 +228,6 @@
 	.welcome-description.md :global(h1),
 	.welcome-description.md :global(h2),
 	.welcome-description.md :global(h3) {
-		color: var(--text-primary);
 		font-family: var(--font-display);
 		font-weight: 600;
 		margin: 0.8em 0 0.4em;
@@ -238,9 +236,9 @@
 	.welcome-description.md :global(h1:first-child),
 	.welcome-description.md :global(h2:first-child),
 	.welcome-description.md :global(h3:first-child) { margin-top: 0; }
-	.welcome-description.md :global(h1) { font-size: 1.1rem; }
-	.welcome-description.md :global(h2) { font-size: 0.95rem; }
-	.welcome-description.md :global(h3) { font-size: 0.85rem; color: var(--orange-300); }
+	.welcome-description.md :global(h1) { font-size: 1.1rem; color: var(--orange-300); }
+	.welcome-description.md :global(h2) { font-size: 0.95rem; color: var(--peach); }
+	.welcome-description.md :global(h3) { font-size: 0.85rem; color: var(--teal); }
 	.welcome-description.md :global(strong) { color: var(--text-primary); }
 	.welcome-description.md :global(ul),
 	.welcome-description.md :global(ol) { margin: 0 0 0.6em; padding-left: 1.3em; }
