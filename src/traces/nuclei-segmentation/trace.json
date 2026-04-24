@@ -28,11 +28,16 @@
             "roundIndex": 0,
             "nodeIndex": 1
           },
-          "included": false,
+          "included": true,
           "displayMode": "full",
           "overrides": {
             "type": "assistant",
-            "html": "<p>I'll open the image in Fiji using an ImageJ macro.</p>"
+            "html": "<p>I'll open the image in Fiji using an ImageJ macro.</p>",
+            "final": true
+          },
+          "comment": {
+            "en": "Claude plans to open the fluorescence microscopy image using an ImageJ macro via the Fiji MCP server — a bridge that lets Claude control Fiji programmatically.",
+            "ja": "Claude は Fiji MCP サーバー（Claude が Fiji をプログラムで制御できる ブリッジ）経由で ImageJ マクロを使い、蛍光顕微鏡画像を開く方針を立てます。"
           }
         },
         {
@@ -47,6 +52,10 @@
             "type": "tool_call",
             "toolName": "ToolSearch",
             "code": "{\n  \"query\": \"select:mcp__fiji-mcp__run_ij_macro,mcp__fiji-mcp__status\",\n  \"max_results\": 2\n}"
+          },
+          "comment": {
+            "en": "A one-line ImageJ macro opens the TIFF file. The MCP server forwards it to the running Fiji instance and returns the result.",
+            "ja": "1 行の ImageJ マクロで TIFF ファイルを開きます。MCP サーバーが 実行中の Fiji インスタンスに転送し、結果を返します。"
           }
         },
         {
@@ -55,7 +64,7 @@
             "roundIndex": 0,
             "nodeIndex": 2
           },
-          "included": false,
+          "included": true,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -64,12 +73,31 @@
           }
         },
         {
+          "id": "s-ins-0-3",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "window",
+            "windowTitle": "Osteosarcoma_01.tif",
+            "content": {
+              "kind": "fiji-image",
+              "src": "step_001.png",
+              "statusBar": "1376×1104 pixels; RGB"
+            },
+            "comment": {
+              "en": "Claude requests a thumbnail of the opened image. This is a fluorescence micrograph of osteosarcoma cells — blue (DAPI) marks nuclei, green marks cytoskeleton/actin.",
+              "ja": "Claude が開いた画像のサムネイルを要求します。これはオステオサルコーマ 細胞の蛍光顕微鏡写真で、青（DAPI）が核を、緑が細胞骨格/アクチンを示します。"
+            },
+            "subtitle": "1376×1104 · RGB · fluorescence"
+          }
+        },
+        {
           "id": "s-5",
           "sourceRef": {
             "roundIndex": 0,
             "nodeIndex": 3
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -83,7 +111,7 @@
             "roundIndex": 0,
             "nodeIndex": 3
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -97,11 +125,16 @@
             "roundIndex": 0,
             "nodeIndex": 4
           },
-          "included": false,
+          "included": true,
           "displayMode": "full",
           "overrides": {
             "type": "assistant",
-            "html": "<p>The image **Osteosarcoma_01.tif** is now open in Fiji. Let me grab a thumbnail so we can see what we're working with.</p>"
+            "html": "<p>The image **Osteosarcoma_01.tif** is now open in Fiji. Let me grab a thumbnail so we can see what we're working with.</p>",
+            "final": true
+          },
+          "comment": {
+            "en": "The image metadata confirms it's a single-slice RGB image at 1376×1104 pixels — typical for a widefield fluorescence capture.",
+            "ja": "画像メタデータにより、1376×1104 ピクセルの単一スライス RGB 画像 であることが確認されます — ワイドフィールド蛍光撮影の典型的な構成です。"
           }
         },
         {
@@ -110,7 +143,7 @@
             "roundIndex": 0,
             "nodeIndex": 5
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -138,7 +171,7 @@
             "roundIndex": 0,
             "nodeIndex": 6
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -152,7 +185,7 @@
             "roundIndex": 0,
             "nodeIndex": 6
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -166,7 +199,7 @@
             "roundIndex": 0,
             "nodeIndex": 7
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -180,7 +213,7 @@
             "roundIndex": 0,
             "nodeIndex": 7
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -194,7 +227,7 @@
             "roundIndex": 0,
             "nodeIndex": 8
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -240,7 +273,7 @@
             "roundIndex": 0,
             "nodeIndex": 9
           },
-          "included": true,
+          "included": false,
           "displayMode": "full",
           "overrides": {
             "type": "assistant",
@@ -275,11 +308,16 @@
             "roundIndex": 1,
             "nodeIndex": 1
           },
-          "included": false,
+          "included": true,
           "displayMode": "full",
           "overrides": {
             "type": "assistant",
-            "html": "<p>I'll systematically try 10 different nuclei segmentation approaches, inspect each visually, and select the best. Let me start by extracting the nuclei channel, then run all approaches.</p><p>First, let me extract the blue channel (DAPI/nuclei signal) as our starting point.</p>"
+            "html": "<p>I'll systematically try 10 different nuclei segmentation approaches, inspect each visually, and select the best. Let me start by extracting the nuclei channel, then run all approaches.</p><p>First, let me extract the blue channel (DAPI/nuclei signal) as our starting point.</p>",
+            "final": true
+          },
+          "comment": {
+            "en": "Claude outlines its strategy: extract the blue (nuclei) channel, then systematically test 10 different segmentation pipelines varying thresholds, preprocessing, and post-processing.",
+            "ja": "Claude が戦略を説明します：青（核）チャンネルを抽出し、閾値、 前処理、後処理を変えた 10 種類のセグメンテーションパイプラインを 体系的にテストします。"
           }
         },
         {
@@ -294,6 +332,10 @@
             "type": "tool_call",
             "toolName": "fiji · run_ij_macro",
             "code": "{\n  \"code\": \"\\n// Work on the osteosarcoma image\\nselectWindow(\\\"Osteosarcoma_01.tif\\\");\\nrun(\\\"Duplicate...\\\", \\\"title=nuclei_source\\\");\\nrun(\\\"Split Channels\\\");\\n// Blue channel is the nuclei (DAPI), close the others\\nselectWindow(\\\"nuclei_source (red)\\\");\\nclose();\\nselectWindow(\\\"nuclei_source (green)\\\");\\nclose();\\nselectWindow(\\\"nuclei_source (blue)\\\");\\nrename(\\\"nuclei_blue\\\");\\n\"\n}"
+          },
+          "comment": {
+            "en": "Channel splitting isolates the DAPI (blue) signal. Red and green channels are discarded — only the nuclear stain matters for segmentation.",
+            "ja": "チャンネル分割で DAPI（青）信号を分離します。赤と緑のチャンネルは 破棄されます — セグメンテーションに必要なのは核染色のみです。"
           }
         },
         {
@@ -308,6 +350,24 @@
             "type": "tool_result",
             "text": "{\"status\":\"completed\",\"stdout\":\"\",\"stderr\":\"\",\"value\":null,\"error\":null,\"duration_ms\":12988,\"execution_id\":null,\"active_image\":\"nuclei_blue\",\"dismissed_dialogs\":[],\"results_snapshot\":null}",
             "_isError": false
+          }
+        },
+        {
+          "id": "s-ins-1-3",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "window",
+            "windowTitle": "nuclei_blue",
+            "content": {
+              "kind": "fiji-image",
+              "src": "step_002.png"
+            },
+            "comment": {
+              "en": "The isolated blue channel shows clear nuclei with varying intensities and some clustering — typical challenges for automated segmentation.",
+              "ja": "分離された青チャンネルには、輝度の異なる核と一部のクラスタリングが 見られます — 自動セグメンテーションの典型的な課題です。"
+            },
+            "subtitle": "Blue channel (DAPI)"
           }
         },
         {
@@ -335,6 +395,10 @@
             "type": "tool_call",
             "toolName": "fiji · get_thumbnail",
             "code": "{\n  \"title\": \"nuclei_blue\"\n}"
+          },
+          "comment": {
+            "en": "Five approaches in one macro: (1) raw Otsu, (2) Triangle threshold, (3) Li threshold, (4) Gaussian blur + Otsu, (5) Gaussian + Otsu + Watershed. Each produces a binary mask saved as a separate window.",
+            "ja": "1 つのマクロで 5 つのアプローチ：(1) 素の Otsu、(2) Triangle 閾値、 (3) Li 閾値、(4) ガウスぼかし + Otsu、(5) ガウス + Otsu + Watershed。 それぞれがバイナリマスクを別ウィンドウとして生成します。"
           }
         },
         {
@@ -363,6 +427,10 @@
             "type": "tool_call",
             "toolName": "Read",
             "code": "/var/folders/_l/0tlzhrl51y1chrtgtsxrpf4w0000gp/T//fiji_mcp_thumb_1776932396206.png"
+          },
+          "comment": {
+            "en": "Five more approaches: (6) Median + Otsu + Watershed, (7) Gaussian + Triangle + Watershed, (8) Phansalkar local threshold, (9) Gaussian + Otsu + morphological Open + Watershed, (10) Huang + Watershed.",
+            "ja": "さらに 5 つのアプローチ：(6) Median + Otsu + Watershed、(7) Gaussian + Triangle + Watershed、(8) Phansalkar 局所閾値、(9) Gaussian + Otsu + 形態学的 Open + Watershed、(10) Huang + Watershed。"
           }
         },
         {
@@ -371,7 +439,7 @@
             "roundIndex": 1,
             "nodeIndex": 5
           },
-          "included": false,
+          "included": true,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -403,11 +471,128 @@
             "roundIndex": 1,
             "nodeIndex": 6
           },
-          "included": false,
+          "included": true,
           "displayMode": "full",
           "overrides": {
             "type": "assistant",
-            "html": "<p>Good — clear nuclei signal with varying intensities and some clustering. Now let me run the first batch of 5 approaches.</p>"
+            "html": "<p>Good — clear nuclei signal with varying intensities and some clustering. Now let me run the first batch of 5 approaches.</p>",
+            "final": true
+          },
+          "comment": {
+            "en": "Claude grabs thumbnails of all 10 results for visual comparison. This is the key advantage of the MCP approach — the AI can actually see what it produced and make informed judgments.",
+            "ja": "Claude が 10 個の結果すべてのサムネイルを取得して視覚的に比較します。 これが MCP アプローチの主な利点です — AI が実際に生成物を見て 的確な判断を下せます。"
+          }
+        },
+        {
+          "id": "s-ins-1-9",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "window",
+            "windowTitle": "Approaches 1–5",
+            "content": {
+              "kind": "window-collection",
+              "rows": 2,
+              "cols": 3,
+              "windows": [
+                {
+                  "title": "#1 Otsu (raw)",
+                  "content": {
+                    "kind": "fiji-image",
+                    "src": "step_003.png"
+                  }
+                },
+                {
+                  "title": "#2 Triangle",
+                  "content": {
+                    "kind": "fiji-image",
+                    "src": "step_004.png"
+                  }
+                },
+                {
+                  "title": "#3 Li",
+                  "content": {
+                    "kind": "fiji-image",
+                    "src": "step_005.png"
+                  }
+                },
+                {
+                  "title": "#4 Gaussian + Otsu",
+                  "content": {
+                    "kind": "fiji-image",
+                    "src": "step_006.png"
+                  }
+                },
+                {
+                  "title": "#5 Gauss + Otsu + WS",
+                  "content": {
+                    "kind": "fiji-image",
+                    "src": "step_007.png"
+                  }
+                }
+              ]
+            },
+            "comment": {
+              "en": "The first five approaches compared: raw thresholding methods (Otsu, Triangle, Li) and Gaussian-smoothed variants. Without Watershed, touching nuclei merge into blobs. Adding Watershed (#5) splits them.",
+              "ja": "最初の 5 手法の比較：素の閾値法（Otsu、Triangle、Li）と ガウスぼかし併用版。Watershed なしでは接触核が結合。 Watershed 追加（#5）で分離されます。"
+            },
+            "subtitle": "Basic thresholding methods"
+          }
+        },
+        {
+          "id": "s-ins-1-10",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "window",
+            "windowTitle": "Approaches 6–10",
+            "content": {
+              "kind": "window-collection",
+              "rows": 2,
+              "cols": 3,
+              "windows": [
+                {
+                  "title": "#6 Median + Otsu + WS",
+                  "content": {
+                    "kind": "fiji-image",
+                    "src": "step_008.png"
+                  }
+                },
+                {
+                  "title": "#7 Gauss + Triangle + WS",
+                  "content": {
+                    "kind": "fiji-image",
+                    "src": "step_009.png"
+                  }
+                },
+                {
+                  "title": "#8 Phansalkar (local)",
+                  "content": {
+                    "kind": "fiji-image",
+                    "src": "step_010.png"
+                  }
+                },
+                {
+                  "title": "#9 Gauss + Otsu + Open + WS ★",
+                  "content": {
+                    "kind": "fiji-image",
+                    "src": "step_011.png"
+                  }
+                },
+                {
+                  "title": "#10 Huang + WS",
+                  "content": {
+                    "kind": "fiji-image",
+                    "src": "step_012.png"
+                  }
+                }
+              ]
+            },
+            "comment": {
+              "en": "Approaches 6–10 add morphological operations and alternative thresholds. #9 (Gaussian + Otsu + Open + Watershed) wins — morphological opening removes debris and thin bridges before Watershed, producing the cleanest nucleus shapes.",
+              "ja": "アプローチ 6–10 は形態学的操作と代替閾値を追加。#9（Gaussian + Otsu + Open + Watershed）が勝利 — 形態学的 opening がデブリと 細い橋を Watershed 前に除去し、最もクリーンな核形状を生成。"
+            },
+            "subtitle": "Advanced methods"
           }
         },
         {
@@ -416,7 +601,7 @@
             "roundIndex": 1,
             "nodeIndex": 7
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -430,7 +615,7 @@
             "roundIndex": 1,
             "nodeIndex": 7
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -444,11 +629,16 @@
             "roundIndex": 1,
             "nodeIndex": 8
           },
-          "included": false,
+          "included": true,
           "displayMode": "full",
           "overrides": {
             "type": "assistant",
-            "html": "<p>Now the next 5 approaches.</p>"
+            "html": "<p>Now the next 5 approaches.</p>",
+            "final": true
+          },
+          "comment": {
+            "en": "The comparative assessment ranks all 10 approaches. Key takeaways: Triangle over-segments due to cytoplasm autofluorescence, morphological Open before Watershed removes thin bridges between nuclei, and Phansalkar local thresholding picks up too much noise.",
+            "ja": "10 手法すべての比較評価。主なポイント：Triangle は細胞質の自家蛍光 により過剰セグメンテーション、Watershed 前の形態学的 Open が核間の 細い橋を除去、Phansalkar 局所閾値はノイズを拾いすぎ。"
           }
         },
         {
@@ -457,7 +647,7 @@
             "roundIndex": 1,
             "nodeIndex": 9
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -471,7 +661,7 @@
             "roundIndex": 1,
             "nodeIndex": 9
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -485,11 +675,16 @@
             "roundIndex": 1,
             "nodeIndex": 10
           },
-          "included": false,
+          "included": true,
           "displayMode": "full",
           "overrides": {
             "type": "assistant",
-            "html": "<p>All 10 approaches are done. Now let me visually inspect each one. I'll grab thumbnails in parallel batches.</p>"
+            "html": "<p>All 10 approaches are done. Now let me visually inspect each one. I'll grab thumbnails in parallel batches.</p>",
+            "final": true
+          },
+          "comment": {
+            "en": "The first attempt at ROI extraction finds zero nuclei. This begins a debugging detour — Analyze Particles expects specific mask properties and the image has spatial calibration that changes size units.",
+            "ja": "ROI 抽出の最初の試みで核がゼロ検出されます。ここからデバッグが始まります — Analyze Particles にはマスクの特定のプロパティが必要で、 画像の空間キャリブレーションがサイズ単位を変えています。"
           }
         },
         {
@@ -526,7 +721,7 @@
             "roundIndex": 1,
             "nodeIndex": 12
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -540,7 +735,7 @@
             "roundIndex": 1,
             "nodeIndex": 12
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -554,7 +749,7 @@
             "roundIndex": 1,
             "nodeIndex": 13
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -568,7 +763,7 @@
             "roundIndex": 1,
             "nodeIndex": 13
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -582,7 +777,7 @@
             "roundIndex": 1,
             "nodeIndex": 14
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -596,7 +791,7 @@
             "roundIndex": 1,
             "nodeIndex": 14
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -610,7 +805,7 @@
             "roundIndex": 1,
             "nodeIndex": 15
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -624,7 +819,7 @@
             "roundIndex": 1,
             "nodeIndex": 15
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -638,7 +833,7 @@
             "roundIndex": 1,
             "nodeIndex": 16
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -684,7 +879,7 @@
             "roundIndex": 1,
             "nodeIndex": 17
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -730,7 +925,7 @@
             "roundIndex": 1,
             "nodeIndex": 18
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -776,7 +971,7 @@
             "roundIndex": 1,
             "nodeIndex": 19
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -822,7 +1017,7 @@
             "roundIndex": 1,
             "nodeIndex": 20
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -868,11 +1063,12 @@
             "roundIndex": 1,
             "nodeIndex": 21
           },
-          "included": false,
+          "included": true,
           "displayMode": "full",
           "overrides": {
             "type": "assistant",
-            "html": "<p>First 5 results assessed. Now let me see approaches 6–10.</p>"
+            "html": "<p>First 5 results assessed. Now let me see approaches 6–10.</p>",
+            "final": true
           }
         },
         {
@@ -1035,7 +1231,7 @@
             "roundIndex": 1,
             "nodeIndex": 27
           },
-          "included": false,
+          "included": true,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1081,7 +1277,7 @@
             "roundIndex": 1,
             "nodeIndex": 28
           },
-          "included": false,
+          "included": true,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1127,7 +1323,7 @@
             "roundIndex": 1,
             "nodeIndex": 29
           },
-          "included": false,
+          "included": true,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1173,7 +1369,7 @@
             "roundIndex": 1,
             "nodeIndex": 30
           },
-          "included": false,
+          "included": true,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1219,7 +1415,7 @@
             "roundIndex": 1,
             "nodeIndex": 31
           },
-          "included": false,
+          "included": true,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1264,11 +1460,16 @@
             "roundIndex": 1,
             "nodeIndex": 33
           },
-          "included": false,
+          "included": true,
           "displayMode": "full",
           "overrides": {
             "type": "assistant",
-            "html": "<p>All 10 inspected. Here's my assessment:</p><p>| # | Method | Verdict |<br>|---|--------|---------|<br>| 1 | Otsu (raw) | Good detection, but touching nuclei merge |<br>| 2 | Triangle | **Reject** — threshold too low, captures cytoplasm |<br>| 3 | Li | Similar to Otsu, slightly tighter but still merges |<br>| 4 | Gaussian + Otsu | Smoother edges than #1, still merges |<br>| 5 | Gaussian + Otsu + Watershed | Good split of touching nuclei |<br>| 6 | Median + Otsu + Watershed | Similar to #5, slightly less smooth |<br>| 7 | Gaussian + Triangle + Watershed | **Reject** — over-segments everything |<br>| 8 | Phansalkar (local) | Picks up nuclei but also cell edges and noise |<br>| 9 | Gaussian + Otsu + Open + Watershed | **Best** — clean shapes, debris removed, good splits |<br>| 10 | Huang + Watershed | Slightly aggressive, some fragmentation |</p><p><code class=\"decorative-rule\">★ Insight ─────────────────────────────────────</code><br>- **Triangle** is designed for images with a large background peak and a small foreground peak — it overshoots here because the cytoplasm contributes intermediate intensities, pulling the threshold too low.<br>- **Morphological Open** (erosion then dilation) removes objects smaller than the structuring element. Applied before Watershed, it eliminates thin bridges between nuclei, giving Watershed cleaner seed regions to split.<br>- **Watershed** works on binary masks by computing the Euclidean Distance Transform (EDT), finding peaks, and drawing watershed lines between them — it only helps when nuclei actually touch; on well-separated nuclei it's a no-op.<br><code class=\"decorative-rule\">─────────────────────────────────────────────────</code></p><p>**Approach #9** (Gaussian + Otsu + Open + Watershed) wins. Let me finalize it by running Analyze Particles to extract individual nuclei as ROIs on the original image.</p>"
+            "html": "<p>All 10 inspected. Here's my assessment:</p><p>| # | Method | Verdict |<br>|---|--------|---------|<br>| 1 | Otsu (raw) | Good detection, but touching nuclei merge |<br>| 2 | Triangle | **Reject** — threshold too low, captures cytoplasm |<br>| 3 | Li | Similar to Otsu, slightly tighter but still merges |<br>| 4 | Gaussian + Otsu | Smoother edges than #1, still merges |<br>| 5 | Gaussian + Otsu + Watershed | Good split of touching nuclei |<br>| 6 | Median + Otsu + Watershed | Similar to #5, slightly less smooth |<br>| 7 | Gaussian + Triangle + Watershed | **Reject** — over-segments everything |<br>| 8 | Phansalkar (local) | Picks up nuclei but also cell edges and noise |<br>| 9 | Gaussian + Otsu + Open + Watershed | **Best** — clean shapes, debris removed, good splits |<br>| 10 | Huang + Watershed | Slightly aggressive, some fragmentation |</p><p><code class=\"decorative-rule\">★ Insight ─────────────────────────────────────</code><br>- **Triangle** is designed for images with a large background peak and a small foreground peak — it overshoots here because the cytoplasm contributes intermediate intensities, pulling the threshold too low.<br>- **Morphological Open** (erosion then dilation) removes objects smaller than the structuring element. Applied before Watershed, it eliminates thin bridges between nuclei, giving Watershed cleaner seed regions to split.<br>- **Watershed** works on binary masks by computing the Euclidean Distance Transform (EDT), finding peaks, and drawing watershed lines between them — it only helps when nuclei actually touch; on well-separated nuclei it's a no-op.<br><code class=\"decorative-rule\">─────────────────────────────────────────────────</code></p><p>**Approach #9** (Gaussian + Otsu + Open + Watershed) wins. Let me finalize it by running Analyze Particles to extract individual nuclei as ROIs on the original image.</p>",
+            "final": true
+          },
+          "comment": {
+            "en": "The root cause: the microscope embedded spatial calibration in the image, so Analyze Particles' size filter (in calibrated units) silently excluded everything. Removing calibration and filtering in pixels fixes it.",
+            "ja": "根本原因：顕微鏡が画像に空間キャリブレーションを埋め込んでいたため、 Analyze Particles のサイズフィルター（キャリブレーション単位）が すべてを黙って除外していました。キャリブレーションを解除し ピクセル単位でフィルタリングすると解決します。"
           }
         },
         {
@@ -1283,6 +1484,10 @@
             "type": "tool_call",
             "toolName": "fiji · run_ij_macro",
             "code": "{\n  \"code\": \"\\n// Use the winning mask to create ROIs on the original image\\nselectWindow(\\\"approach_09_morph\\\");\\nrun(\\\"Analyze Particles...\\\", \\\"size=50-Infinity circularity=0.3-1.00 show=Outlines display exclude clear add\\\");\\n\\n// Overlay ROIs on the original image\\nselectWindow(\\\"Osteosarcoma_01.tif\\\");\\nroiManager(\\\"Show All with labels\\\");\\n\"\n}"
+          },
+          "comment": {
+            "en": "The final pipeline: remove calibration, set threshold, run Analyze Particles with pixel-based size filters (100–5000 px), circularity filter (0.3–1.0), and exclude edge-touching objects.",
+            "ja": "最終パイプライン：キャリブレーション解除、閾値設定、ピクセルベースの サイズフィルター（100–5000 px）、真円度フィルター（0.3–1.0）、 エッジ接触オブジェクト除外で Analyze Particles を実行。"
           }
         },
         {
@@ -1300,12 +1505,31 @@
           }
         },
         {
+          "id": "s-ins-1-39",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "window",
+            "windowTitle": "Nuclei Segmentation Result",
+            "content": {
+              "kind": "fiji-image",
+              "src": "step_014.png",
+              "statusBar": "103 nuclei detected · Approach #9"
+            },
+            "comment": {
+              "en": "The final result: 103 nuclei outlined in cyan on the original RGB image. Each nucleus is an individual ROI in Fiji's ROI Manager, with area, centroid, and shape measurements in the Results table.",
+              "ja": "最終結果：元の RGB 画像上に 103 個の核がシアンで縁取りされています。 各核は Fiji の ROI Manager の個別 ROI として、面積、重心、 形状測定値が Results テーブルに記録されています。"
+            },
+            "subtitle": "103 nuclei — Osteosarcoma_01.tif"
+          }
+        },
+        {
           "id": "s-91",
           "sourceRef": {
             "roundIndex": 1,
             "nodeIndex": 35
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1319,7 +1543,7 @@
             "roundIndex": 1,
             "nodeIndex": 35
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1333,7 +1557,7 @@
             "roundIndex": 1,
             "nodeIndex": 36
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1361,7 +1585,7 @@
             "roundIndex": 1,
             "nodeIndex": 37
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1407,7 +1631,7 @@
             "roundIndex": 1,
             "nodeIndex": 38
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1421,7 +1645,7 @@
             "roundIndex": 1,
             "nodeIndex": 38
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1448,11 +1672,16 @@
             "roundIndex": 1,
             "nodeIndex": 40
           },
-          "included": false,
+          "included": true,
           "displayMode": "full",
           "overrides": {
             "type": "assistant",
-            "html": "<p>The ROIs aren't showing in the thumbnail and the results table is empty. Let me re-run the analysis with proper measurement settings and flatten the overlay for visualization.</p>"
+            "html": "<p>The ROIs aren't showing in the thumbnail and the results table is empty. Let me re-run the analysis with proper measurement settings and flatten the overlay for visualization.</p>",
+            "final": true
+          },
+          "comment": {
+            "en": "The full pipeline from raw image to quantified results — two prompts, 10 approaches tested and compared, debugging included. This is the kind of systematic exploration that MCP-driven analysis enables.",
+            "ja": "生画像から定量結果までの完全なパイプライン — 2 つのプロンプト、 10 手法のテストと比較、デバッグを含む。これが MCP 駆動型分析が 可能にする体系的な探索です。"
           }
         },
         {
@@ -1461,7 +1690,7 @@
             "roundIndex": 1,
             "nodeIndex": 41
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1475,7 +1704,7 @@
             "roundIndex": 1,
             "nodeIndex": 41
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1515,7 +1744,7 @@
             "roundIndex": 1,
             "nodeIndex": 44
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1529,7 +1758,7 @@
             "roundIndex": 1,
             "nodeIndex": 44
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1556,7 +1785,7 @@
             "roundIndex": 1,
             "nodeIndex": 46
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1570,7 +1799,7 @@
             "roundIndex": 1,
             "nodeIndex": 46
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1597,7 +1826,7 @@
             "roundIndex": 1,
             "nodeIndex": 48
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1611,7 +1840,7 @@
             "roundIndex": 1,
             "nodeIndex": 48
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1638,7 +1867,7 @@
             "roundIndex": 1,
             "nodeIndex": 50
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1652,7 +1881,7 @@
             "roundIndex": 1,
             "nodeIndex": 50
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1679,7 +1908,7 @@
             "roundIndex": 1,
             "nodeIndex": 52
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1693,7 +1922,7 @@
             "roundIndex": 1,
             "nodeIndex": 52
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1707,7 +1936,7 @@
             "roundIndex": 1,
             "nodeIndex": 53
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1721,7 +1950,7 @@
             "roundIndex": 1,
             "nodeIndex": 53
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1748,7 +1977,7 @@
             "roundIndex": 1,
             "nodeIndex": 55
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1762,7 +1991,7 @@
             "roundIndex": 1,
             "nodeIndex": 55
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1789,7 +2018,7 @@
             "roundIndex": 1,
             "nodeIndex": 57
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1803,7 +2032,7 @@
             "roundIndex": 1,
             "nodeIndex": 57
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1830,7 +2059,7 @@
             "roundIndex": 1,
             "nodeIndex": 59
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1844,7 +2073,7 @@
             "roundIndex": 1,
             "nodeIndex": 59
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1871,7 +2100,7 @@
             "roundIndex": 1,
             "nodeIndex": 61
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1885,7 +2114,7 @@
             "roundIndex": 1,
             "nodeIndex": 61
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1925,7 +2154,7 @@
             "roundIndex": 1,
             "nodeIndex": 64
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1939,7 +2168,7 @@
             "roundIndex": 1,
             "nodeIndex": 64
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1966,7 +2195,7 @@
             "roundIndex": 1,
             "nodeIndex": 66
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -1980,7 +2209,7 @@
             "roundIndex": 1,
             "nodeIndex": 66
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -1994,7 +2223,7 @@
             "roundIndex": 1,
             "nodeIndex": 67
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -2066,7 +2295,7 @@
             "roundIndex": 1,
             "nodeIndex": 70
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_call",
@@ -2080,7 +2309,7 @@
             "roundIndex": 1,
             "nodeIndex": 70
           },
-          "included": true,
+          "included": false,
           "displayMode": "compact",
           "overrides": {
             "type": "tool_result",
@@ -2094,7 +2323,7 @@
             "roundIndex": 1,
             "nodeIndex": 71
           },
-          "included": true,
+          "included": false,
           "displayMode": "full",
           "overrides": {
             "type": "assistant",
