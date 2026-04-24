@@ -265,18 +265,6 @@
 						placeholder="What the reader needs before starting..."
 					></textarea>
 				</label>
-				<label>
-					<span>Briefing (shown in desktop area when no windows visible)</span>
-					<textarea
-						value={composition.briefing?.en ?? ''}
-						oninput={(e) => {
-							const val = (e.target as HTMLTextAreaElement).value;
-							composition.briefing = val ? { en: val } : undefined;
-						}}
-						rows="3"
-						placeholder="Markdown briefing text..."
-					></textarea>
-				</label>
 			</div>
 		</details>
 	</section>

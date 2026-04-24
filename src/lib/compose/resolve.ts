@@ -1,4 +1,4 @@
-import type { Tutorial, TutorialRound, TutorialWelcome, WindowStep, WindowContentData } from '$lib/data/tutorials';
+import type { Tutorial, TutorialRound, WindowStep, WindowContentData } from '$lib/data/tutorials';
 import type { TraceState } from '$lib/trace/types';
 import type { TutorialComposition, CompositionBlock } from './types';
 import { traceStateToTutorialRounds } from '$lib/trace/convert';
@@ -76,22 +76,6 @@ export function resolveComposition(
 	const slug = composition.slug;
 	const rounds = resolveBlocks(composition.blocks, loadTrace);
 
-	let fullRounds: TutorialRound[] | undefined;
-	if (composition.fullBlocks && composition.fullBlocks.length > 0) {
-		fullRounds = resolveBlocks(composition.fullBlocks, loadTrace);
-	}
-
-	let welcome: TutorialWelcome | undefined;
-	if (composition.description) {
-		welcome = {
-			heading: composition.meta.title,
-			description: { en: composition.description },
-			learnings: []
-		};
-	} else if (composition.welcome) {
-		welcome = composition.welcome;
-	}
-
 	return {
 		meta: {
 			...composition.meta,
@@ -99,9 +83,8 @@ export function resolveComposition(
 				? { thumbnail: rewriteAssetPath(slug, composition.meta.thumbnail) }
 				: {})
 		},
-		...(welcome ? { welcome } : {}),
-		...(composition.briefing ? { briefing: composition.briefing } : {}),
-		rounds: rewriteRoundAssets(slug, rounds),
-		...(fullRounds ? { fullRounds: rewriteRoundAssets(slug, fullRounds) } : {})
+		...(composition.description ? { description: composition.description } : {}),
+		...(composition.requirements ? { requirements: composition.requirements } : {}),
+		rounds: rewriteRoundAssets(slug, rounds)
 	};
 }

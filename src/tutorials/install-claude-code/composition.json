@@ -21,30 +21,6 @@
     ],
     "author": "Steffen Plunder"
   },
-  "welcome": {
-    "heading": {
-      "en": "Install Claude Code",
-      "ja": "Claude Code のインストール"
-    },
-    "description": {
-      "en": "A beginner-friendly walkthrough for your very first Claude Code installation: install the CLI with one command, log in for the first time, and make Claude Code build your first tiny webpage. No prior Claude Code experience required.",
-      "ja": "初めて Claude Code をインストールする方向けの、初心者に優しいウォークスルー： ワンコマンドで CLI をインストールし、初回ログインを行い、 Claude Code に最初の小さなウェブページを作らせます。Claude Code の事前経験は不要です。"
-    },
-    "learnings": [
-      {
-        "en": "Installing Claude Code with a single curl command",
-        "ja": "単一の curl コマンドで Claude Code をインストールする"
-      },
-      {
-        "en": "Logging in on first launch",
-        "ja": "初回起動時にログインする"
-      },
-      {
-        "en": "Running a first end-to-end prompt (build + open a webpage)",
-        "ja": "最初のエンドツーエンドのプロンプトを実行する（構築して開く）"
-      }
-    ]
-  },
   "blocks": [
     {
       "kind": "trace",
@@ -58,14 +34,5 @@
       "sourceSlug": "install-claude-code"
     }
   ],
-  "fullBlocks": [
-    {
-      "kind": "trace",
-      "sourceSlug": "install-claude-code-terminal"
-    },
-    {
-      "kind": "trace",
-      "sourceSlug": "install-claude-code"
-    }
-  ]
+  "description": "A beginner-friendly walkthrough for your very first Claude Code installation: install the CLI with one command, log in for the first time, and make Claude Code build your first tiny webpage. No prior Claude Code experience required.\n\n**What you'll see:**\n- Installing Claude Code with a single curl command\n- Logging in on first launch\n- Running a first end-to-end prompt (build + open a webpage)"
 }

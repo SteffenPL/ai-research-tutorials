@@ -314,15 +314,6 @@ export type Step =
 	| ToolCallStep | ToolResultStep | PermissionStep | OutputStep
 	| WindowStep | TableStep | StatusStep | DividerStep;
 
-export interface TutorialWelcome {
-	/** Short heading for the welcome overlay */
-	heading: { en: string; ja?: string };
-	/** Brief description of what this tutorial covers */
-	description: { en: string; ja?: string };
-	/** List of things the user will learn */
-	learnings: { en: string; ja?: string }[];
-}
-
 export interface TutorialRound {
 	/** Round kind — 'claude' for AI sessions (default), 'terminal' for shell sessions */
 	kind?: 'claude' | 'terminal';
@@ -336,14 +327,9 @@ export interface TutorialRound {
 
 export interface Tutorial {
 	meta: TutorialMeta;
-	/** Optional welcome overlay shown before playback starts */
-	welcome?: TutorialWelcome;
-	/** Markdown briefing shown in the desktop area when no windows are visible */
-	briefing?: { en: string; ja?: string };
-	/** Simplified/curated rounds (default view) */
+	description?: string;
+	requirements?: string;
 	rounds: TutorialRound[];
-	/** Full unabridged log — shown when user switches to "Full Log" mode */
-	fullRounds?: TutorialRound[];
 }
 
 /* ─── Helpers ───────────────────────────────── */

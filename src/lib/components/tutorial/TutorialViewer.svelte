@@ -13,12 +13,8 @@
 	let { tutorial }: { tutorial: Tutorial } = $props();
 	let title = $derived(getTutorialTitle(tutorial.meta, langStore.current));
 
-	/* ─── Log mode: simplified vs full ───────── */
-	let logMode = $state<'simplified' | 'full'>('simplified');
-	let hasFullLog = $derived(!!tutorial.fullRounds);
-	let activeRounds = $derived(logMode === 'full' && tutorial.fullRounds ? tutorial.fullRounds : tutorial.rounds);
-
 	/* ─── Flatten rounds into a single timeline ── */
+	let activeRounds = $derived(tutorial.rounds);
 	let allSteps = $derived(activeRounds.flatMap((r) => r.steps));
 	let roundBoundaries = $derived(
 		activeRounds.reduce<number[]>((acc, r, i) => {
@@ -150,16 +146,6 @@
 			scroller.addEventListener('scrollend', reenable, { once: true });
 		}
 		setTimeout(reenable, 1200);
-	}
-
-	function setLogMode(mode: 'simplified' | 'full') {
-		if (mode === logMode) return;
-		stopPlay();
-		logMode = mode;
-		currentStep = -1;
-		if (browser && terminalBody) {
-			terminalBody.scrollTop = 0;
-		}
 	}
 
 	function setDetailMode(mode: 'steps' | 'tutorial' | 'round') {
@@ -369,7 +355,7 @@
 			{allSteps}
 			{spacerHeight}
 			{displayRoundIdx}
-			isFullLog={logMode === 'full'}
+			isFullLog={false}
 			onFocusWindow={focusWindow}
 			bind:terminalBodyRef={terminalBody}
 		/>
@@ -381,15 +367,12 @@
 				{currentStep}
 				{focusedWindow}
 				meta={tutorial.meta}
-				welcome={tutorial.welcome}
-				briefing={tutorial.briefing}
-				{hasFullLog}
-				{logMode}
+				description={tutorial.description}
+				requirements={tutorial.requirements}
 				{getStackClass}
 				onFocus={focusWindow}
 				onRestore={restoreFocus}
 				onJump={jumpToStep}
-				onSetLogMode={setLogMode}
 			/>
 
 			<!-- Bottom Panel: Comment + Controls -->
@@ -399,15 +382,14 @@
 				{currentRoundIdx}
 				{currentTutorialInRound}
 				{playing}
-				{hasFullLog}
-				bind:logMode
+
 				bind:detailMode
 				bind:showSettings
 				onPrev={prev}
 				onNext={next}
 				onTogglePlay={togglePlay}
 				onSetDetailMode={setDetailMode}
-				onSetLogMode={setLogMode}
+
 			/>
 		</div>
 	</div>

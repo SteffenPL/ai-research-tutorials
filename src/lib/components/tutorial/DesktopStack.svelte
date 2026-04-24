@@ -17,51 +17,52 @@
 	that step (same behavior as the taskbar item).
 -->
 <script lang="ts">
-	import { getWindowIcon, isChromeless, type WindowStep, type TutorialMeta, type TutorialWelcome } from '$lib/data/tutorials';
+	import { getWindowIcon, isChromeless, type WindowStep, type TutorialMeta } from '$lib/data/tutorials';
 	import { getTutorialTitle } from '$lib/data/tutorials';
 	import WindowChrome from '$lib/components/windows/WindowChrome.svelte';
 	import WindowContent from '$lib/components/windows/WindowContent.svelte';
 	import { renderMarkdown } from '$lib/utils/markdown';
-	import { t, langStore } from '$lib/stores/lang.svelte';
+	import { langStore } from '$lib/stores/lang.svelte';
 
 	let {
 		windowSteps,
 		currentStep,
 		focusedWindow,
 		meta,
-		welcome,
-		briefing,
-		hasFullLog,
-		logMode,
+		description,
+		requirements,
 		getStackClass,
 		onFocus,
 		onRestore,
-		onJump,
-		onSetLogMode
+		onJump
 	}: {
 		windowSteps: { step: WindowStep; index: number }[];
 		currentStep: number;
 		focusedWindow: WindowStep | null;
 		meta: TutorialMeta;
-		welcome?: TutorialWelcome;
-		briefing?: { en: string; ja?: string };
-		hasFullLog: boolean;
-		logMode: 'simplified' | 'full';
+		description?: string;
+		requirements?: string;
 		getStackClass: (winIndex: number) => string;
 		onFocus: (step: WindowStep) => void;
 		onRestore: () => void;
 		onJump: (stepIndex: number) => void;
-		onSetLogMode: (mode: 'simplified' | 'full') => void;
 	} = $props();
 
 	let hasVisibleWindows = $derived(windowSteps.some(w => w.index <= currentStep));
 
 	let descriptionHtml = $state<string | null>(null);
 	$effect(() => {
-		const text = welcome ? t(welcome.description) : briefing ? t(briefing) : null;
-		if (!text) { descriptionHtml = null; return; }
+		if (!description) { descriptionHtml = null; return; }
 		let cancelled = false;
-		renderMarkdown(text).then(html => { if (!cancelled) descriptionHtml = html; });
+		renderMarkdown(description).then(html => { if (!cancelled) descriptionHtml = html; });
+		return () => { cancelled = true; };
+	});
+
+	let requirementsHtml = $state<string | null>(null);
+	$effect(() => {
+		if (!requirements) { requirementsHtml = null; return; }
+		let cancelled = false;
+		renderMarkdown(requirements).then(html => { if (!cancelled) requirementsHtml = html; });
 		return () => { cancelled = true; };
 	});
 
@@ -81,30 +82,11 @@
 				{#if meta.author}
 					<p class="welcome-author">by {meta.author}</p>
 				{/if}
-				{#if welcome}
-					<p class="welcome-description">{t(welcome.description)}</p>
-					{#if welcome.learnings.length > 0}
-						<div class="welcome-learnings">
-							<span class="welcome-learnings-label">{t({ en: 'What you’ll see', ja: '学べること' })}</span>
-							<ul>
-								{#each welcome.learnings as item}
-									<li>{t(item)}</li>
-								{/each}
-							</ul>
-						</div>
-					{/if}
-				{:else if descriptionHtml}
+				{#if descriptionHtml}
 					<div class="welcome-description md">{@html descriptionHtml}</div>
 				{/if}
-				{#if hasFullLog}
-					<div class="welcome-modes">
-						<button class="mode-pill" class:active={logMode === 'simplified'} onclick={() => onSetLogMode('simplified')}>
-							{t({ en: 'Tutorial', ja: 'チュートリアル' })}
-						</button>
-						<button class="mode-pill" class:active={logMode === 'full'} onclick={() => onSetLogMode('full')}>
-							{t({ en: 'Full Log', ja: '完全ログ' })}
-						</button>
-					</div>
+				{#if requirementsHtml}
+					<div class="welcome-requirements md">{@html requirementsHtml}</div>
 				{/if}
 			</div>
 		</div>
@@ -245,79 +227,22 @@
 	.welcome-description.md :global(p) { margin: 0 0 0.6em; }
 	.welcome-description.md :global(p:last-child) { margin-bottom: 0; }
 
-	.welcome-learnings {
+	.welcome-requirements {
 		text-align: left;
 		background: rgba(0, 0, 0, 0.2);
 		border-radius: 10px;
 		padding: 12px 16px;
-		margin-bottom: 16px;
-	}
-
-	.welcome-learnings-label {
-		font-family: var(--font-display);
-		font-size: 0.65rem;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--orange-300);
-		display: block;
-		margin-bottom: 6px;
-	}
-
-	.welcome-learnings ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-
-	.welcome-learnings li {
-		font-size: 0.8rem;
+		font-size: 0.82rem;
+		line-height: 1.6;
 		color: var(--text-secondary);
-		padding-left: 16px;
-		position: relative;
-		line-height: 1.5;
 	}
 
-	.welcome-learnings li::before {
-		content: '\25B8';
-		position: absolute;
-		left: 0;
-		color: var(--accent);
-		font-size: 0.7rem;
-	}
-
-	.welcome-modes {
-		display: flex;
-		gap: 8px;
-		justify-content: center;
-	}
-
-	.mode-pill {
-		font-family: var(--font-display);
-		font-size: 0.75rem;
-		font-weight: 500;
-		padding: 6px 16px;
-		border-radius: 8px;
-		border: 1px solid var(--border-color);
-		background: transparent;
-		color: var(--text-secondary);
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.mode-pill:hover {
-		border-color: var(--text-tertiary);
-		color: var(--text-primary);
-	}
-
-	.mode-pill.active {
-		background: var(--accent-soft);
-		border-color: var(--orange-500);
-		color: var(--orange-300);
-	}
+	.welcome-requirements :global(p) { margin: 0 0 0.5em; }
+	.welcome-requirements :global(p:last-child) { margin-bottom: 0; }
+	.welcome-requirements :global(strong) { color: var(--text-primary); }
+	.welcome-requirements :global(ul),
+	.welcome-requirements :global(ol) { margin: 0 0 0.5em; padding-left: 1.2em; }
+	.welcome-requirements :global(li) { margin-bottom: 0.2em; }
 
 	.fiji-window {
 		position: absolute;

@@ -16,30 +16,24 @@
 		currentRoundIdx,
 		currentTutorialInRound,
 		playing,
-		hasFullLog,
-		logMode = $bindable(),
 		detailMode = $bindable(),
 		showSettings = $bindable(false),
 		onPrev,
 		onNext,
 		onTogglePlay,
-		onSetDetailMode,
-		onSetLogMode
+		onSetDetailMode
 	}: {
 		commentHtml: string;
 		currentStep: number;
 		currentRoundIdx: number;
 		currentTutorialInRound: number;
 		playing: boolean;
-		hasFullLog: boolean;
-		logMode: 'simplified' | 'full';
 		detailMode: 'steps' | 'tutorial' | 'round';
 		showSettings: boolean;
 		onPrev: () => void;
 		onNext: () => void;
 		onTogglePlay: () => void;
 		onSetDetailMode: (mode: 'steps' | 'tutorial' | 'round') => void;
-		onSetLogMode: (mode: 'simplified' | 'full') => void;
 	} = $props();
 </script>
 
@@ -65,18 +59,6 @@
 				{#if showSettings}
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div class="settings-popover" onpointerdown={(e) => e.stopPropagation()}>
-						{#if hasFullLog}
-							<span class="settings-label">Log</span>
-							<div class="detail-pills">
-								<button class="detail-pill" class:active={logMode === 'simplified'} onclick={() => onSetLogMode('simplified')}>
-									Simplified
-								</button>
-								<button class="detail-pill" class:active={logMode === 'full'} onclick={() => onSetLogMode('full')}>
-									Full Log
-								</button>
-							</div>
-							<div class="settings-divider"></div>
-						{/if}
 						<span class="settings-label">Detail Level</span>
 						<div class="detail-pills">
 							{#each [['steps', 'Steps'], ['tutorial', 'Tutorial'], ['round', 'Round']] as const as [mode, label]}
