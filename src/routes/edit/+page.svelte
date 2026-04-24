@@ -549,7 +549,7 @@
 	.section {
 		border: 1px solid var(--border-subtle);
 		border-radius: 8px;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-surface);
 		overflow: hidden;
 	}
 
@@ -559,7 +559,7 @@
 		justify-content: space-between;
 		padding: 0.75rem 1rem;
 		border-bottom: 1px solid var(--border-subtle);
-		background: rgba(0, 0, 0, 0.15);
+		background: var(--overlay-dim);
 	}
 
 	.section-header h2 {
@@ -589,7 +589,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 0.6rem 1rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+		border-bottom: 1px solid var(--glass-faint);
 	}
 
 	.item:last-child {
@@ -634,7 +634,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
 		border-bottom: 1px solid var(--border-subtle);
-		background: rgba(0, 0, 0, 0.1);
+		background: var(--glass-faint);
 	}
 
 	.import-form label {
@@ -653,7 +653,7 @@
 
 	.import-form input {
 		padding: 0.35rem 0.5rem;
-		background: rgba(0, 0, 0, 0.3);
+		background: var(--bg-deep);
 		border: 1px solid var(--border-subtle);
 		border-radius: 4px;
 		color: var(--text-primary);
@@ -681,7 +681,7 @@
 	/* ─── Buttons ─── */
 	.btn {
 		padding: 0.35rem 0.75rem;
-		background: rgba(255, 255, 255, 0.06);
+		background: var(--glass-highlight);
 		border: 1px solid var(--border-subtle);
 		border-radius: 6px;
 		color: var(--text-primary);
@@ -693,7 +693,7 @@
 	}
 
 	.btn:hover {
-		background: rgba(255, 255, 255, 0.1);
+		background: var(--glass-highlight-hover);
 		border-color: var(--orange-400);
 	}
 
@@ -710,7 +710,7 @@
 
 	.btn-sm {
 		padding: 0.2rem 0.5rem;
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--glass-faint);
 		border: 1px solid var(--border-subtle);
 		border-radius: 4px;
 		color: var(--text-secondary);
@@ -722,7 +722,7 @@
 	}
 
 	.btn-sm:hover {
-		background: rgba(255, 255, 255, 0.08);
+		background: var(--glass-ultra);
 		color: var(--text-primary);
 	}
 
@@ -744,7 +744,7 @@
 
 	.import-form select {
 		padding: 0.35rem 0.5rem;
-		background: rgba(0, 0, 0, 0.3);
+		background: var(--bg-deep);
 		border: 1px solid var(--border-subtle);
 		border-radius: 4px;
 		color: var(--text-primary);
@@ -763,12 +763,12 @@
 		font-family: var(--font-mono);
 		font-size: 0.68rem;
 		color: var(--teal);
-		background: rgba(0, 0, 0, 0.15);
+		background: var(--glass-faint);
 		border-bottom: 1px solid var(--border-subtle);
 	}
 
 	.asset-group {
-		border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+		border-bottom: 1px solid var(--glass-faint);
 	}
 
 	.asset-group:last-child {
@@ -794,7 +794,7 @@
 	}
 
 	.asset-group-toggle:hover {
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--glass-faint);
 	}
 
 	.asset-group-title {
@@ -808,7 +808,7 @@
 		font-family: var(--font-mono);
 		font-size: 0.62rem;
 		color: var(--text-tertiary);
-		background: rgba(255, 255, 255, 0.06);
+		background: var(--glass-highlight);
 		padding: 0.1rem 0.4rem;
 		border-radius: 8px;
 	}
@@ -839,7 +839,7 @@
 		gap: 0.25rem;
 		width: 80px;
 		padding: 0.35rem;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--glass-faint);
 		border: 1px solid transparent;
 		border-radius: 6px;
 		cursor: pointer;
@@ -847,7 +847,7 @@
 	}
 
 	.asset-item:hover {
-		background: rgba(255, 255, 255, 0.07);
+		background: var(--glass-ultra);
 		border-color: var(--orange-400);
 	}
 
@@ -856,7 +856,7 @@
 		height: 48px;
 		object-fit: cover;
 		border-radius: 4px;
-		background: rgba(0, 0, 0, 0.3);
+		background: var(--overlay-light);
 	}
 
 	.asset-thumb-placeholder {
@@ -960,7 +960,7 @@
 	.slug-input {
 		flex: 1;
 		padding: 0.35rem 0.5rem;
-		background: rgba(0, 0, 0, 0.3);
+		background: var(--bg-deep);
 		border: 1px solid var(--border-subtle);
 		border-radius: 4px;
 		color: var(--text-primary);
@@ -999,7 +999,7 @@
 		font-family: var(--font-mono);
 		font-size: 0.62rem;
 		color: var(--text-tertiary);
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--glass-faint);
 		padding: 0.1rem 0.4rem;
 		border-radius: 4px;
 		text-decoration: none;
@@ -1008,7 +1008,7 @@
 
 	.sub-link:hover {
 		color: var(--orange-300);
-		background: rgba(233, 84, 32, 0.1);
+		background: var(--accent-soft);
 	}
 
 	.meta-link {

@@ -476,25 +476,25 @@
 	--card-shadow-hover: 0 6px 24px rgba(160, 96, 8, 0.10), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* ─── Solid theme: dark gets matrix green ─── */
+/* ─── Solid theme: dark gets clean white accent ─── */
 [data-theme="dark"][data-wallpaper="solid-theme"] {
-	--rain-color: 40,200,80;
-	--accent: #30c060;
-	--orange-500: #30c060;
-	--orange-400: #48d078;
-	--orange-300: #60e090;
-	--orange-200: #80e8a8;
-	--accent-glow: rgba(48, 192, 96, 0.18);
-	--accent-soft: rgba(48, 192, 96, 0.10);
-	--accent-muted: rgba(48, 192, 96, 0.05);
-	--accent-border: rgba(48, 192, 96, 0.28);
-	--accent-hover: rgba(48, 192, 96, 0.14);
-	--step-prompt-bg: rgba(48, 192, 96, 0.10);
-	--step-prompt-answer: rgba(48, 192, 96, 0.05);
-	--step-prompt-glow: rgba(48, 192, 96, 0.14);
-	--step-prompt-border: rgba(72, 208, 120, 0.20);
+	--rain-color: 200,200,210;
+	--accent: #c8c8d4;
+	--orange-500: #c8c8d4;
+	--orange-400: #d4d4de;
+	--orange-300: #e0e0e8;
+	--orange-200: #ececf0;
+	--accent-glow: rgba(200, 200, 212, 0.16);
+	--accent-soft: rgba(200, 200, 212, 0.08);
+	--accent-muted: rgba(200, 200, 212, 0.04);
+	--accent-border: rgba(200, 200, 212, 0.22);
+	--accent-hover: rgba(200, 200, 212, 0.12);
+	--step-prompt-bg: rgba(200, 200, 212, 0.08);
+	--step-prompt-answer: rgba(200, 200, 212, 0.04);
+	--step-prompt-glow: rgba(200, 200, 212, 0.12);
+	--step-prompt-border: rgba(212, 212, 224, 0.18);
 	--tag-text: var(--orange-300);
-	--card-shadow-hover: 0 6px 24px rgba(48, 192, 96, 0.12), 0 2px 8px rgba(0, 0, 0, 0.5);
+	--card-shadow-hover: 0 6px 24px rgba(200, 200, 212, 0.10), 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 /* ─── Color (solid) ─── */
@@ -503,24 +503,24 @@
 	--wallpaper-base: #3d1440;
 }
 [data-theme="dark"][data-wallpaper="solid-color"] {
-	--rain-color: 40,200,80;
-	--wallpaper-base: #0a1410;
-	--accent: #30c060;
-	--orange-500: #30c060;
-	--orange-400: #48d078;
-	--orange-300: #60e090;
-	--orange-200: #80e8a8;
-	--accent-glow: rgba(48, 192, 96, 0.18);
-	--accent-soft: rgba(48, 192, 96, 0.10);
-	--accent-muted: rgba(48, 192, 96, 0.05);
-	--accent-border: rgba(48, 192, 96, 0.28);
-	--accent-hover: rgba(48, 192, 96, 0.14);
-	--step-prompt-bg: rgba(48, 192, 96, 0.10);
-	--step-prompt-answer: rgba(48, 192, 96, 0.05);
-	--step-prompt-glow: rgba(48, 192, 96, 0.14);
-	--step-prompt-border: rgba(72, 208, 120, 0.20);
+	--rain-color: 200,200,210;
+	--wallpaper-base: #101014;
+	--accent: #c8c8d4;
+	--orange-500: #c8c8d4;
+	--orange-400: #d4d4de;
+	--orange-300: #e0e0e8;
+	--orange-200: #ececf0;
+	--accent-glow: rgba(200, 200, 212, 0.16);
+	--accent-soft: rgba(200, 200, 212, 0.08);
+	--accent-muted: rgba(200, 200, 212, 0.04);
+	--accent-border: rgba(200, 200, 212, 0.22);
+	--accent-hover: rgba(200, 200, 212, 0.12);
+	--step-prompt-bg: rgba(200, 200, 212, 0.08);
+	--step-prompt-answer: rgba(200, 200, 212, 0.04);
+	--step-prompt-glow: rgba(200, 200, 212, 0.12);
+	--step-prompt-border: rgba(212, 212, 224, 0.18);
 	--tag-text: var(--orange-300);
-	--card-shadow-hover: 0 6px 24px rgba(48, 192, 96, 0.12), 0 2px 8px rgba(0, 0, 0, 0.5);
+	--card-shadow-hover: 0 6px 24px rgba(200, 200, 212, 0.10), 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 [data-theme="light"][data-wallpaper="solid-color"] {
 	--rain-color: 20,90,150;
