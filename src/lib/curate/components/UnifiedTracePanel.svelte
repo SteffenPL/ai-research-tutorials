@@ -279,6 +279,7 @@
 			<span class="insert-cat">Primary</span>
 			<button onclick={() => onInsertAssistantStep(roundId, afterStepId)}>Assistant</button>
 			<button onclick={() => onInsertOutputStep(roundId, afterStepId)}>Output</button>
+			<button onclick={() => onInsertStep(roundId, afterStepId, { type: 'question', html: '<p>Question?</p>', answer: '1' })}>Question</button>
 			<button onclick={() => onInsertStatusStep(roundId, afterStepId)}>Status</button>
 			<button onclick={() => onInsertDividerStep(roundId, afterStepId)}>Divider</button>
 		</div>

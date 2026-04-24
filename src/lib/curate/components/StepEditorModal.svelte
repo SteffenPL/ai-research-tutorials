@@ -265,6 +265,54 @@
 				}}
 			></textarea>
 		</label>
+	{:else if type === 'question'}
+		{@const parsed = parseQuestionHtml(o.html as string)}
+		<label class="field">
+			<span class="field-label">Question Text</span>
+			<input
+				type="text"
+				value={parsed.prompt}
+				oninput={(e) => {
+					const val = (e.target as HTMLInputElement).value;
+					o.html = rebuildQuestionHtml(val, parsed.options);
+					bumpPreview();
+				}}
+			/>
+		</label>
+		<div class="field">
+			<span class="field-label">Options</span>
+			{#each parsed.options as opt, i}
+				<div class="question-option-row">
+					<input
+						type="radio"
+						name="question-answer-source"
+						checked={String(i + 1) === (o.answer as string)}
+						onchange={() => { o.answer = String(i + 1); bumpPreview(); }}
+					/>
+					<input
+						type="text"
+						class="question-option-input"
+						value={opt}
+						oninput={(e) => {
+							parsed.options[i] = (e.target as HTMLInputElement).value;
+							o.html = rebuildQuestionHtml(parsed.prompt, parsed.options);
+							bumpPreview();
+						}}
+					/>
+					<button class="btn-sm btn-icon" onclick={() => {
+						parsed.options.splice(i, 1);
+						if (parseInt(o.answer as string) > parsed.options.length) o.answer = String(parsed.options.length);
+						o.html = rebuildQuestionHtml(parsed.prompt, parsed.options);
+						bumpPreview();
+					}}>&times;</button>
+				</div>
+			{/each}
+			<button class="btn-sm" onclick={() => {
+				parsed.options.push('New option');
+				o.html = rebuildQuestionHtml(parsed.prompt, parsed.options);
+				bumpPreview();
+			}}>+ Add option</button>
+		</div>
 	{:else if type === 'window'}
 		<label class="field">
 			<span class="field-label">Window Title</span>
@@ -352,6 +400,54 @@
 				<option value="error">error</option>
 			</select>
 		</label>
+	{:else if ins.type === 'question'}
+		{@const parsed = parseQuestionHtml(ins.html)}
+		<label class="field">
+			<span class="field-label">Question Text</span>
+			<input
+				type="text"
+				value={parsed.prompt}
+				oninput={(e) => {
+					const val = (e.target as HTMLInputElement).value;
+					ins.html = rebuildQuestionHtml(val, parsed.options);
+					bumpPreview();
+				}}
+			/>
+		</label>
+		<div class="field">
+			<span class="field-label">Options</span>
+			{#each parsed.options as opt, i}
+				<div class="question-option-row">
+					<input
+						type="radio"
+						name="question-answer"
+						checked={String(i + 1) === ins.answer}
+						onchange={() => { ins.answer = String(i + 1); bumpPreview(); }}
+					/>
+					<input
+						type="text"
+						class="question-option-input"
+						value={opt}
+						oninput={(e) => {
+							parsed.options[i] = (e.target as HTMLInputElement).value;
+							ins.html = rebuildQuestionHtml(parsed.prompt, parsed.options);
+							bumpPreview();
+						}}
+					/>
+					<button class="btn-sm btn-icon" onclick={() => {
+						parsed.options.splice(i, 1);
+						if (parseInt(ins.answer) > parsed.options.length) ins.answer = String(parsed.options.length);
+						ins.html = rebuildQuestionHtml(parsed.prompt, parsed.options);
+						bumpPreview();
+					}}>&times;</button>
+				</div>
+			{/each}
+			<button class="btn-sm" onclick={() => {
+				parsed.options.push('New option');
+				ins.html = rebuildQuestionHtml(parsed.prompt, parsed.options);
+				bumpPreview();
+			}}>+ Add option</button>
+		</div>
 	{:else if ins.type === 'divider'}
 		<label class="field">
 			<span class="field-label">Label</span>
