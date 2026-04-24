@@ -236,9 +236,9 @@
 	.welcome-description.md :global(h1:first-child),
 	.welcome-description.md :global(h2:first-child),
 	.welcome-description.md :global(h3:first-child) { margin-top: 0; }
-	.welcome-description.md :global(h1) { font-size: 1.1rem; color: var(--orange-300); }
-	.welcome-description.md :global(h2) { font-size: 0.95rem; color: var(--peach); }
-	.welcome-description.md :global(h3) { font-size: 0.85rem; color: var(--teal); }
+	.welcome-description.md :global(h1) { font-size: 1.1rem; color: var(--text-primary); }
+	.welcome-description.md :global(h2) { font-size: 0.95rem; color: var(--text-primary); }
+	.welcome-description.md :global(h3) { font-size: 0.85rem; color: var(--text-primary); }
 	.welcome-description.md :global(strong) { color: var(--text-primary); }
 	.welcome-description.md :global(ul),
 	.welcome-description.md :global(ol) { margin: 0 0 0.6em; padding-left: 1.3em; }
