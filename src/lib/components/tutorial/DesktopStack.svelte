@@ -176,7 +176,7 @@
 		align-items: center;
 		justify-content: center;
 		animation: welcomeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-		overflow-y: auto;
+		overflow: hidden;
 	}
 
 	@keyframes welcomeIn {
@@ -186,6 +186,7 @@
 
 	.welcome-card {
 		max-width: 480px;
+		max-height: 100%;
 		width: 100%;
 		background: rgba(28, 16, 23, 0.7);
 		backdrop-filter: blur(16px);
@@ -194,6 +195,7 @@
 		border-radius: 14px;
 		padding: 28px 28px 24px;
 		text-align: center;
+		overflow-y: auto;
 	}
 
 	.welcome-tags {
