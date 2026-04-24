@@ -355,7 +355,6 @@
 			{allSteps}
 			{spacerHeight}
 			{displayRoundIdx}
-			isFullLog={false}
 			onFocusWindow={focusWindow}
 			bind:terminalBodyRef={terminalBody}
 		/>

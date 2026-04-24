@@ -161,25 +161,19 @@ export function sessionViewToTraceState(view: SessionView): TraceState {
 
 export function traceStepToTutorialStep(step: TraceStep): Step | null {
 	if (step.inserted) {
-		if (step.displayMode === 'compact') step.inserted.compact = true;
-		if (step.hidden) step.inserted.hidden = true;
 		return step.inserted;
 	}
 	if (!step.overrides) return null;
 
 	const o = step.overrides as Record<string, unknown>;
 	const type = o.type as string;
-	const isCompact = step.displayMode !== 'normal' && step.displayMode !== 'full';
-	const isHidden = !!step.hidden;
 
 	switch (type) {
 		case 'assistant': {
 			const s: AssistantStep = {
 				type: 'assistant',
 				html: (step.shortenedText ?? o.html) as string,
-				...(o.final ? { final: true } : {}),
-				...(isCompact ? { compact: true } : {}),
-				...(isHidden ? { hidden: true } : {})
+				...(o.final ? { final: true } : {})
 			};
 			if (step.comment) s.comment = step.comment;
 			return s;
@@ -187,9 +181,7 @@ export function traceStepToTutorialStep(step: TraceStep): Step | null {
 		case 'thinking': {
 			const s: ThinkingStep = {
 				type: 'thinking',
-				text: (step.shortenedText ?? o.text) as string,
-				...(isCompact ? { compact: true } : {}),
-				...(isHidden ? { hidden: true } : {})
+				text: (step.shortenedText ?? o.text) as string
 			};
 			if (step.comment) s.comment = step.comment;
 			return s;
@@ -198,9 +190,7 @@ export function traceStepToTutorialStep(step: TraceStep): Step | null {
 			const s: ToolCallStep = {
 				type: 'tool_call',
 				toolName: o.toolName as string,
-				code: (step.shortenedText ?? o.code) as string,
-				...(isCompact ? { compact: true } : {}),
-				...(isHidden ? { hidden: true } : {})
+				code: (step.shortenedText ?? o.code) as string
 			};
 			if (step.comment) s.comment = step.comment;
 			return s;
@@ -208,9 +198,7 @@ export function traceStepToTutorialStep(step: TraceStep): Step | null {
 		case 'tool_result': {
 			const s: ToolResultStep = {
 				type: 'tool_result',
-				text: (step.shortenedText ?? o.text) as string,
-				...(isCompact ? { compact: true } : {}),
-				...(isHidden ? { hidden: true } : {})
+				text: (step.shortenedText ?? o.text) as string
 			};
 			if (step.comment) s.comment = step.comment;
 			return s;
@@ -220,9 +208,7 @@ export function traceStepToTutorialStep(step: TraceStep): Step | null {
 				type: 'window',
 				windowTitle: o.windowTitle as string,
 				...(o.subtitle ? { subtitle: o.subtitle as string } : {}),
-				content: o.content as WindowStep['content'],
-				...(isCompact ? { compact: true } : {}),
-				...(isHidden ? { hidden: true } : {})
+				content: o.content as WindowStep['content']
 			};
 			if (step.comment) s.comment = step.comment;
 			return s;
@@ -233,10 +219,9 @@ export function traceStepToTutorialStep(step: TraceStep): Step | null {
 }
 
 export function traceStateToTutorialRounds(state: TraceState): TutorialRound[] {
-	return state.rounds.filter((round) => round.included !== false).map((round) => {
+	return state.rounds.map((round) => {
 		const steps: Step[] = [];
 		for (const ts of round.steps) {
-			if (!ts.included && !ts.inserted) continue;
 			const step = traceStepToTutorialStep(ts);
 			if (step) steps.push(step);
 		}

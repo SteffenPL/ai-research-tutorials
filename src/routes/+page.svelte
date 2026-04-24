@@ -7,6 +7,52 @@
 	import { getAllTutorials } from '$lib/data/tutorial-loader';
 
 	const tutorials = getAllTutorials();
+
+	const rotatingWords = [
+		{ en: 'Research', ja: 'リサーチ' },
+		{ en: 'Coding', ja: 'コーディング' },
+		{ en: 'Analysis', ja: '解析' },
+		{ en: 'Review', ja: 'レビュー' },
+		{ en: 'Building', ja: '構築' }
+	];
+
+	let wordIndex = $state(0);
+	let displayText = $state(t(rotatingWords[0]));
+
+	function scrambleTo(target: string) {
+		const from = displayText;
+		const maxLen = Math.max(from.length, target.length);
+		const totalFrames = 12;
+		let frame = 0;
+
+		const tick = setInterval(() => {
+			frame++;
+			const progress = frame / totalFrames;
+			let result = '';
+			for (let i = 0; i < maxLen; i++) {
+				const charDone = progress > (i + 1) / maxLen;
+				if (charDone) {
+					result += target[i] ?? '';
+				} else if (i < target.length) {
+					result += Math.random() < 0.5 ? '0' : '1';
+				}
+			}
+			displayText = result;
+			if (frame >= totalFrames) {
+				clearInterval(tick);
+				displayText = target;
+			}
+		}, 105);
+	}
+
+	$effect(() => {
+		const interval = setInterval(() => {
+			const nextIndex = (wordIndex + 1) % rotatingWords.length;
+			wordIndex = nextIndex;
+			scrambleTo(t(rotatingWords[nextIndex]));
+		}, 5000);
+		return () => clearInterval(interval);
+	});
 </script>
 
 <svelte:head>
@@ -31,8 +77,8 @@
 			<span>{t({ en: 'Kyoto University \u00b7 ASHBi', ja: '京都大学 \u00b7 ASHBi' })}</span>
 		</div>
 		<h1 class="hero__title">
-			{t({ en: 'AI Research', ja: 'AI リサーチ' })}<br />
-			<span>{t({ en: 'Tutorials', ja: 'チュートリアル' })}</span>
+			AI <span class="hero__rotating">{displayText}</span><br />
+			{t({ en: 'Tutorials', ja: 'チュートリアル' })}
 		</h1>
 		<p class="hero__subtitle">
 			{t({
@@ -144,8 +190,10 @@
 		animation: fadeUp 0.6s ease 0.1s forwards;
 	}
 
-	.hero__title span {
+	.hero__rotating {
+		display: inline-block;
 		color: var(--accent);
+		font-family: var(--font-mono);
 	}
 
 	.hero__subtitle {

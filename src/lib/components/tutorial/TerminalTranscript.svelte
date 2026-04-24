@@ -21,15 +21,12 @@
 	import type { TutorialRound, Step, WindowStep } from '$lib/data/tutorials';
 	import WindowChrome from '$lib/components/windows/WindowChrome.svelte';
 	import StepRenderer from './StepRenderer.svelte';
-	import CompactChipFlow from './CompactChipFlow.svelte';
-
 	let {
 		activeRounds,
 		roundBoundaries,
 		allSteps,
 		spacerHeight,
 		displayRoundIdx,
-		isFullLog = false,
 		onFocusWindow,
 		terminalBodyRef = $bindable<HTMLElement | null>(null)
 	}: {
@@ -38,69 +35,16 @@
 		allSteps: Step[];
 		spacerHeight: number;
 		displayRoundIdx: number;
-		isFullLog?: boolean;
 		onFocusWindow: (step: WindowStep) => void;
 		terminalBodyRef?: HTMLElement | null;
 	} = $props();
 
-	type StepGroup =
-		| { kind: 'step'; step: Step; si: number; globalIndex: number }
-		| { kind: 'compact'; steps: Step[]; startSi: number; globalIndex: number }
-		| { kind: 'hidden'; steps: Step[]; startSi: number; count: number; globalIndex: number };
+	type StepGroup = { kind: 'step'; step: Step; si: number; globalIndex: number };
 
 	function groupSteps(steps: Step[], roundStart: number): StepGroup[] {
-		if (isFullLog) {
-			return steps.map((step, si) => ({ kind: 'step' as const, step, si, globalIndex: roundStart + si }));
-		}
-		const groups: StepGroup[] = [];
-		let hiddenRun: Step[] = [];
-		let hiddenStartSi = 0;
-		let compactRun: Step[] = [];
-		let compactStartSi = 0;
-
-		function flushCompact() {
-			if (compactRun.length > 0) {
-				groups.push({ kind: 'compact', steps: compactRun, startSi: compactStartSi, globalIndex: roundStart + compactStartSi });
-				compactRun = [];
-			}
-		}
-
-		function flushHidden() {
-			if (hiddenRun.length > 0) {
-				groups.push({ kind: 'hidden', steps: hiddenRun, startSi: hiddenStartSi, count: hiddenRun.length, globalIndex: roundStart + hiddenStartSi });
-				hiddenRun = [];
-			}
-		}
-
-		for (let si = 0; si < steps.length; si++) {
-			const step = steps[si];
-			if (step.hidden) {
-				flushCompact();
-				if (hiddenRun.length === 0) hiddenStartSi = si;
-				hiddenRun.push(step);
-			} else if (step.compact) {
-				flushHidden();
-				if (compactRun.length === 0) compactStartSi = si;
-				compactRun.push(step);
-			} else {
-				flushHidden();
-				flushCompact();
-				groups.push({ kind: 'step', step, si, globalIndex: roundStart + si });
-			}
-		}
-		flushHidden();
-		flushCompact();
-		return groups;
+		return steps.map((step, si) => ({ kind: 'step' as const, step, si, globalIndex: roundStart + si }));
 	}
 
-	let expandedHiddenGroups = $state(new Set<string>());
-
-	function toggleHiddenGroup(key: string) {
-		const next = new Set(expandedHiddenGroups);
-		if (next.has(key)) next.delete(key);
-		else next.add(key);
-		expandedHiddenGroups = next;
-	}
 </script>
 
 <div class="terminal-container">
@@ -157,7 +101,6 @@
 							{/if}
 						</div>
 						{#each groupSteps(round.steps, roundStart) as group}
-							{#if group.kind === 'step'}
 								<div
 									data-step={group.globalIndex}
 									class="step-block"
@@ -169,45 +112,6 @@
 										{onFocusWindow}
 									/>
 								</div>
-							{:else if group.kind === 'compact'}
-								<div
-									data-step={group.globalIndex}
-									class="step-block"
-								>
-									<CompactChipFlow steps={group.steps} {onFocusWindow} />
-								</div>
-							{:else}
-								{@const groupKey = `${ri}-${group.startSi}`}
-								{@const expanded = expandedHiddenGroups.has(groupKey)}
-								<div
-									data-step={group.globalIndex}
-									class="step-block"
-								>
-									<button
-										type="button"
-										class="hidden-group-bar"
-										onclick={() => toggleHiddenGroup(groupKey)}
-									>
-										<span class="hidden-chevron" class:expanded>{expanded ? '▾' : '▸'}</span>
-										<span class="hidden-label">{group.count} step{group.count > 1 ? 's' : ''} hidden</span>
-									</button>
-									{#if expanded}
-										{#each group.steps as hStep, hsi}
-											<div
-												data-step={roundStart + group.startSi + hsi}
-												class="step-block hidden-step-revealed"
-											>
-												<StepRenderer
-													step={hStep}
-													showClaudeLabel={false}
-													isLast={false}
-													{onFocusWindow}
-												/>
-											</div>
-										{/each}
-									{/if}
-								</div>
-							{/if}
 						{/each}
 					</div>
 				{/each}
@@ -400,47 +304,6 @@
 
 	.round-prompt-block .prompt-block {
 		margin: 0;
-	}
-
-	/* ── Hidden step group ── */
-	.hidden-group-bar {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		width: 100%;
-		padding: 4px 14px;
-		margin: 4px 0;
-		background: none;
-		border: none;
-		border-left: 2px dashed var(--border-subtle);
-		font-family: var(--font-mono);
-		font-size: 11px;
-		color: var(--text-tertiary);
-		cursor: pointer;
-		transition: color 0.15s, background 0.15s;
-		text-align: left;
-	}
-
-	.hidden-group-bar:hover {
-		color: var(--text-secondary);
-		background: rgba(255, 255, 255, 0.02);
-	}
-
-	.hidden-chevron {
-		font-size: 10px;
-		flex-shrink: 0;
-		transition: transform 0.15s;
-	}
-
-	.hidden-label {
-		opacity: 0.7;
-	}
-
-	.hidden-step-revealed {
-		opacity: 0.6;
-		border-left: 1px dashed var(--border-subtle);
-		margin-left: 8px;
-		padding-left: 6px;
 	}
 
 	/* Center the mobile inline window within its step-block */

@@ -175,14 +175,7 @@
 	{/if}
 {/snippet}
 
-{#if step.compact}
-	{@const style = getStepStyle(step.type)}
-	<div class="compact-step" style="--chip-accent: {style.accent}">
-		<span class="compact-type">{style.icon}</span>
-		<span class="compact-text">{compactSummary(step)}</span>
-	</div>
-
-{:else if step.type === 'assistant'}
+{#if step.type === 'assistant'}
 	<div class="assistant-block" class:final={step.final}>
 		<span class="assistant-dot" class:final-dot={step.final}>●</span>
 		<div class="assistant-content">
