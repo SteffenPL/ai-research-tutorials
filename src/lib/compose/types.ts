@@ -1,4 +1,4 @@
-import type { TutorialMeta, TutorialWelcome, TutorialRound } from '$lib/data/tutorials';
+import type { TutorialMeta, TutorialWelcome } from '$lib/data/tutorials';
 
 export const FORMAT_VERSION = '1.0.0';
 
@@ -18,15 +18,10 @@ export interface TutorialComposition {
 	devOnly?: boolean;
 }
 
-export type CompositionBlock = TraceBlock | HandAuthoredBlock;
+export type CompositionBlock = TraceBlock;
 
 export interface TraceBlock {
 	kind: 'trace';
 	sourceSlug: string;
 	rounds?: number[];
-}
-
-export interface HandAuthoredBlock {
-	kind: 'round';
-	round: TutorialRound;
 }

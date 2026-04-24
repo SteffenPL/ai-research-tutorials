@@ -56,19 +56,15 @@ function resolveBlocks(
 ): TutorialRound[] {
 	const allRounds: TutorialRound[] = [];
 	for (const block of blocks) {
-		if (block.kind === 'round') {
-			allRounds.push(block.round);
-		} else {
-			const trace = loadTrace(block.sourceSlug);
-			if (!trace) continue;
-			let rounds = traceStateToTutorialRounds(trace);
-			if (block.rounds) {
-				rounds = block.rounds
-					.filter((i) => i >= 0 && i < rounds.length)
-					.map((i) => rounds[i]);
-			}
-			allRounds.push(...rounds);
+		const trace = loadTrace(block.sourceSlug);
+		if (!trace) continue;
+		let rounds = traceStateToTutorialRounds(trace);
+		if (block.rounds) {
+			rounds = block.rounds
+				.filter((i) => i >= 0 && i < rounds.length)
+				.map((i) => rounds[i]);
 		}
+		allRounds.push(...rounds);
 	}
 	return allRounds;
 }

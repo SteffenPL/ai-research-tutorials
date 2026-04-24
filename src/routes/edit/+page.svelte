@@ -363,7 +363,7 @@
 							</span>
 						</div>
 						<div class="item-actions">
-							<a class="btn-sm" href="{base}/compose/{tutorial.slug}">Compose</a>
+							<a class="btn-sm" href="{base}/compose/{tutorial.slug}">Edit</a>
 							<a class="btn-sm" href="{base}/preview/{tutorial.slug}">Preview</a>
 							<button class="btn-sm btn-danger" onclick={() => deleteItem('tutorial', { slug: tutorial.slug })}>Delete</button>
 						</div>

@@ -146,12 +146,12 @@
 </script>
 
 <svelte:head>
-	<title>Compose · {data.slug}</title>
+	<title>Edit · {data.slug}</title>
 </svelte:head>
 
 <div class="page-bg" aria-hidden="true"></div>
 
-<Nav showBack pageTitle="Compose · {data.slug}" />
+<Nav showBack pageTitle="Edit · {data.slug}" />
 
 <header class="toolbar">
 	<div class="toolbar-left">
