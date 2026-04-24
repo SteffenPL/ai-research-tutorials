@@ -13,8 +13,17 @@
 
 import type { Tutorial } from './tutorials';
 import type { TutorialComposition } from '$lib/compose/types';
+import { FORMAT_VERSION } from '$lib/compose/types';
 import type { TraceState } from '$lib/trace/types';
 import { resolveComposition } from '$lib/compose/resolve';
+
+function checkVersion(label: string, version: string | undefined) {
+	if (!version) {
+		console.warn(`tutorial-loader: ${label} is missing formatVersion`);
+	} else if (!version.startsWith('1.')) {
+		console.warn(`tutorial-loader: ${label} has unknown formatVersion "${version}"`);
+	}
+}
 
 /* ─── Vite globs ────────────────────────────── */
 
@@ -37,7 +46,9 @@ for (const [path, raw] of Object.entries(traceRaw)) {
 	const m = path.match(/\/src\/traces\/([^/]+)\/trace\.json$/);
 	if (!m) continue;
 	try {
-		tracesBySlug.set(m[1], JSON.parse(raw));
+		const trace: TraceState = JSON.parse(raw);
+		checkVersion(`trace "${m[1]}"`, trace.formatVersion);
+		tracesBySlug.set(m[1], trace);
 	} catch (e) {
 		console.warn(`tutorial-loader: failed to parse trace at ${path}:`, e);
 	}
@@ -65,6 +76,7 @@ function buildTutorial(path: string, raw: string): Tutorial | null {
 	}
 
 	const slug = slugFromPath(path);
+	checkVersion(`composition "${slug}"`, composition.formatVersion);
 	if (composition.slug !== slug) {
 		console.warn(
 			`tutorial-loader: composition.slug "${composition.slug}" doesn't match directory "${slug}"`
