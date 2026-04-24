@@ -63,6 +63,7 @@
 	--font-body: 'Cantarell', sans-serif;
 	--font-mono: 'JetBrains Mono', monospace;
 	--transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+	--window-cascade-duration: 50ms;
 
 	--nav-bg: var(--glass-bg);
 	--card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);

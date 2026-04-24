@@ -109,6 +109,12 @@ The trace viewer at `/tutorials/[slug]` renders as a virtual desktop. The render
 - **Keyboard**: Arrow keys for prev/next, `p` for play/pause, `Esc` to restore a maximized window
 - **Level switching**: snaps to the nearest completed boundary at the new granularity
 
+### Window cascade animation
+- **Positioning**: windows are centered in the desktop area (`left: 50%; top: 50%` with `translate(-50%, -50%)`), cascading outward (right + up) with depth.
+- **`--window-cascade-duration`** (CSS variable in `global.css`): controls the shift/fade/scale transition time for all window state changes.
+- **`REVEAL_INTERVAL_MS`** (JS constant in `TutorialViewer.svelte`): stagger delay between consecutive window reveals when scrolling forward. Going backward is always instant.
+- Both values are load-bearing for the desktop feel — changes should be tested visually.
+
 ### Mobile (<=900px)
 - Page-level scrolling (spacers hidden via CSS)
 - Sticky tutorial panel (comment + controls) floats at the bottom — `position: sticky; bottom: 0`

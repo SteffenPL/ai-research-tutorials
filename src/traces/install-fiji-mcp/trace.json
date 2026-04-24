@@ -1,0 +1,201 @@
+{
+  "formatVersion": "1.0.0",
+  "title": "Install fiji-mcp",
+  "rounds": [
+    {
+      "id": "r-clone",
+      "kind": "terminal",
+      "prompt": "git clone https://github.com/SteffenPL/fiji-mcp.git && cd fiji-mcp && uv sync",
+      "included": true,
+      "steps": [
+        {
+          "id": "s-clone-1",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "output",
+            "text": "Cloning into 'fiji-mcp'...\nremote: Enumerating objects: 312, done.\nremote: Counting objects: 100% (312/312), done.\nremote: Compressing objects: 100% (198/198), done.\nremote: Total 312 (delta 142), reused 267 (delta 101)\nReceiving objects: 100% (312/312), 1.82 MiB | 12.4 MiB/s, done.\nResolving deltas: 100% (142/142), done.",
+            "comment": {
+              "en": "Clone the <a href=\"https://github.com/SteffenPL/fiji-mcp\">fiji-mcp</a> repository and install its Python dependencies with <a href=\"https://docs.astral.sh/uv/\">uv</a>. You need Python 3.11+ and uv installed beforehand.",
+              "ja": "<a href=\"https://github.com/SteffenPL/fiji-mcp\">fiji-mcp</a> リポジトリをクローンし、<a href=\"https://docs.astral.sh/uv/\">uv</a> で Python 依存関係をインストールします。事前に Python 3.11+ と uv が必要です。"
+            }
+          }
+        },
+        {
+          "id": "s-clone-2",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "output",
+            "text": "Using CPython 3.12.8\nCreating virtual environment at: .venv\nResolved 28 packages in 1.2s\nInstalled 28 packages in 340ms\n + fastmcp==3.2.0\n + fiji-mcp==0.1.0 (from .)\n + websockets==15.0\n + ..."
+          }
+        },
+        {
+          "id": "s-clone-3",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "status",
+            "text": "dependencies installed",
+            "variant": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "r-install",
+      "kind": "terminal",
+      "prompt": "uv run fiji-mcp install",
+      "included": true,
+      "steps": [
+        {
+          "id": "s-install-1",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "output",
+            "text": "Searching for Fiji installation...\n  checking /Applications/Fiji.app ... found!\n  Fiji home: /Applications/Fiji.app\n  Java version: 1.8.0_322 (bundled)\nCopying bridge plugin to /Applications/Fiji.app/plugins/\n  fiji-mcp-bridge-0.1.0.jar ... done\nSaving Fiji path to .fiji-path",
+            "comment": {
+              "en": "This command does three things: (1) auto-discovers your Fiji installation, (2) copies the bridge plugin JAR into Fiji's <code>plugins/</code> folder, and (3) saves the Fiji path so the MCP server can launch Fiji later. If Fiji is not in a standard location, pass <code>--fiji-home /path/to/Fiji.app</code>.",
+              "ja": "このコマンドは3つのことを行います: (1) Fiji のインストール先を自動検出、(2) ブリッジプラグイン JAR を Fiji の <code>plugins/</code> フォルダにコピー、(3) MCP サーバーが後で Fiji を起動できるよう Fiji のパスを保存。Fiji が標準の場所にない場合は <code>--fiji-home /path/to/Fiji.app</code> を指定してください。"
+            }
+          }
+        },
+        {
+          "id": "s-install-2",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "status",
+            "text": "bridge plugin installed into Fiji",
+            "variant": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "r-mcp-add",
+      "kind": "terminal",
+      "prompt": "claude mcp add --scope project fiji-mcp -- uv run --directory /Users/steffen/fiji-mcp fiji-mcp",
+      "included": true,
+      "steps": [
+        {
+          "id": "s-mcp-add-1",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "output",
+            "text": "Added fiji-mcp to project MCP config (.mcp.json)\n\nfiji-mcp\n  command: uv run --directory /Users/steffen/fiji-mcp fiji-mcp\n  scope: project",
+            "comment": {
+              "en": "Register fiji-mcp as an MCP server in Claude Code. Use <code>--scope project</code> to add it only for the current project, or <code>--scope user</code> for all projects. The <code>--directory</code> flag must be an <strong>absolute path</strong> to your fiji-mcp clone.",
+              "ja": "fiji-mcp を Claude Code の MCP サーバーとして登録します。<code>--scope project</code> で現在のプロジェクトのみに追加、<code>--scope user</code> で全プロジェクトに追加できます。<code>--directory</code> フラグには fiji-mcp クローンへの<strong>絶対パス</strong>を指定してください。"
+            }
+          }
+        },
+        {
+          "id": "s-mcp-add-2",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "status",
+            "text": "MCP server registered",
+            "variant": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "r-open-image",
+      "kind": "claude",
+      "prompt": "Open the sample image blobs.gif in Fiji and show me a thumbnail.",
+      "included": true,
+      "steps": [
+        {
+          "id": "s-open-1",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "thinking",
+            "text": "The user wants to open a sample image in Fiji. I can use the run_ij_macro tool to open the blobs.gif sample image from the ImageJ sample images URL, then get_thumbnail to show it.",
+            "duration": "2s"
+          }
+        },
+        {
+          "id": "s-open-2",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "tool_call",
+            "toolName": "fiji · run_ij_macro",
+            "code": "open(\"https://imagej.net/images/blobs.gif\");",
+            "comment": {
+              "en": "Claude uses the <code>run_ij_macro</code> tool to execute an ImageJ macro inside Fiji. The first tool call auto-launches Fiji and starts the bridge plugin if it is not already running.",
+              "ja": "Claude は <code>run_ij_macro</code> ツールを使って Fiji 内で ImageJ マクロを実行します。最初のツール呼び出し時に、Fiji がまだ起動していなければ自動的に起動し、ブリッジプラグインも開始されます。"
+            }
+          }
+        },
+        {
+          "id": "s-open-3",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "tool_result",
+            "text": "Macro executed successfully.\nActive image: blobs.gif (256×254, 8-bit)"
+          }
+        },
+        {
+          "id": "s-open-4",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "tool_call",
+            "toolName": "fiji · get_thumbnail",
+            "code": "title: blobs.gif\nwidth: 512"
+          }
+        },
+        {
+          "id": "s-open-5",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "tool_result",
+            "text": "Thumbnail saved to /tmp/fiji-mcp/thumbnails/blobs_thumb.png (512×505, 8-bit)"
+          }
+        },
+        {
+          "id": "s-open-6",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "window",
+            "windowTitle": "blobs.gif",
+            "subtitle": "256×254 · 8-bit",
+            "content": {
+              "kind": "fiji-image",
+              "src": "blobs_thumbnail.png",
+              "statusBar": "256×254 pixels; 8-bit; 64K"
+            },
+            "comment": {
+              "en": "The <code>get_thumbnail</code> tool returns a display-ready PNG with the current LUT and brightness/contrast baked in — exactly what you see in Fiji. The agent can now <em>see</em> the image and reason about its contents.",
+              "ja": "<code>get_thumbnail</code> ツールは、現在の LUT と明るさ/コントラストが適用された表示用 PNG を返します — Fiji で見ているものと同じです。エージェントはこれで画像を<em>見て</em>、内容について推論できるようになります。"
+            }
+          }
+        },
+        {
+          "id": "s-open-7",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "assistant",
+            "html": "<p>I've opened the sample image <strong>blobs.gif</strong> in Fiji. It's a 256×254 pixel, 8-bit grayscale image showing a collection of binary blobs — a classic ImageJ test image often used for segmentation and particle analysis demos.</p><p>The fiji-mcp bridge is working. You can now ask me to process images, run macros, apply filters, or perform measurements — all through Fiji.</p>",
+            "final": true,
+            "comment": {
+              "en": "That's it! With fiji-mcp installed, Claude Code can run ImageJ macros, inspect images via thumbnails, and control Fiji interactively. Try asking it to apply a Gaussian blur, threshold the image, or run particle analysis next.",
+              "ja": "以上です！ fiji-mcp をインストールすると、Claude Code は ImageJ マクロの実行、サムネイルによる画像の確認、Fiji のインタラクティブな操作が可能になります。次はガウシアンぼかし、閾値処理、粒子解析などを試してみましょう。"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -299,10 +299,10 @@
 		max-width: min(440px, 85%);
 		max-height: calc(100% - 16px);
 		--enter-delay: 0ms;
-		transition: transform 50ms ease-out var(--enter-delay),
-		            opacity 50ms ease-out var(--enter-delay),
-		            filter 50ms ease-out var(--enter-delay),
-		            box-shadow 50ms ease-out var(--enter-delay);
+		transition: transform var(--window-cascade-duration) ease-out var(--enter-delay),
+		            opacity var(--window-cascade-duration) ease-out var(--enter-delay),
+		            filter var(--window-cascade-duration) ease-out var(--enter-delay),
+		            box-shadow var(--window-cascade-duration) ease-out var(--enter-delay);
 		transform-origin: center center;
 	}
 
