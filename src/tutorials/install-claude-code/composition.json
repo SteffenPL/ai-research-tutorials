@@ -34,5 +34,5 @@
       "sourceSlug": "install-claude-code"
     }
   ],
-  "description": "A beginner-friendly walkthrough for your very first Claude Code installation: install the CLI with one command, log in for the first time, and make Claude Code build your first tiny webpage. No prior Claude Code experience required.\n\n**What you'll see:**\n- Installing Claude Code with a single curl command\n- Logging in on first launch\n- Running a first end-to-end prompt (build + open a webpage)"
+  "description": "A beginner-friendly walkthrough for your very first Claude Code installation: install the CLI with one command, log in for the first time, and make Claude Code build your first tiny webpage. No prior Claude Code experience required.\n\n### What you'll see\n- Installing Claude Code with a single curl command\n- Logging in on first launch\n- Running a first end-to-end prompt (build + open a webpage)"
 }

@@ -23,5 +23,5 @@
       "sourceSlug": "nuclei-segmentation"
     }
   ],
-  "description": "Watch Claude Code drive Fiji via MCP to segment nuclei in a fluorescence microscopy image. It tries 10 different thresholding and morphology pipelines, visually compares them all, picks the best, and counts 103 nuclei — all from two natural-language prompts.\n\n**What you'll see:**\n- Opening images and running ImageJ macros via Fiji MCP\n- Systematic comparison of segmentation approaches\n- Debugging spatial calibration issues in Analyze Particles"
+  "description": "Watch Claude Code drive Fiji via MCP to segment nuclei in a fluorescence microscopy image. It tries 10 different thresholding and morphology pipelines, visually compares them all, picks the best, and counts 103 nuclei — all from two natural-language prompts.\n\n### What you'll see\n- Opening images and running ImageJ macros via Fiji MCP\n- Systematic comparison of segmentation approaches\n- Debugging spatial calibration issues in Analyze Particles"
 }
