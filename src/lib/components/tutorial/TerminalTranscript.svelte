@@ -347,6 +347,11 @@
 	   scrolls out, instead of stacking behind prompt N+1. */
 	.round-block {
 		display: block;
+		margin-bottom: 48px;
+	}
+
+	.round-block:last-child {
+		margin-bottom: 0;
 	}
 
 	.round-prompt-block {
