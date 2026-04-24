@@ -6,7 +6,7 @@ export type WallpaperName = 'mesh-aubergine' | 'mesh-ocean' | 'mesh-forest' | 'm
 
 export const COLOR_THEMES: { id: ColorTheme; label: string; swatch: string }[] = [
 	{ id: 'warm', label: 'Warm', swatch: '#2C001E' },
-	{ id: 'dark', label: 'Dark', swatch: '#1a1a20' },
+	{ id: 'dark', label: 'Dark', swatch: '#151518' },
 	{ id: 'light', label: 'Light', swatch: '#f0e8e4' }
 ];
 

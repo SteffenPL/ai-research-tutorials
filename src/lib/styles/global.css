@@ -109,37 +109,37 @@
 
 /* ─── Dark Theme — Gentoo/Linux inspired, true dark, cooler tones ─── */
 [data-theme="dark"] {
-	--aubergine-900: #0e0e12;
-	--aubergine-800: #1a1a20;
-	--aubergine-700: #222228;
-	--aubergine-600: #2a2a32;
+	--aubergine-900: #0a0a0e;
+	--aubergine-800: #151518;
+	--aubergine-700: #1e1e22;
+	--aubergine-600: #282830;
 	--aubergine-500: #3a3a44;
 	--aubergine-400: #555560;
 	--aubergine-300: #757580;
-	--orange-500: #b8a0d0;
-	--orange-400: #c8b0e0;
-	--orange-300: #d0c0e8;
-	--orange-200: #e0d4f0;
+	--orange-500: #c4a0f0;
+	--orange-400: #d0b0f8;
+	--orange-300: #dac0ff;
+	--orange-200: #e8d8ff;
 
 	--bg-primary: var(--aubergine-800);
-	--bg-secondary: #222228;
-	--bg-surface: rgba(22, 22, 28, 0.8);
-	--bg-hover: #2e2e36;
-	--bg-terminal: #141418;
-	--bg-dialog: #1e1e24;
-	--bg-deep: #121216;
-	--bg-inset: #0c0c10;
-	--text-primary: #e4e4ec;
-	--text-secondary: #a8a8b4;
-	--text-tertiary: #68687a;
-	--border-color: #333340;
-	--border-subtle: #444450;
+	--bg-secondary: #1e1e24;
+	--bg-surface: rgba(18, 18, 22, 0.8);
+	--bg-hover: #2a2a34;
+	--bg-terminal: #101014;
+	--bg-dialog: #1a1a20;
+	--bg-deep: #0e0e12;
+	--bg-inset: #0a0a0e;
+	--text-primary: #e8e8f0;
+	--text-secondary: #b0b0c0;
+	--text-tertiary: #606878;
+	--border-color: #2e2e3a;
+	--border-subtle: #3c3c4a;
 	--accent: var(--orange-500);
-	--accent-glow: rgba(184, 160, 208, 0.15);
-	--accent-soft: rgba(184, 160, 208, 0.08);
-	--accent-muted: rgba(184, 160, 208, 0.04);
-	--accent-border: rgba(184, 160, 208, 0.25);
-	--accent-hover: rgba(184, 160, 208, 0.12);
+	--accent-glow: rgba(196, 160, 240, 0.18);
+	--accent-soft: rgba(196, 160, 240, 0.10);
+	--accent-muted: rgba(196, 160, 240, 0.05);
+	--accent-border: rgba(196, 160, 240, 0.28);
+	--accent-hover: rgba(196, 160, 240, 0.14);
 
 	--green: #78c878;
 	--blue: #70a8e8;
@@ -157,32 +157,32 @@
 	--glass-faint: rgba(255, 255, 255, 0.03);
 	--glass-divider: rgba(255, 255, 255, 0.025);
 	--glass-ultra: rgba(255, 255, 255, 0.06);
-	--glass-bg: rgba(18, 18, 24, 0.92);
-	--glass-bg-strong: rgba(18, 18, 24, 0.97);
-	--glass-bg-medium: rgba(18, 18, 24, 0.90);
-	--glass-bg-soft: rgba(18, 18, 24, 0.75);
+	--glass-bg: rgba(14, 14, 18, 0.93);
+	--glass-bg-strong: rgba(14, 14, 18, 0.97);
+	--glass-bg-medium: rgba(14, 14, 18, 0.92);
+	--glass-bg-soft: rgba(14, 14, 18, 0.78);
 
 	--nav-bg: var(--glass-bg);
-	--card-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-	--card-shadow-hover: 0 6px 24px rgba(184, 160, 208, 0.10), 0 2px 8px rgba(0, 0, 0, 0.4);
+	--card-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+	--card-shadow-hover: 0 6px 24px rgba(196, 160, 240, 0.12), 0 2px 8px rgba(0, 0, 0, 0.5);
 
 	--tag-bg: var(--accent-soft);
 	--tag-border: var(--accent-border);
 	--tag-text: var(--orange-300);
 
-	--step-teal-bg: rgba(96, 184, 168, 0.06);
-	--step-tool-bg: rgba(200, 160, 136, 0.04);
-	--step-mauve-bg: rgba(176, 144, 208, 0.06);
-	--step-prompt-bg: rgba(184, 160, 208, 0.08);
-	--step-prompt-answer: rgba(184, 160, 208, 0.04);
-	--step-prompt-glow: rgba(184, 160, 208, 0.12);
-	--step-prompt-border: rgba(184, 160, 208, 0.18);
+	--step-teal-bg: rgba(96, 184, 168, 0.07);
+	--step-tool-bg: rgba(200, 160, 136, 0.05);
+	--step-mauve-bg: rgba(176, 144, 208, 0.07);
+	--step-prompt-bg: rgba(196, 160, 240, 0.10);
+	--step-prompt-answer: rgba(196, 160, 240, 0.05);
+	--step-prompt-glow: rgba(196, 160, 240, 0.14);
+	--step-prompt-border: rgba(196, 160, 240, 0.20);
 	--step-question-bg: rgba(255, 255, 255, 0.012);
 	--step-table-bg: rgba(255, 255, 255, 0.025);
 	--step-badge-bg: rgba(0, 0, 0, 0.3);
 
-	--zoom-controls-bg: rgba(18, 18, 24, 0.88);
-	--source-gutter-bg: rgba(18, 18, 24, 0.80);
+	--zoom-controls-bg: rgba(14, 14, 18, 0.90);
+	--source-gutter-bg: rgba(14, 14, 18, 0.82);
 
 	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
 	--shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
@@ -194,10 +194,10 @@
 	--shadow-window-3: 0 4px 16px rgba(0, 0, 0, 0.7);
 	--shadow-window-4: 0 2px 10px rgba(0, 0, 0, 0.7);
 
-	--wallpaper-base: #1a1a20;
-	--wallpaper-gradient: linear-gradient(150deg, #16161c 0%, #1e1e26 20%, #24242e 40%, #1e1e26 60%, #18181e 80%, #14141a 100%);
-	--page-gradient: linear-gradient(150deg, #1a1a20 0%, #222228 20%, #2a2a32 40%, #24242c 60%, #1e1e24 80%, #1a1a20 100%);
-	--edit-gradient: linear-gradient(150deg, #18181e 0%, #202028 20%, #282830 40%, #222228 60%, #1c1c22 80%, #18181e 100%);
+	--wallpaper-base: #151518;
+	--wallpaper-gradient: linear-gradient(150deg, #101014 0%, #181820 20%, #1e1e28 40%, #181820 60%, #131318 80%, #0e0e14 100%);
+	--page-gradient: linear-gradient(150deg, #151518 0%, #1e1e24 20%, #262630 40%, #202028 60%, #1a1a20 80%, #151518 100%);
+	--edit-gradient: linear-gradient(150deg, #131318 0%, #1a1a22 20%, #22222a 40%, #1e1e24 60%, #181820 80%, #131318 100%);
 }
 
 /* ─── Light Theme ─── */
@@ -306,8 +306,9 @@
 
 /* Aubergine wallpaper: keep default accent (orange for warm, purple for dark, etc.) */
 
-/* Ocean wallpaper → blue accent */
-[data-wallpaper="mesh-ocean"] {
+/* Ocean wallpaper → blue accent (dark themes) */
+[data-theme="warm"][data-wallpaper="mesh-ocean"],
+[data-theme="dark"][data-wallpaper="mesh-ocean"] {
 	--accent: #3898d8;
 	--orange-500: #3898d8;
 	--orange-400: #50a8e0;
@@ -326,8 +327,29 @@
 	--card-shadow-hover: 0 6px 24px rgba(56, 152, 216, 0.12), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Forest wallpaper → green accent */
-[data-wallpaper="mesh-forest"] {
+/* Ocean wallpaper → darker blue for light theme */
+[data-theme="light"][data-wallpaper="mesh-ocean"] {
+	--accent: #1870a8;
+	--orange-500: #1870a8;
+	--orange-400: #2080b8;
+	--orange-300: #105888;
+	--orange-200: #0e4870;
+	--accent-glow: rgba(24, 112, 168, 0.14);
+	--accent-soft: rgba(24, 112, 168, 0.07);
+	--accent-muted: rgba(24, 112, 168, 0.03);
+	--accent-border: rgba(24, 112, 168, 0.22);
+	--accent-hover: rgba(24, 112, 168, 0.10);
+	--step-prompt-bg: rgba(24, 112, 168, 0.08);
+	--step-prompt-answer: rgba(24, 112, 168, 0.04);
+	--step-prompt-glow: rgba(24, 112, 168, 0.12);
+	--step-prompt-border: rgba(32, 128, 184, 0.2);
+	--tag-text: var(--orange-300);
+	--card-shadow-hover: 0 6px 24px rgba(24, 112, 168, 0.10), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Forest wallpaper → green accent (dark themes) */
+[data-theme="warm"][data-wallpaper="mesh-forest"],
+[data-theme="dark"][data-wallpaper="mesh-forest"] {
 	--accent: #48a858;
 	--orange-500: #48a858;
 	--orange-400: #60b868;
@@ -346,8 +368,29 @@
 	--card-shadow-hover: 0 6px 24px rgba(72, 168, 88, 0.12), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Sunset wallpaper → warm amber accent */
-[data-wallpaper="mesh-sunset"] {
+/* Forest wallpaper → darker green for light theme */
+[data-theme="light"][data-wallpaper="mesh-forest"] {
+	--accent: #287838;
+	--orange-500: #287838;
+	--orange-400: #308840;
+	--orange-300: #1e6028;
+	--orange-200: #185020;
+	--accent-glow: rgba(40, 120, 56, 0.14);
+	--accent-soft: rgba(40, 120, 56, 0.07);
+	--accent-muted: rgba(40, 120, 56, 0.03);
+	--accent-border: rgba(40, 120, 56, 0.22);
+	--accent-hover: rgba(40, 120, 56, 0.10);
+	--step-prompt-bg: rgba(40, 120, 56, 0.08);
+	--step-prompt-answer: rgba(40, 120, 56, 0.04);
+	--step-prompt-glow: rgba(40, 120, 56, 0.12);
+	--step-prompt-border: rgba(48, 136, 64, 0.2);
+	--tag-text: var(--orange-300);
+	--card-shadow-hover: 0 6px 24px rgba(40, 120, 56, 0.10), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Sunset wallpaper → warm amber accent (dark themes) */
+[data-theme="warm"][data-wallpaper="mesh-sunset"],
+[data-theme="dark"][data-wallpaper="mesh-sunset"] {
 	--accent: #d88830;
 	--orange-500: #d88830;
 	--orange-400: #e0a048;
@@ -364,6 +407,31 @@
 	--step-prompt-border: rgba(224, 160, 72, 0.2);
 	--tag-text: var(--orange-300);
 	--card-shadow-hover: 0 6px 24px rgba(216, 136, 48, 0.12), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Sunset wallpaper → darker amber for light theme */
+[data-theme="light"][data-wallpaper="mesh-sunset"] {
+	--accent: #a86810;
+	--orange-500: #a86810;
+	--orange-400: #b87818;
+	--orange-300: #905008;
+	--orange-200: #784408;
+	--accent-glow: rgba(168, 104, 16, 0.14);
+	--accent-soft: rgba(168, 104, 16, 0.07);
+	--accent-muted: rgba(168, 104, 16, 0.03);
+	--accent-border: rgba(168, 104, 16, 0.22);
+	--accent-hover: rgba(168, 104, 16, 0.10);
+	--step-prompt-bg: rgba(168, 104, 16, 0.08);
+	--step-prompt-answer: rgba(168, 104, 16, 0.04);
+	--step-prompt-glow: rgba(168, 104, 16, 0.12);
+	--step-prompt-border: rgba(184, 120, 24, 0.2);
+	--tag-text: var(--orange-300);
+	--card-shadow-hover: 0 6px 24px rgba(168, 104, 16, 0.10), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Charcoal wallpaper → override wallpaper base to dark gray */
+[data-wallpaper="solid-charcoal"] {
+	--wallpaper-base: #1a1a1a;
 }
 
 /* ─── Reset & Base ─── */
