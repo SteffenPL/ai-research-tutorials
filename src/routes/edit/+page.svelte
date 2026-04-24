@@ -278,7 +278,7 @@
 							{#if trace.title && trace.title !== trace.slug}
 								<span class="item-title">{trace.title}</span>
 							{/if}
-							<span class="item-meta">{trace.roundCount} rounds · from {trace.sessionSlug}</span>
+							<span class="item-meta">{trace.roundCount} rounds{trace.sessionSlug ? ` · from ${trace.sessionSlug}` : ' · standalone'}</span>
 						</div>
 						<div class="item-actions">
 							<a class="btn-sm" href="{base}/curate/{trace.slug}">Edit</a>

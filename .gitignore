@@ -17,9 +17,8 @@ output/
 test_output.json
 test_images/
 
-# Fiji MCP traces
+# Fiji MCP traces (top-level, not the committed src/traces/)
 /traces/
-/src/traces/
 
 # Trash
 .trash/

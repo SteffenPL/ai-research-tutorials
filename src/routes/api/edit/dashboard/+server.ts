@@ -14,7 +14,7 @@ interface SessionInfo {
 interface TraceInfo {
 	slug: string;
 	title?: string;
-	sessionSlug: string;
+	sessionSlug?: string;
 	roundCount: number;
 }
 
@@ -77,7 +77,7 @@ export const GET: RequestHandler = () => {
 				roundCount: state.rounds?.length ?? 0
 			});
 		} catch {
-			traces.push({ slug, sessionSlug: slug, roundCount: 0 });
+			traces.push({ slug, roundCount: 0 });
 		}
 	}
 

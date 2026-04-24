@@ -1,0 +1,161 @@
+{
+  "formatVersion": "1.0.0",
+  "sessionSlug": "install-claude-code",
+  "title": "install-claude-code",
+  "rounds": [
+    {
+      "id": "r-8",
+      "kind": "claude",
+      "prompt": "Please create a small html page with a simulation of the game of life",
+      "sourceRoundIndex": 0,
+      "steps": [
+        {
+          "id": "s-1",
+          "sourceRef": {
+            "roundIndex": 0,
+            "nodeIndex": 0
+          },
+          "included": false,
+          "displayMode": "full",
+          "overrides": {
+            "type": "thinking",
+            "text": ""
+          }
+        },
+        {
+          "id": "s-2",
+          "sourceRef": {
+            "roundIndex": 0,
+            "nodeIndex": 1
+          },
+          "included": false,
+          "displayMode": "full",
+          "overrides": {
+            "type": "tool_call",
+            "toolName": "Bash",
+            "code": "ls /Users/SteffenPlunder/Documents/Workspace/ping-pong/"
+          }
+        },
+        {
+          "id": "s-3",
+          "sourceRef": {
+            "roundIndex": 0,
+            "nodeIndex": 1
+          },
+          "included": false,
+          "displayMode": "full",
+          "overrides": {
+            "type": "tool_result",
+            "text": "(Bash completed with no output)",
+            "_isError": false
+          }
+        },
+        {
+          "id": "s-4",
+          "sourceRef": {
+            "roundIndex": 0,
+            "nodeIndex": 2
+          },
+          "included": false,
+          "displayMode": "full",
+          "overrides": {
+            "type": "assistant",
+            "html": "<p>The directory is empty, so I'll create a fresh Game of Life page.\n\n`★ Insight ─────────────────────────────────────`\n- Conway's Game of Life needs **double buffering**: we can't update cells in-place because each cell's next state depends on its neighbors' *current* state. Modifying live data mid-iteration corrupts the calculation.\n- Using a flat `Uint8Array` instead of a 2D array is much faster — contiguous memory, no nested array overhead, and the index `y * cols + x` maps directly to a CPU cache line.\n- We'll use `requestAnimationFrame` instead of `setInterval` — it syncs to the display refresh rate and pauses automatically in background tabs.\n`─────────────────────────────────────────────────`</p>"
+          }
+        },
+        {
+          "id": "s-5",
+          "sourceRef": {
+            "roundIndex": 0,
+            "nodeIndex": 3
+          },
+          "included": false,
+          "displayMode": "full",
+          "overrides": {
+            "type": "tool_call",
+            "toolName": "Write",
+            "code": "/Users/SteffenPlunder/Documents/Workspace/ping-pong/game-of-life.html"
+          }
+        },
+        {
+          "id": "s-6",
+          "sourceRef": {
+            "roundIndex": 0,
+            "nodeIndex": 3
+          },
+          "included": true,
+          "displayMode": "full",
+          "overrides": {
+            "type": "tool_result",
+            "text": "File created successfully at: /Users/SteffenPlunder/Documents/Workspace/ping-pong/game-of-life.html",
+            "_isError": false
+          }
+        },
+        {
+          "id": "s-7",
+          "sourceRef": {
+            "roundIndex": 0,
+            "nodeIndex": 4
+          },
+          "included": true,
+          "displayMode": "full",
+          "overrides": {
+            "type": "assistant",
+            "html": "<p>`★ Insight ─────────────────────────────────────`\n- **Toroidal topology**: `(x + dx + cols) % cols` wraps coordinates so the grid edges connect — a glider crossing the right edge reappears on the left. Without this, patterns \"die\" at the boundary.\n- **Decoupling simulation from rendering**: the `loop` uses `requestAnimationFrame` (ties to ~60fps screen refresh) but gates the actual `step()` behind a custom interval (`1000/fps`). This lets the speed slider control simulation rate independently of the render loop, and keeps the UI responsive.\n- **Toggle-on-click drawing**: on `mousedown` we read the cell's current state and invert it, then `mousemove` paints that same value. This is a common UX pattern (used by iOS toggle rows too) — start a drag on a dead cell and everything you touch becomes alive, start on a live cell and you erase.\n`─────────────────────────────────────────────────`\n\nOpen `game-of-life.html` in a browser. A glider is pre-seeded in the corner — hit **Start** to watch it travel diagonally, or click **Random** to fill the board and observe emergent patterns (still lifes, oscillators, occasional gliders).</p>",
+            "final": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "r-12",
+      "kind": "claude",
+      "prompt": "Open the webpage",
+      "sourceRoundIndex": 1,
+      "steps": [
+        {
+          "id": "s-9",
+          "sourceRef": {
+            "roundIndex": 1,
+            "nodeIndex": 0
+          },
+          "included": true,
+          "displayMode": "full",
+          "overrides": {
+            "type": "tool_call",
+            "toolName": "Bash",
+            "code": "open /Users/SteffenPlunder/Documents/Workspace/ping-pong/game-of-life.html"
+          }
+        },
+        {
+          "id": "s-10",
+          "sourceRef": {
+            "roundIndex": 1,
+            "nodeIndex": 0
+          },
+          "included": true,
+          "displayMode": "full",
+          "overrides": {
+            "type": "tool_result",
+            "text": "(Bash completed with no output)",
+            "_isError": false
+          }
+        },
+        {
+          "id": "s-11",
+          "sourceRef": {
+            "roundIndex": 1,
+            "nodeIndex": 1
+          },
+          "included": true,
+          "displayMode": "full",
+          "overrides": {
+            "type": "assistant",
+            "html": "<p>Opened in your default browser. The glider should be visible in the top-left — click **Start** to animate it, or **Random** to seed the whole board.\n\n`★ Insight ─────────────────────────────────────`\n- macOS's `open` command uses Launch Services to pick the default handler for the file type (`.html` → your default browser). It's the CLI equivalent of double-clicking in Finder.\n- Because the file is loaded via `file://` rather than `http://`, there's no server involved — everything runs locally in the browser's JS engine. This also means some browser APIs (like `fetch` to relative paths, service workers, or `SharedArrayBuffer`) would be restricted under stricter CORS rules, but our self-contained page doesn't need them.\n`─────────────────────────────────────────────────`</p>",
+            "final": true
+          }
+        }
+      ]
+    }
+  ]
+}
