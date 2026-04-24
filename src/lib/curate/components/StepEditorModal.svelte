@@ -56,6 +56,25 @@
 		}
 	}
 
+	function parseQuestionHtml(html: string): { prompt: string; options: string[] } {
+		const olMatch = html.match(/([\s\S]*?)<ol[^>]*>([\s\S]*?)<\/ol>/i);
+		if (!olMatch) return { prompt: html.replace(/<[^>]*>/g, '').trim(), options: [] };
+		const prompt = olMatch[1].replace(/<[^>]*>/g, '').trim();
+		const liRegex = /<li[^>]*>([\s\S]*?)<\/li>/gi;
+		const options: string[] = [];
+		let match;
+		while ((match = liRegex.exec(olMatch[2])) !== null) {
+			options.push(match[1].replace(/<[^>]*>/g, '').trim());
+		}
+		return { prompt, options };
+	}
+
+	function rebuildQuestionHtml(prompt: string, options: string[]): string {
+		if (options.length === 0) return `<p>${prompt}</p>`;
+		const lis = options.map(o => `\n  <li>${o}</li>`).join('');
+		return `<p>${prompt}</p>\n<ol>${lis}\n</ol>`;
+	}
+
 	function noopFocus(_step: WindowStep) {}
 </script>
 
@@ -778,5 +797,39 @@
 	.btn-sm:hover {
 		background: rgba(255, 255, 255, 0.08);
 		color: var(--text-primary);
+	}
+
+	.question-option-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.35rem;
+	}
+
+	.question-option-row input[type="radio"] {
+		accent-color: var(--accent);
+		flex-shrink: 0;
+	}
+
+	.question-option-input {
+		flex: 1;
+		padding: 0.4rem 0.6rem;
+		background: rgba(0, 0, 0, 0.3);
+		border: 1px solid var(--border-subtle);
+		border-radius: 5px;
+		color: var(--text-primary);
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+	}
+
+	.question-option-input:focus {
+		outline: none;
+		border-color: var(--orange-400);
+	}
+
+	.btn-icon {
+		padding: 0.2rem 0.45rem;
+		font-size: 1rem;
+		line-height: 1;
 	}
 </style>
