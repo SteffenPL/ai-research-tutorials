@@ -42,22 +42,20 @@
 	} = $props();
 
 	type StepEntry = { kind: 'step'; step: Step; si: number; globalIndex: number };
-	type CommentEntry = { kind: 'comment'; text: string };
 	type CompactGroup = { kind: 'compact-group'; steps: Step[]; globalStart: number };
 	type RenderItem = StepEntry | CompactGroup;
-	type Segment = { kind: 'steps'; entries: RenderItem[] } | CommentEntry;
 
-	function segmentSteps(steps: Step[], roundStart: number): Segment[] {
-		const segments: Segment[] = [];
-		let currentBatch: RenderItem[] = [];
+	function buildRenderItems(steps: Step[], roundStart: number): RenderItem[] {
+		const items: RenderItem[] = [];
+		let compactRun: StepEntry[] = [];
 
-		function flushCompactRun(run: StepEntry[]) {
-			if (run.length > 0) {
-				currentBatch.push({ kind: 'compact-group', steps: run.map(e => e.step), globalStart: run[0].globalIndex });
+		function flushCompactRun() {
+			if (compactRun.length > 0) {
+				items.push({ kind: 'compact-group', steps: compactRun.map(e => e.step), globalStart: compactRun[0].globalIndex });
+				compactRun = [];
 			}
 		}
 
-		let compactRun: StepEntry[] = [];
 		for (let si = 0; si < steps.length; si++) {
 			const step = steps[si];
 			const entry: StepEntry = { kind: 'step', step, si, globalIndex: roundStart + si };
@@ -65,35 +63,12 @@
 			if (step.compact) {
 				compactRun.push(entry);
 			} else {
-				flushCompactRun(compactRun);
-				compactRun = [];
-				currentBatch.push(entry);
-			}
-
-			const comment = resolveComment(step.comment);
-			if (comment) {
-				flushCompactRun(compactRun);
-				compactRun = [];
-				segments.push({ kind: 'steps', entries: currentBatch });
-				segments.push({ kind: 'comment', text: comment });
-				currentBatch = [];
+				flushCompactRun();
+				items.push(entry);
 			}
 		}
-		flushCompactRun(compactRun);
-		if (currentBatch.length > 0) {
-			segments.push({ kind: 'steps', entries: currentBatch });
-		}
-		return segments;
-	}
-
-	function resolveComment(c: unknown): string | undefined {
-		if (!c) return undefined;
-		if (typeof c === 'string') return c;
-		if (typeof c === 'object' && 'en' in (c as object)) {
-			const obj = c as { en: string; ja?: string };
-			return langStore.current === 'ja' && obj.ja ? obj.ja : obj.en;
-		}
-		return undefined;
+		flushCompactRun();
+		return items;
 	}
 
 </script>
@@ -134,68 +109,52 @@
 				{#each activeRounds as round, ri}
 					{@const isTerminal = round.kind === 'terminal'}
 					{@const roundStart = roundBoundaries[ri]}
-					{@const segments = segmentSteps(round.steps, roundStart)}
+					{@const items = buildRenderItems(round.steps, roundStart)}
 					<div class="round-block">
-						{#each segments as segment, segIdx}
-							{#if segment.kind === 'steps'}
-								{@const isLast = segIdx === segments.length - 1}
-								<div class="terminal-segment" class:segment-continuation={segIdx > 0} class:segment-continues={!isLast}>
-									{#if segIdx === 0}
-										<div class="segment-titlebar">
-											<span class="segment-dot segment-dot--red"></span>
-											<span class="segment-dot segment-dot--yellow"></span>
-											<span class="segment-dot segment-dot--green"></span>
-											<span class="segment-title">claude — Round {ri + 1}</span>
-										</div>
-									{/if}
-									{#if segIdx === 0}
-										<div
-											data-step="{roundStart}-prompt"
-											class="step-block round-prompt-block"
-										>
-											{#if isTerminal}
-												<div class="prompt-block terminal-prompt">
-													{#if round.cwd}<div class="terminal-cwd">{round.cwd}</div>{/if}
-													<div class="terminal-cmd"><span class="terminal-percent">%</span> {round.prompt}</div>
-												</div>
-											{:else}
-												<div class="prompt-block">
-													<span class="prompt-chevron">&#8250;</span>
-													<div class="prompt-text">{round.prompt}</div>
-												</div>
-											{/if}
-										</div>
-									{/if}
-									{#each segment.entries as item}
-										{#if item.kind === 'compact-group'}
-											<div
-												data-step={item.globalStart}
-												class="step-block"
-											>
-												<CompactChipFlow
-													steps={item.steps}
-													{onFocusWindow}
-												/>
-											</div>
-										{:else}
-											<div
-												data-step={item.globalIndex}
-												class="step-block"
-											>
-												<StepRenderer
-													step={item.step}
-													showClaudeLabel={item.step.type === 'assistant' && item.si === 0}
-													isLast={item.globalIndex === allSteps.length - 1}
-													{onFocusWindow}
-												/>
-											</div>
-										{/if}
-									{/each}
+						<div class="round-titlebar">
+							<span class="round-dot round-dot--red"></span>
+							<span class="round-dot round-dot--yellow"></span>
+							<span class="round-dot round-dot--green"></span>
+							<span class="round-title">claude — Round {ri + 1}</span>
+						</div>
+						<div
+							data-step="{roundStart}-prompt"
+							class="step-block round-prompt-block"
+						>
+							{#if isTerminal}
+								<div class="prompt-block terminal-prompt">
+									{#if round.cwd}<div class="terminal-cwd">{round.cwd}</div>{/if}
+									<div class="terminal-cmd"><span class="terminal-percent">%</span> {round.prompt}</div>
 								</div>
 							{:else}
-								<div class="inline-comment">
-									<div class="inline-comment__label">Tutorial</div>
-									<div class="inline-comment__text">{@html segment.text}</div>
+								<div class="prompt-block">
+									<span class="prompt-chevron">&#8250;</span>
+									<div class="prompt-text">{round.prompt}</div>
+								</div>
+							{/if}
+						</div>
+						{#each items as item}
+							{#if item.kind === 'compact-group'}
+								<div
+									data-step={item.globalStart}
+									class="step-block"
+								>
+									<CompactChipFlow
+										steps={item.steps}
+										{onFocusWindow}
+									/>
+								</div>
+							{:else}
+								<div
+									data-step={item.globalIndex}
+									class="step-block"
+								>
+									<StepRenderer
+										step={item.step}
+										showClaudeLabel={item.step.type === 'assistant' && item.si === 0}
+										isLast={item.globalIndex === allSteps.length - 1}
+										{onFocusWindow}
+									/>
 								</div>
 							{/if}
 						{/each}
@@ -407,168 +366,14 @@
 		text-align: center;
 	}
 
-	/* ─── Mobile-only elements (hidden on desktop) ── */
-	.segment-titlebar {
-		display: none;
-	}
 
-	.inline-comment {
+	/* ─── Mobile-only elements (hidden on desktop) ── */
+	.round-titlebar {
 		display: none;
 	}
 
 	/* ─── Mobile: inline document flow ── */
 	@media (max-width: 900px) {
-		.terminal-segment {
-			background: var(--bg-terminal);
-			border-radius: 12px;
-			margin: 12px 0;
-			overflow: hidden;
-			border: 1px solid var(--border-subtle);
-		}
-
-		.terminal-segment.segment-continuation {
-			border-radius: 0 0 12px 12px;
-			margin-top: 40px;
-			border-top: none;
-			overflow: visible;
-			position: relative;
-		}
-
-		.terminal-segment.segment-continues {
-			border-radius: 12px 12px 0 0;
-			margin-bottom: 40px;
-			border-bottom: none;
-			overflow: visible;
-			position: relative;
-		}
-
-		.terminal-segment.segment-continuation.segment-continues {
-			border-radius: 0;
-		}
-
-		.terminal-segment .step-block:first-child {
-			padding-top: 14px;
-		}
-
-		.terminal-segment .step-block:last-child {
-			padding-bottom: 12px;
-		}
-
-		.terminal-segment.segment-continues .step-block:last-child {
-			padding-bottom: 0;
-		}
-
-		.terminal-segment.segment-continuation .step-block:first-child {
-			padding-top: 0;
-		}
-
-		.terminal-segment.segment-continues::after {
-			content: '';
-			position: absolute;
-			bottom: -24px;
-			left: -1px;
-			right: -1px;
-			height: 24px;
-			background: linear-gradient(to bottom, var(--bg-terminal), transparent);
-			border-left: 1px solid var(--border-subtle);
-			border-right: 1px solid var(--border-subtle);
-			pointer-events: none;
-			z-index: 1;
-		}
-
-		.terminal-segment.segment-continuation::before {
-			content: '';
-			position: absolute;
-			top: -24px;
-			left: -1px;
-			right: -1px;
-			height: 24px;
-			background: linear-gradient(to top, var(--bg-terminal), transparent);
-			border-left: 1px solid var(--border-subtle);
-			border-right: 1px solid var(--border-subtle);
-			pointer-events: none;
-			z-index: 1;
-		}
-
-		.segment-titlebar {
-			display: flex;
-			align-items: center;
-			gap: 6px;
-			padding: 8px 12px;
-			margin-bottom: 10px;
-			background: var(--bg-hover);
-			border-bottom: 1px solid var(--glass-faint);
-		}
-
-		.segment-dot {
-			width: 10px;
-			height: 10px;
-			border-radius: 50%;
-		}
-
-		.segment-dot--red { background: var(--dot-red); opacity: 0.4; }
-		.segment-dot--yellow { background: var(--dot-yellow); opacity: 0.4; }
-		.segment-dot--green { background: var(--dot-green); opacity: 0.4; }
-
-		.segment-title {
-			font-family: var(--font-mono);
-			font-size: 11px;
-			font-weight: 500;
-			color: var(--text-tertiary);
-			margin-left: 4px;
-		}
-
-		.inline-comment {
-			display: block;
-			margin: 16px 12px;
-			padding: 16px 20px;
-			background: var(--glass-bg-soft);
-			backdrop-filter: blur(16px);
-			-webkit-backdrop-filter: blur(16px);
-			border-radius: 12px;
-			border: 1px solid var(--border-color);
-		}
-
-		.inline-comment__label {
-			font-size: 9px;
-			font-weight: 700;
-			text-transform: uppercase;
-			letter-spacing: 1px;
-			color: var(--orange-300);
-			margin-bottom: 6px;
-			display: flex;
-			align-items: center;
-			gap: 6px;
-		}
-
-		.inline-comment__label::after {
-			content: '';
-			flex: 1;
-			height: 1px;
-			background: linear-gradient(90deg, var(--orange-300), transparent);
-			opacity: 0.2;
-		}
-
-		.inline-comment__text {
-			font-family: var(--font-display);
-			font-size: 13px;
-			line-height: 1.6;
-			color: var(--text-secondary);
-		}
-
-		.inline-comment__text :global(strong) {
-			color: var(--text-primary);
-			font-weight: 700;
-		}
-
-		.inline-comment__text :global(code) {
-			font-family: var(--font-mono);
-			font-size: 12px;
-			background: var(--accent-soft);
-			color: var(--peach);
-			padding: 1px 5px;
-			border-radius: 3px;
-		}
 		.terminal-container {
 			width: 100%;
 			min-width: 0;
@@ -587,7 +392,11 @@
 
 		.round-block {
 			margin-bottom: 0;
-			margin-top: 48px;
+			margin-top: 16px;
+			background: var(--bg-terminal);
+			border-radius: 12px;
+			border: 1px solid var(--border-subtle);
+			overflow: hidden;
 		}
 
 		.round-block:first-child {
@@ -596,7 +405,39 @@
 
 		.round-block + .round-block {
 			padding-top: 0;
-			border-top: none;
+			border-top: 1px solid var(--border-subtle);
+		}
+
+		.round-block .step-block:last-child {
+			padding-bottom: 12px;
+		}
+
+		.round-titlebar {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			padding: 8px 12px;
+			margin-bottom: 10px;
+			background: var(--bg-hover);
+			border-bottom: 1px solid var(--glass-faint);
+		}
+
+		.round-dot {
+			width: 10px;
+			height: 10px;
+			border-radius: 50%;
+		}
+
+		.round-dot--red { background: var(--dot-red); opacity: 0.4; }
+		.round-dot--yellow { background: var(--dot-yellow); opacity: 0.4; }
+		.round-dot--green { background: var(--dot-green); opacity: 0.4; }
+
+		.round-title {
+			font-family: var(--font-mono);
+			font-size: 11px;
+			font-weight: 500;
+			color: var(--text-tertiary);
+			margin-left: 4px;
 		}
 
 		/* On mobile, prompts are regular flow (not sticky) */

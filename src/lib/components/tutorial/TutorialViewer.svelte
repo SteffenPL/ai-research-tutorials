@@ -470,8 +470,8 @@
 			bind:terminalBodyRef={terminalBody}
 		/>
 
-		<!-- Right Column: Fiji windows (incl. max overlay) + controls -->
-		<div class="right-column" bind:this={rightColumn}>
+		<!-- Right Column: Fiji windows (desktop) -->
+		<div class="right-column">
 			<DesktopStack
 				{windowSteps}
 				{currentStep}
@@ -486,7 +486,29 @@
 				onJump={jumpToStep}
 			/>
 
-			<!-- Bottom Panel: Comment + Controls -->
+			<!-- Desktop: controls live inside right-column -->
+			<div class="desktop-controls">
+				<ControlsPanel
+					commentHtml={currentComment}
+					{currentStep}
+					{currentRoundIdx}
+					{currentTutorialInRound}
+					{currentTutorialGlobal}
+					totalTutorialStops={tutorialStops.length}
+					{playing}
+
+					bind:detailMode
+					bind:showSettings
+					onPrev={prev}
+					onNext={next}
+					onTogglePlay={togglePlay}
+					onSetDetailMode={setDetailMode}
+				/>
+			</div>
+		</div>
+
+		<!-- Mobile: sticky controls at bottom of viewport -->
+		<div class="mobile-controls" bind:this={rightColumn}>
 			<ControlsPanel
 				commentHtml={currentComment}
 				{currentStep}
@@ -502,7 +524,6 @@
 				onNext={next}
 				onTogglePlay={togglePlay}
 				onSetDetailMode={setDetailMode}
-
 			/>
 		</div>
 	</div>
@@ -564,6 +585,14 @@
 		gap: 10px;
 	}
 
+	.desktop-controls {
+		display: contents;
+	}
+
+	.mobile-controls {
+		display: none;
+	}
+
 	@media (max-width: 900px) {
 		:global(body.tutorial-active) { overflow: visible !important; overflow-y: auto !important; }
 
@@ -588,10 +617,17 @@
 		}
 
 		.right-column {
-			order: 1;
 			padding: 0;
 			gap: 0;
 			flex: none;
+		}
+
+		.desktop-controls {
+			display: none;
+		}
+
+		.mobile-controls {
+			display: block;
 			position: sticky;
 			bottom: 0;
 			z-index: 20;

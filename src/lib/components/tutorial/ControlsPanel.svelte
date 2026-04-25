@@ -394,32 +394,49 @@
 		border-radius: 3px;
 	}
 
-	/* ─── Mobile: flip order, remove side borders, grow into viewport ─── */
+	/* ─── Mobile: single unified sticky bar ─── */
 	@media (max-width: 900px) {
 		.bottom-panel {
-			position: static;
-			left: auto;
-			right: auto;
-			gap: 0;
 			height: auto;
 			min-height: 0;
 			max-height: none;
+			gap: 0;
 			overflow: visible;
-		}
-
-		.controls { order: 1; }
-		.comment-panel { order: 0; }
-
-		.controls {
-			padding: 8px 12px;
-			gap: 6px;
-			border-radius: 0;
-			border-left: none;
-			border-right: none;
-			border-bottom: none;
 			background: var(--glass-bg-strong);
 			backdrop-filter: blur(12px);
 			-webkit-backdrop-filter: blur(12px);
+			border-top: 1px solid var(--border-color);
+			border-radius: 10px 10px 0 0;
+		}
+
+		.comment-panel {
+			order: 0;
+			flex: none;
+			border: none;
+			border-radius: 0;
+			background: transparent;
+			backdrop-filter: none;
+			-webkit-backdrop-filter: none;
+			overflow: hidden;
+			padding: 10px 14px 6px;
+		}
+
+		.comment-scroll {
+			flex: none;
+			max-height: 80px;
+			overflow-y: auto;
+		}
+
+		.controls {
+			order: 1;
+			padding: 6px 12px 8px;
+			gap: 6px;
+			border: none;
+			border-radius: 0;
+			border-top: 1px solid var(--border-subtle);
+			background: transparent;
+			backdrop-filter: none;
+			-webkit-backdrop-filter: none;
 		}
 
 		.ctrl-btn { width: 40px; padding: 4px 0 2px; }
@@ -428,9 +445,6 @@
 		.step-counter { font-size: 10px; }
 		.settings-btn svg { width: 14px; height: 14px; }
 
-		.comment-panel {
-			display: none;
-		}
 		.comment-header { margin-bottom: 4px; }
 		.comment-text { font-size: 12px; line-height: 1.5; }
 	}
