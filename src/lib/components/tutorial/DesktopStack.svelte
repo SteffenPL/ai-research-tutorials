@@ -406,5 +406,16 @@
 
 	@media (max-width: 900px) {
 		.fiji-area { display: none; }
+
+		.max-backdrop {
+			position: fixed;
+			inset: 0;
+		}
+
+		.max-window {
+			position: fixed;
+			inset: 0;
+			border-radius: 0;
+		}
 	}
 </style>

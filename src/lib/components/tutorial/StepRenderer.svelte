@@ -1083,9 +1083,8 @@
 		.inline-fiji :global(img),
 		.inline-fiji :global(video) {
 			display: block;
-			max-width: 100%;
-			max-height: 30vh;
-			max-height: 30dvh;
+			width: 100%;
+			height: auto;
 			image-rendering: pixelated;
 			background: #000;
 		}
