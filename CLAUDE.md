@@ -276,3 +276,7 @@ npm run build        # production build to build/
 ```
 
 Target repo: `steffenpl/ai-research-tutorials` (GitHub Pages from `gh-pages` branch).
+
+## Playwright & screenshots
+
+Playwright MCP snapshots go to `.playwright-mcp/` and screenshots to `screenshots/` — both are gitignored. When taking screenshots, always use the `screenshots/` prefix (e.g. `screenshots/my-check.png`).

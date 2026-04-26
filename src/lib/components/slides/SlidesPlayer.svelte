@@ -341,7 +341,7 @@
 				{#if activeWindows.length > 0}
 					{#each activeWindows as win, wi (wi + '-' + currentScene)}
 						<div class="stack-window" style={windowStackStyle(wi, activeWindows.length)}>
-							<div class="window">
+							<div class="window" class:window--collection={win.content.kind === 'window-collection'}>
 								{#if !isChromeless(win.content)}
 									<WindowChrome
 										title={win.windowTitle}
@@ -616,6 +616,24 @@
 	.window__content {
 		max-height: 65vh;
 		overflow: hidden;
+	}
+
+	.window--collection {
+		background: transparent;
+		box-shadow: none;
+		border-radius: 0;
+		border: none;
+	}
+
+	.window--collection .window__content :global(.sub-window) {
+		border: 1px solid var(--border-subtle);
+		border-radius: 10px;
+		background: var(--bg-secondary);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+	}
+
+	.window--collection .window__content :global(.collection-grid) {
+		gap: 4px;
 	}
 
 	/* ─── Pause ─── */
