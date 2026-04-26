@@ -104,7 +104,12 @@ const allTutorials: Tutorial[] = Object.entries(compositionRaw)
 /* ─── Public API ────────────────────────────── */
 
 export function getAllTutorials(): Tutorial[] {
-	return allTutorials.filter((t) => t.meta.visibility !== 'hidden');
+	return allTutorials.filter((t) => t.meta.visibility !== 'hidden' && t.meta.visibility !== 'draft');
+}
+
+export function getDraftTutorials(): Tutorial[] {
+	if (!import.meta.env.DEV) return [];
+	return allTutorials.filter((t) => t.meta.visibility === 'draft');
 }
 
 export function getTutorialBySlug(slug: string): Tutorial | undefined {

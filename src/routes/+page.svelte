@@ -5,9 +5,10 @@
 	import MatrixRain from '$lib/components/MatrixRain.svelte';
 	import Wallpaper from '$lib/components/Wallpaper.svelte';
 	import { t } from '$lib/stores/lang.svelte';
-	import { getAllTutorials } from '$lib/data/tutorial-loader';
+	import { getAllTutorials, getDraftTutorials } from '$lib/data/tutorial-loader';
 
 	const tutorials = getAllTutorials();
+	const drafts = getDraftTutorials();
 
 	const rotatingWords = [
 		{ en: 'Research', ja: 'リサーチ' },
@@ -120,6 +121,26 @@
 		{/each}
 	</div>
 </section>
+
+{#if drafts.length > 0}
+<section class="tutorials drafts" id="drafts">
+	<div class="tutorials__inner">
+		<div class="tutorials__header">
+			<h2 class="tutorials__heading">
+				<span class="drafts__badge">DEV</span>
+				{t({ en: 'Drafts', ja: '下書き' })}
+			</h2>
+			<span class="tutorials__count">{drafts.length} {drafts.length === 1 ? 'draft' : 'drafts'}</span>
+		</div>
+
+		{#each drafts as tutorial, i}
+			<div style="animation-delay: {0.1 + i * 0.08}s">
+				<TutorialCard {tutorial} />
+			</div>
+		{/each}
+	</div>
+</section>
+{/if}
 
 <Footer />
 
@@ -279,6 +300,23 @@
 		font-family: var(--font-mono);
 		font-size: 0.75rem;
 		color: var(--text-tertiary);
+	}
+
+	.drafts {
+		border-top: 1px dashed rgba(233, 84, 32, 0.3);
+	}
+
+	.drafts__badge {
+		display: inline-block;
+		font-size: 0.6rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		color: var(--accent);
+		background: rgba(233, 84, 32, 0.15);
+		padding: 0.15em 0.5em;
+		border-radius: 4px;
+		margin-right: 0.4em;
+		vertical-align: middle;
 	}
 
 	@media (max-width: 640px) {

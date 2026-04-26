@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import Nav from '$lib/components/Nav.svelte';
-	import type { TutorialComposition, TraceBlock } from '$lib/compose/types';
+	import type { TutorialComposition, TraceBlock, HandAuthoredBlock } from '$lib/compose/types';
 	import BlockSearchBar from '$lib/compose/BlockSearchBar.svelte';
 	import AssetPickerDialog from '$lib/components/AssetPickerDialog.svelte';
 	import TraceBlockEditor from '$lib/curate/components/TraceBlockEditor.svelte';
@@ -282,7 +282,7 @@
 	<!-- ═══ TRACE BLOCKS ═══ -->
 	<section class="blocks-section">
 		<div class="section-header">
-			<h2>Trace Blocks</h2>
+			<h2>Blocks</h2>
 			<div class="section-actions">
 				<button class="btn-sm btn-accent" onclick={() => (showBlockSearch = true)}>
 					+ Add Trace
@@ -299,7 +299,7 @@
 		{/if}
 
 		{#if composition.blocks.length === 0}
-			<p class="empty">No trace blocks yet. Add a trace to start composing.</p>
+			<p class="empty">No blocks yet. Add a trace to start composing.</p>
 		{:else}
 			<ol class="block-list">
 				{#each composition.blocks as block, i}
@@ -351,6 +351,47 @@
 										ondirty={() => markTraceDirty(block.sourceSlug)}
 										bind:this={blockEditorRefs[i]}
 									/>
+								</div>
+							{/if}
+						</li>
+					{:else if block.kind === 'round'}
+						<li class="block-item">
+							<div class="block-header">
+								<button class="block-expand" onclick={() => toggleExpand(i)}>
+									{expandedBlocks.has(i) ? '▾' : '▸'}
+								</button>
+								<span class="block-kind block-kind--round">Round</span>
+								<span class="block-slug">{block.round.kind ?? 'claude'}</span>
+								<span class="block-summary">
+									{block.round.steps?.length ?? 0} steps · "{block.round.prompt?.slice(0, 60)}{(block.round.prompt?.length ?? 0) > 60 ? '…' : ''}"
+								</span>
+								<div class="block-actions">
+									<button class="btn-icon" onclick={() => moveBlock(i, -1)} disabled={i === 0}>↑</button>
+									<button class="btn-icon" onclick={() => moveBlock(i, 1)} disabled={i === composition.blocks.length - 1}>↓</button>
+									<button class="btn-icon danger" onclick={() => removeBlock(i)}>✕</button>
+								</div>
+							</div>
+
+							{#if expandedBlocks.has(i)}
+								<div class="block-detail round-detail">
+									<div class="round-steps">
+										{#each block.round.steps ?? [] as step, si}
+											<div class="round-step">
+												<span class="round-step-index">{si + 1}</span>
+												<span class="round-step-type">{step.type}</span>
+												{#if step.type === 'window'}
+													<span class="round-step-info">{step.windowTitle ?? ''}</span>
+												{:else if step.type === 'assistant'}
+													<span class="round-step-info">{step.final ? '(final)' : ''}</span>
+												{:else if step.type === 'tool_call'}
+													<span class="round-step-info">{step.toolName ?? ''}</span>
+												{/if}
+												{#if step.comment}
+													<span class="round-step-comment">💬</span>
+												{/if}
+											</div>
+										{/each}
+									</div>
 								</div>
 							{/if}
 						</li>
@@ -604,8 +645,49 @@
 		gap: 0.2rem;
 		flex-shrink: 0;
 	}
+	.block-kind--round {
+		background: rgba(0, 180, 180, 0.15);
+		color: var(--teal);
+	}
 	.block-detail {
 		padding: 0 0.5rem 0.5rem;
+	}
+	.round-steps {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+		padding: 0.25rem;
+	}
+	.round-step {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.2rem 0.4rem;
+		border-radius: 3px;
+		background: rgba(0, 0, 0, 0.15);
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+	}
+	.round-step-index {
+		color: var(--text-tertiary);
+		font-size: 0.6rem;
+		min-width: 1.2em;
+		text-align: right;
+	}
+	.round-step-type {
+		color: var(--teal);
+		font-weight: 500;
+		flex-shrink: 0;
+	}
+	.round-step-info {
+		color: var(--text-secondary);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.round-step-comment {
+		flex-shrink: 0;
+		font-size: 0.6rem;
 	}
 	.block-rounds-filter {
 		padding: 0 0.25rem 0.5rem;

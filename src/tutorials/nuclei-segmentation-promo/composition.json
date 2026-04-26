@@ -9,7 +9,7 @@
     "tags": ["fiji", "segmentation", "promo"],
     "thumbnail": "tutorials/nuclei-segmentation/assets/step_001.png",
     "author": "Steffen Plunder",
-    "visibility": "hidden"
+    "visibility": "draft"
   },
   "description": "AI-driven nuclei segmentation: two prompts, ten approaches, 103 nuclei detected.",
   "blocks": [
@@ -28,13 +28,14 @@
               "statusBar": "1376×1104 pixels; RGB"
             },
             "subtitle": "1376×1104 · RGB · fluorescence",
-            "promoDuration": 5000
+            "comment": "The AI agent opens the image in Fiji via MCP tool calls — writing and executing an ImageJ macro autonomously."
           },
           {
             "type": "assistant",
             "html": "<p>The image is open in Fiji — a fluorescence micrograph of osteosarcoma cells. Blue (DAPI) marks nuclei, green marks cytoskeleton.</p>",
             "final": true,
-            "promoDuration": 5000
+            "promoDuration": 4000,
+            "comment": "The agent inspects the image metadata and reports back with a structured summary."
           }
         ]
       }
@@ -61,7 +62,8 @@
               ]
             },
             "subtitle": "Basic thresholding methods",
-            "promoDuration": 5000
+            "promoDuration": 2500,
+            "comment": "Five basic approaches tested — from raw thresholding (Otsu, Triangle, Li) to Gaussian-smoothed variants with Watershed splitting."
           },
           {
             "type": "window",
@@ -79,7 +81,8 @@
               ]
             },
             "subtitle": "Advanced methods",
-            "promoDuration": 5000
+            "promoDuration": 2500,
+            "comment": "Five advanced approaches — including local thresholding and morphological cleanup. The agent visually inspects each result to judge quality."
           },
           {
             "type": "window",
@@ -90,13 +93,14 @@
               "statusBar": "103 nuclei detected · Approach #9"
             },
             "subtitle": "103 nuclei — Osteosarcoma_01.tif",
-            "promoDuration": 6000
+            "comment": "The agent selects Approach #9 as the winner, runs Analyze Particles, and overlays the detected nuclei on the original image."
           },
           {
             "type": "assistant",
             "html": "<p><strong>103 nuclei</strong> segmented using <strong>Approach #9</strong> — Gaussian blur + Otsu threshold + Morphological Open + Watershed.</p><p>#9's morphological Open step removed debris and thin bridges before Watershed, producing the cleanest nucleus shapes out of all 10 approaches.</p>",
             "final": true,
-            "promoDuration": 8000
+            "promoDuration": 7000,
+            "comment": "Complete — from a single natural-language prompt to a quantitative result with 103 individually measured nuclei."
           }
         ]
       }
