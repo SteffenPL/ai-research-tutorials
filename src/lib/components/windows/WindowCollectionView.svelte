@@ -48,7 +48,7 @@
 <style>
 	.collection-grid {
 		display: grid;
-		grid-template-columns: repeat(var(--cols), auto);
+		grid-template-columns: repeat(var(--cols), 1fr);
 		gap: 6px;
 		justify-content: center;
 		align-content: center;
@@ -131,9 +131,34 @@
 		background: #000;
 	}
 
-	.max-sub-body :global(img) {
+	.max-sub-body :global(.zoom-container) {
+		flex: 1 1 auto;
+		min-height: 0;
+	}
+
+	.max-sub-body :global(.zoom-content) {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.max-sub-body :global(img),
+	.max-sub-body :global(video) {
 		max-width: 100%;
 		max-height: 100%;
+		width: auto;
+		height: auto;
 		object-fit: contain;
+	}
+
+	@media (max-width: 900px) {
+		.max-sub-window {
+			top: 57px;
+			left: 6px;
+			right: 6px;
+			bottom: 121px;
+		}
 	}
 </style>

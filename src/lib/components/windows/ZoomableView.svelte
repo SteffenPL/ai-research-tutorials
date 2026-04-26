@@ -141,8 +141,7 @@
 		overflow: hidden;
 		display: block;
 		min-height: 0;
-		/* touch-action: none would kill native scrolling on mobile — we only
-		   disable it for the content wrapper when actively panning */
+		container-type: inline-size;
 	}
 
 	.zoom-content {
@@ -225,6 +224,25 @@
 		}
 		.zoom-controls .pct {
 			font-size: 11px;
+		}
+	}
+
+	/* Compact zoom controls for small containers */
+	@container (max-width: 300px) {
+		.zoom-controls {
+			padding: 1px;
+			border-radius: 6px;
+			bottom: 4px;
+			right: 4px;
+		}
+		.zoom-controls button {
+			min-width: 20px;
+			height: 18px;
+			font-size: 11px;
+			padding: 0 4px;
+		}
+		.zoom-controls .pct {
+			display: none;
 		}
 	}
 </style>

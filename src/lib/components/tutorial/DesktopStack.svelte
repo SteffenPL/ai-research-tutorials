@@ -414,8 +414,11 @@
 
 		.max-window {
 			position: fixed;
-			inset: 0;
-			border-radius: 0;
+			top: 57px;
+			left: 6px;
+			right: 6px;
+			bottom: 121px;
+			border-radius: 10px;
 		}
 	}
 </style>

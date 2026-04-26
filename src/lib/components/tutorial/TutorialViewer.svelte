@@ -450,14 +450,16 @@
 
 	<!-- Workspace -->
 	<div class="workspace">
-		<!-- Mobile welcome (above terminal, hidden on desktop) -->
-		{#if !hasVisibleWindows}
+		<!-- Mobile welcome (above terminal) -->
+		<!-- On desktop: only shown until first window appears (then desktop welcome card takes over) -->
+		<!-- On mobile: always shown -->
+		<div class="mobile-welcome-wrap" class:desktop-hide={hasVisibleWindows}>
 			<MobileWelcome
 				meta={tutorial.meta}
 				description={tutorial.description}
 				requirements={tutorial.requirements}
 			/>
-		{/if}
+		</div>
 
 		<!-- Terminal Window -->
 		<TerminalTranscript
@@ -585,6 +587,10 @@
 		gap: 10px;
 	}
 
+	.mobile-welcome-wrap.desktop-hide {
+		display: none;
+	}
+
 	.desktop-controls {
 		display: contents;
 	}
@@ -620,6 +626,10 @@
 			padding: 0;
 			gap: 0;
 			flex: none;
+		}
+
+		.mobile-welcome-wrap.desktop-hide {
+			display: block;
 		}
 
 		.desktop-controls {
