@@ -315,15 +315,21 @@
 		</button>
 	{/if}
 	<!-- Mobile: full inline window -->
-	<div class="inline-fiji">
-		<WindowChrome
-			title={step.windowTitle}
-			subtitle={step.subtitle}
-			icon={step.icon ?? getWindowIcon(step.content)}
-			onMaximize={() => onFocusWindow(step)}
-		/>
-		<WindowContent content={step.content} />
-	</div>
+	{#if step.content.kind === 'window-collection'}
+		<div class="inline-collection">
+			<WindowContent content={step.content} />
+		</div>
+	{:else}
+		<div class="inline-fiji">
+			<WindowChrome
+				title={step.windowTitle}
+				subtitle={step.subtitle}
+				icon={step.icon ?? getWindowIcon(step.content)}
+				onMaximize={() => onFocusWindow(step)}
+			/>
+			<WindowContent content={step.content} />
+		</div>
+	{/if}
 
 {:else if step.type === 'table'}
 	<table class="results-table">
@@ -934,8 +940,9 @@
 		background: linear-gradient(90deg, transparent, var(--border-color), transparent);
 	}
 
-	/* ── Window marker (desktop) and inline-fiji (mobile) ── */
-	.inline-fiji {
+	/* ── Window marker (desktop) and inline-fiji/collection (mobile) ── */
+	.inline-fiji,
+	.inline-collection {
 		display: none;
 	}
 
@@ -1088,6 +1095,12 @@
 		.inline-fiji :global(.folder-body) {
 			max-height: 30vh;
 			max-height: 30dvh;
+		}
+
+		.inline-collection {
+			display: block;
+			margin: 12px 0;
+			max-width: 100%;
 		}
 	}
 </style>
