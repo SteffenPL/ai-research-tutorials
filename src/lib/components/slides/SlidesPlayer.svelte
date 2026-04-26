@@ -487,7 +487,8 @@
 
 	/* ─── Left: chat frame ─── */
 	.chat-frame {
-		width: 36%;
+		width: 400px;
+		flex-shrink: 0;
 		height: 100vh;
 		display: flex;
 		align-items: center;
@@ -497,16 +498,15 @@
 
 	.chat-frame__inner {
 		width: 100%;
-		max-width: 420px;
+		height: 520px;
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
 		padding: 24px;
 		border-radius: 16px;
-		background: rgba(0, 0, 0, 0.2);
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		backdrop-filter: blur(6px);
-		max-height: calc(100vh - 80px);
+		background: rgba(0, 0, 0, 0.35);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		backdrop-filter: blur(10px);
 		overflow-y: auto;
 	}
 
@@ -549,8 +549,8 @@
 
 	.bubble--user {
 		align-self: flex-end;
-		background: rgba(233, 84, 32, 0.12);
-		border: 1px solid rgba(233, 84, 32, 0.2);
+		background: rgba(233, 84, 32, 0.25);
+		border: 1px solid rgba(233, 84, 32, 0.35);
 		border-radius: 14px 14px 4px 14px;
 		text-align: right;
 	}
@@ -558,15 +558,15 @@
 
 	.bubble--ai {
 		align-self: flex-start;
-		background: rgba(42, 161, 152, 0.1);
-		border: 1px solid rgba(42, 161, 152, 0.18);
+		background: rgba(42, 161, 152, 0.22);
+		border: 1px solid rgba(42, 161, 152, 0.3);
 		border-radius: 14px 14px 14px 4px;
 	}
 	.bubble--ai .bubble__tag { color: var(--teal, #2AA198); }
 
 	/* ─── Right: content area ─── */
 	.content-area {
-		width: 64%;
+		flex: 1;
 		height: 100vh;
 		position: relative;
 	}
