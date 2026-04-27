@@ -13,7 +13,7 @@ Live site: https://steffenpl.github.io/ai-research-tutorials/
 
 ## Tutorial data system
 
-Each tutorial is a `composition.json` file in `src/tutorials/<slug>/`. Compositions reference traces and/or contain hand-authored rounds. The `Tutorial` type consumed by the viewer is organized into **rounds** (one per user prompt), each containing an ordered list of steps:
+Each tutorial is a `composition.json` file in `src/tutorials/<slug>/`. Compositions reference one or more traces. The `Tutorial` type consumed by the viewer is organized into **rounds** (one per user prompt), each containing an ordered list of steps:
 
 ```ts
 export const myTutorial: Tutorial = {
@@ -180,7 +180,7 @@ Asset path rewriting is handled by `rewriteAssetPath()` in `src/lib/compose/reso
 
 ## Composition pipeline
 
-The composition tool at `/compose/<slug>` assembles tutorials from trace blocks and hand-authored rounds.
+The composition tool at `/compose/<slug>` assembles tutorials from trace blocks.
 
 ### Pipeline
 
@@ -192,7 +192,7 @@ Traces (src/traces/<slug>/trace.json)
 
 ### Key files
 
-- `src/lib/compose/types.ts` — TutorialComposition, TraceBlock, HandAuthoredBlock
+- `src/lib/compose/types.ts` — TutorialComposition, TraceBlock
 - `src/lib/compose/resolve.ts` — resolves composition → Tutorial (asset rewriting, trace loading)
 - `src/lib/compose/preview-store.ts` — in-memory preview store
 - `src/routes/compose/[slug]/+page.svelte` — composition editor

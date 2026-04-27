@@ -1,6 +1,6 @@
 import type { Tutorial, TutorialRound, WindowStep, WindowContentData } from '$lib/data/tutorials';
 import type { TraceState } from '$lib/trace/types';
-import type { TutorialComposition, CompositionBlock } from './types';
+import type { TutorialComposition, TraceBlock } from './types';
 import { traceStateToTutorialRounds } from '$lib/trace/convert';
 
 export type TraceLoader = (slug: string) => TraceState | null;
@@ -51,15 +51,11 @@ function rewriteRoundAssets(slug: string, rounds: TutorialRound[]): TutorialRoun
 }
 
 function resolveBlocks(
-	blocks: CompositionBlock[],
+	blocks: TraceBlock[],
 	loadTrace: TraceLoader
 ): TutorialRound[] {
 	const allRounds: TutorialRound[] = [];
 	for (const block of blocks) {
-		if (block.kind === 'round') {
-			allRounds.push(block.round);
-			continue;
-		}
 		const trace = loadTrace(block.sourceSlug);
 		if (!trace) continue;
 		let rounds = traceStateToTutorialRounds(trace);

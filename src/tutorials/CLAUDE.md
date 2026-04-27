@@ -60,16 +60,16 @@ at build time via `resolveComposition()`. No YAML export step needed.
   },
   "devOnly": false,
   "blocks": [
-    { "kind": "trace", "sourceSlug": "my-trace" },
-    { "kind": "round", "round": { "kind": "claude", "prompt": "...", "steps": [...] } }
+    { "kind": "trace", "sourceSlug": "my-trace" }
   ],
   "fullBlocks": [...]
 }
 ```
 
-Blocks reference traces (`kind: "trace"`) or contain hand-authored
-rounds (`kind: "round"`). `fullBlocks` is optional and provides the
-unabridged log (enables "Full Log" toggle).
+Blocks reference traces (`kind: "trace"`). Hand-authored content lives
+in traces as `inserted` steps (no session source required).
+`fullBlocks` is optional and provides the unabridged log (enables
+"Full Log" toggle).
 
 ## Round structure (inside blocks)
 
@@ -171,7 +171,7 @@ flow is:
 2. **Create trace** — open `/curate/<slug>`, select/deselect steps, set
    compact/full per step, add comments. Saved to `src/traces/<slug>/trace.json`.
 3. **Compose tutorial** — open `/compose/<slug>`, add trace blocks
-   and/or hand-authored rounds, edit metadata. Saved to
+   add trace blocks, edit metadata. Saved to
    `src/tutorials/<slug>/composition.json`. The static build reads
    this directly — no export step needed.
 

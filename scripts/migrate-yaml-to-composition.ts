@@ -1,13 +1,11 @@
 #!/usr/bin/env tsx
 /**
- * One-time migration: convert YAML-based tutorials to composition.json.
+ * DEPRECATED — One-time migration script, already run. HandAuthoredBlock
+ * support has been removed from the composition system. Compositions now
+ * only accept trace blocks; hand-authored content lives in traces as
+ * inserted steps. This file is retained for historical reference only.
  *
- * For each tutorial with a meta.yaml, produces a composition.json containing:
- *   - meta fields (slug, title, tags, thumbnail, sessions, author)
- *   - welcome / briefing
- *   - blocks from tutorial/round-NN.yaml as HandAuthoredBlocks
- *   - fullBlocks from full-log/round-NN.yaml as HandAuthoredBlocks
- *   - formatVersion: "1.0.0"
+ * Original purpose: convert YAML-based tutorials to composition.json.
  *
  * Usage:
  *   tsx scripts/migrate-yaml-to-composition.ts [--dry-run]
