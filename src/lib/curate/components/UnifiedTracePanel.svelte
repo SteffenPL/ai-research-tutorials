@@ -17,6 +17,7 @@
 		onToggleRound,
 		onToggleStep,
 		onMoveStep,
+		onMoveRound,
 		onRemoveStep,
 		onRemoveRound,
 		onCycleDisplayMode,
@@ -40,6 +41,7 @@
 		onToggleRound: (roundId: string) => void;
 		onToggleStep: (roundId: string, stepId: string) => void;
 		onMoveStep: (roundId: string, stepId: string, direction: -1 | 1) => void;
+		onMoveRound: (roundId: string, direction: -1 | 1) => void;
 		onRemoveStep: (roundId: string, stepId: string) => void;
 		onRemoveRound: (roundId: string) => void;
 		onCycleDisplayMode: (step: TraceStep) => void;
@@ -465,11 +467,13 @@
 						{#if round.sourceRoundIndex !== undefined}
 							<span class="source-indicator">R{round.sourceRoundIndex + 1}</span>
 						{/if}
-						<span class="round-count">{#if includedCount(round) < totalCount(round)}{includedCount(round)}/{totalCount(round)}{:else}{totalCount(round)} steps{/if}</span>
+						<span class="round-count">{totalCount(round)} steps{#if totalCount(round) - includedCount(round) > 0} ({totalCount(round) - includedCount(round)} hidden){/if}</span>
 						<div class="round-actions">
 							{#if view && round.sourceRoundIndex !== undefined}
 								<button class="btn-icon" title="Reset round" onclick={() => onResetRound(round.id)}>↻</button>
 							{/if}
+							<button class="btn-icon" title="Move round up" onclick={() => onMoveRound(round.id, -1)}>↑</button>
+							<button class="btn-icon" title="Move round down" onclick={() => onMoveRound(round.id, 1)}>↓</button>
 							<button class="btn-icon" title="Hide round" onclick={() => onToggleRound(round.id)}>⊘</button>
 							<button class="btn-icon danger" title="Remove round" onclick={() => onRemoveRound(round.id)}>✕</button>
 						</div>

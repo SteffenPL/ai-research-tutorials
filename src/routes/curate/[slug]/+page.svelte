@@ -132,6 +132,18 @@
 		round.steps = round.steps.filter((s) => s.id !== stepId);
 	}
 
+	function moveRound(roundId: string, direction: -1 | 1) {
+		if (!curation) return;
+		const idx = curation.rounds.findIndex((r) => r.id === roundId);
+		if (idx < 0) return;
+		const newIdx = idx + direction;
+		if (newIdx < 0 || newIdx >= curation.rounds.length) return;
+		const tmp = curation.rounds[idx];
+		curation.rounds[idx] = curation.rounds[newIdx];
+		curation.rounds[newIdx] = tmp;
+		curation.rounds = [...curation.rounds];
+	}
+
 	function removeRound(roundId: string) {
 		if (!curation) return;
 		curation.rounds = curation.rounds.filter((r) => r.id !== roundId);
@@ -395,6 +407,7 @@
 			onToggleRound={toggleRound}
 			onToggleStep={toggleStep}
 			onMoveStep={moveStep}
+			onMoveRound={moveRound}
 			onRemoveStep={removeStep}
 			onRemoveRound={removeRound}
 			onCycleDisplayMode={cycleDisplayMode}
