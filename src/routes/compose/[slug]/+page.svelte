@@ -61,9 +61,14 @@
 		saving = true;
 		statusMessage = '';
 		try {
-			// Save all dirty traces first
 			for (const ref of blockEditorRefs) {
-				if (ref?.isDirty()) await ref.save();
+				if (ref?.isDirty()) {
+					const saved = await ref.save();
+					if (!saved) {
+						statusMessage = 'Trace save failed';
+						return;
+					}
+				}
 			}
 
 			const res = await fetch(`/api/compose/${data.slug}`, {
@@ -73,12 +78,13 @@
 			});
 			const json = await res.json();
 			statusMessage = json.ok ? 'Saved' : 'Save failed';
-			dirtyTraces = new Set();
+			if (json.ok) dirtyTraces = new Set();
 		} catch {
 			statusMessage = 'Save error';
+		} finally {
+			saving = false;
+			setTimeout(() => (statusMessage = ''), 3000);
 		}
-		saving = false;
-		setTimeout(() => (statusMessage = ''), 3000);
 	}
 
 	async function preview() {
@@ -621,15 +627,6 @@
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
-	.btn-primary {
-		background: var(--accent-soft);
-		border-color: var(--orange-500);
-		color: var(--orange-300);
-	}
-	.btn-danger {
-		border-color: var(--red);
-		color: var(--red);
-	}
 	.btn-sm {
 		padding: 0.2rem 0.5rem;
 		background: rgba(255, 255, 255, 0.04);
@@ -669,48 +666,5 @@
 	.btn-icon:disabled {
 		opacity: 0.3;
 		cursor: not-allowed;
-	}
-
-	/* ─── Overlay / Dialog ─── */
-	.overlay {
-		position: fixed;
-		inset: 0;
-		z-index: 50;
-		background: rgba(0, 0, 0, 0.6);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-	.dialog {
-		background: var(--glass-bg-strong);
-		border: 1px solid var(--border-subtle);
-		border-radius: 10px;
-		padding: 1.5rem;
-		max-width: 440px;
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-	}
-	.dialog h3 {
-		margin: 0 0 0.5rem;
-		font-size: 1rem;
-		color: var(--orange-300);
-	}
-	.dialog p {
-		font-size: 0.82rem;
-		color: var(--text-secondary);
-		margin: 0 0 0.6rem;
-	}
-	.dialog ul {
-		margin: 0 0 1rem;
-		padding-left: 1.2rem;
-	}
-	.dialog li {
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		color: var(--text-primary);
-	}
-	.dialog-actions {
-		display: flex;
-		gap: 0.5rem;
-		justify-content: flex-end;
 	}
 </style>

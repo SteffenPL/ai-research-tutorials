@@ -64,8 +64,9 @@
 			statusMessage = 'Save failed';
 		} catch {
 			statusMessage = 'Save error';
+		} finally {
+			saving = false;
 		}
-		saving = false;
 		return false;
 	}
 
