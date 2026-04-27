@@ -671,7 +671,7 @@
 	.bubble--user .bubble__tag { color: var(--orange-400); }
 
 	.bubble--round-start {
-		margin-top: 56px;
+		margin-top: var(--nav-total-height);
 	}
 
 	.bubble--ai {

@@ -423,6 +423,7 @@
 			max-height: none;
 			gap: 0;
 			overflow: visible;
+			padding-bottom: var(--safe-area-bottom);
 			background: var(--glass-bg-strong);
 			backdrop-filter: blur(12px);
 			-webkit-backdrop-filter: blur(12px);

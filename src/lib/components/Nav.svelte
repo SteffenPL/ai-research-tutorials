@@ -89,6 +89,9 @@
 		left: 0;
 		right: 0;
 		z-index: 100;
+		padding-top: var(--safe-area-top);
+		padding-left: var(--safe-area-left);
+		padding-right: var(--safe-area-right);
 		background: var(--nav-bg);
 		backdrop-filter: blur(16px) saturate(1.2);
 		-webkit-backdrop-filter: blur(16px) saturate(1.2);
@@ -99,7 +102,7 @@
 		max-width: 960px;
 		margin: 0 auto;
 		padding: 0 24px;
-		height: 56px;
+		height: var(--nav-content-height);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -276,9 +279,12 @@
 	}
 
 	@media (max-width: 640px) {
+		.nav {
+			--nav-content-height: 52px;
+		}
+
 		.nav__inner {
 			padding: 0 16px;
-			height: 52px;
 		}
 
 		.nav__logo-text {

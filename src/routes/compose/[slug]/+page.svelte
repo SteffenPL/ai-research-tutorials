@@ -414,7 +414,7 @@
 
 	.toolbar {
 		position: sticky;
-		top: 56px;
+		top: var(--nav-total-height);
 		z-index: 20;
 		display: flex;
 		align-items: center;
@@ -461,7 +461,7 @@
 	.compose {
 		max-width: 960px;
 		margin: 0 auto;
-		padding: calc(56px + 3rem + 0.5rem) 1rem 8rem;
+		padding: calc(var(--nav-total-height) + 3rem + 0.5rem) 1rem 8rem;
 	}
 
 	/* ─── Cards ─── */

@@ -459,7 +459,7 @@
 	/* ─── Toolbar ─────────────────────────────── */
 	.toolbar {
 		position: sticky;
-		top: 56px;
+		top: var(--nav-total-height);
 		z-index: 20;
 		display: flex;
 		align-items: center;
@@ -568,7 +568,7 @@
 	.metadata-section {
 		max-width: 1600px;
 		margin: 0 auto;
-		padding: calc(56px + 3rem + 0.5rem) 1rem 0;
+		padding: calc(var(--nav-total-height) + 3rem + 0.5rem) 1rem 0;
 	}
 	.metadata-section .tutorial-header {
 		margin: 0;
