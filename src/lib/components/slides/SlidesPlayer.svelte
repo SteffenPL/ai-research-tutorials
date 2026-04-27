@@ -722,6 +722,27 @@
 	}
 	.comment-text :global(p) { margin: 0; }
 
+	.comment-text::before {
+		content: '\201C';
+		font-size: 2em;
+		line-height: 0;
+		vertical-align: -0.2em;
+		margin-right: 4px;
+		color: var(--orange-300);
+		opacity: 0.5;
+		font-family: Georgia, serif;
+	}
+	.comment-text::after {
+		content: '\201D';
+		font-size: 2em;
+		line-height: 0;
+		vertical-align: -0.2em;
+		margin-left: 4px;
+		color: var(--orange-300);
+		opacity: 0.5;
+		font-family: Georgia, serif;
+	}
+
 	@keyframes commentIn {
 		from { opacity: 0; transform: translateY(8px); }
 		to { opacity: 1; transform: translateY(0); }

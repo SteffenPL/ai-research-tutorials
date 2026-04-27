@@ -87,6 +87,14 @@
 		overflow: hidden;
 	}
 
+	.sub-body :global(.zoom-container) {
+		height: 100%;
+	}
+
+	.sub-body :global(.zoom-content) {
+		height: 100%;
+	}
+
 	.sub-body :global(img) {
 		display: block;
 		width: 100%;
