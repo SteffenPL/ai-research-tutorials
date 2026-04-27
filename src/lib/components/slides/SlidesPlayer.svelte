@@ -366,7 +366,11 @@
 					{#if activeWindows.length > 0}
 						{#each activeWindows as win, wi (wi + '-' + currentScene)}
 							<div class="stack-window" style={windowStackStyle(wi, activeWindows.length)}>
-								<div class="window" class:window--collection={win.content.kind === 'window-collection'}>
+								<div
+									class="window"
+									class:window--collection={win.content.kind === 'window-collection'}
+									class:window--chromeless={isChromeless(win.content)}
+								>
 									{#if !isChromeless(win.content)}
 										<WindowChrome
 											title={win.windowTitle}
@@ -664,11 +668,16 @@
 		height: 75vh;
 	}
 
-	.window--collection {
+	.window--chromeless {
 		background: transparent;
 		box-shadow: none;
 		border-radius: 0;
 		border: none;
+	}
+
+	.window--chromeless .window__content {
+		max-height: 75vh;
+		height: 75vh;
 	}
 
 	.window--collection .window__content :global(.sub-window) {

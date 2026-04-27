@@ -49,8 +49,14 @@
 <style>
 	.fiji-main-container {
 		position: relative;
-		padding: 16px 16px 120px 16px;
+		height: 100%;
 		min-height: 300px;
+		padding: 16px;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		align-items: flex-start;
+		gap: 10px;
 	}
 
 	/* ─── Fiji main window ─── */
@@ -59,13 +65,17 @@
 		border-radius: 8px;
 		box-shadow: var(--card-shadow, 0 4px 20px rgba(0, 0, 0, 0.3));
 		overflow: hidden;
+		width: min(520px, 100%);
 		max-width: 520px;
 		border: 1px solid var(--border-subtle);
+		flex-shrink: 1;
 	}
 
 	.fiji-toolbar {
 		display: flex;
 		align-items: center;
+		width: max-content;
+		min-width: 100%;
 		padding: 4px 8px;
 		border-top: 1px solid var(--glass-faint);
 		border-bottom: 1px solid var(--glass-faint);
@@ -112,6 +122,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		min-width: 0;
 		padding: 4px 8px;
 		background: var(--bg-secondary);
 		font-size: 11px;
@@ -119,17 +130,26 @@
 		font-family: var(--font-display);
 	}
 
+	.status-text {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
 	.search-box {
 		opacity: 0.6;
 		font-style: italic;
+		flex-shrink: 0;
+		margin-left: 12px;
+		white-space: nowrap;
 	}
 
 	/* ─── Log sub-window ─── */
 	.log-window {
-		position: absolute;
-		left: 120px;
-		bottom: 16px;
-		width: min(500px, calc(100% - 40px));
+		position: relative;
+		margin-left: 10%;
+		width: min(500px, calc(90% - 16px));
 		background: var(--bg-secondary);
 		border-radius: 8px;
 		box-shadow: var(--card-shadow, 0 6px 24px rgba(0, 0, 0, 0.25));
