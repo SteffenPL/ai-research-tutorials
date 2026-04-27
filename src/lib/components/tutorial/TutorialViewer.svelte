@@ -603,8 +603,10 @@
 		:global(body.tutorial-active) { overflow: visible !important; overflow-y: auto !important; }
 
 		.desktop :global(.nav) {
-			position: sticky;
+			position: fixed;
 			top: calc(-1 * var(--browser-chrome-bleed));
+			left: 0;
+			right: 0;
 			z-index: 100;
 		}
 
@@ -616,7 +618,7 @@
 
 		.workspace {
 			flex-direction: column;
-			padding: 0;
+			padding: var(--nav-total-height) 0 0;
 			gap: 0;
 			overflow: visible;
 			flex: 0 0 auto;
@@ -638,9 +640,24 @@
 
 		.mobile-controls {
 			display: block;
-			position: sticky;
+			position: fixed;
+			left: 0;
+			right: 0;
 			bottom: 0;
-			z-index: 20;
+			z-index: 80;
+		}
+
+		.mobile-controls::after {
+			content: '';
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: calc(-1 * var(--browser-chrome-bleed));
+			height: var(--browser-chrome-bleed);
+			background: var(--glass-bg-strong);
+			backdrop-filter: blur(12px);
+			-webkit-backdrop-filter: blur(12px);
+			pointer-events: none;
 		}
 	}
 </style>

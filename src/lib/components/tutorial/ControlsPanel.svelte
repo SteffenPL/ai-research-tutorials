@@ -423,8 +423,7 @@
 			max-height: none;
 			gap: 0;
 			overflow: visible;
-			padding-bottom: calc(var(--safe-area-bottom) + var(--browser-chrome-bleed));
-			margin-bottom: calc(-1 * var(--browser-chrome-bleed));
+			padding-bottom: var(--safe-area-bottom);
 			background: var(--glass-bg-strong);
 			backdrop-filter: blur(12px);
 			-webkit-backdrop-filter: blur(12px);
