@@ -3,13 +3,13 @@
   "title": "install-claude-code-terminal",
   "rounds": [
     {
-      "id": "r-full-terminal-0",
+      "id": "r-install",
       "kind": "terminal",
       "prompt": "curl -fsSL https://claude.ai/install.sh | bash",
       "included": true,
       "steps": [
         {
-          "id": "s-full-terminal-0-0",
+          "id": "s-install-output",
           "included": true,
           "displayMode": "normal",
           "inserted": {
@@ -22,7 +22,7 @@
           }
         },
         {
-          "id": "s-full-terminal-0-1",
+          "id": "s-install-status",
           "included": true,
           "displayMode": "normal",
           "inserted": {
@@ -30,32 +30,64 @@
             "text": "✓ installation complete",
             "variant": "success"
           }
-        },
+        }
+      ]
+    },
+    {
+      "id": "r-source",
+      "kind": "terminal",
+      "prompt": "source ~/.zshrc",
+      "included": true,
+      "steps": []
+    },
+    {
+      "id": "r-which",
+      "kind": "terminal",
+      "prompt": "which claude",
+      "included": true,
+      "steps": [
         {
-          "id": "s-full-terminal-0-2",
+          "id": "s-which-output",
           "included": true,
           "displayMode": "normal",
           "inserted": {
             "type": "output",
-            "text": "$ source ~/.zshrc\n$ which claude\n/Users/steffen/.local/bin/claude\n$ claude --version\nclaude 2.0.0"
+            "text": "/Users/steffen/.local/bin/claude"
           }
-        },
+        }
+      ]
+    },
+    {
+      "id": "r-version",
+      "kind": "terminal",
+      "prompt": "claude --version",
+      "included": true,
+      "steps": [
         {
-          "id": "s-full-terminal-0-3",
-          "included": true,
-          "displayMode": "normal",
-          "inserted": {
-            "type": "divider",
-            "label": "create a working folder"
-          }
-        },
-        {
-          "id": "s-full-terminal-0-4",
+          "id": "s-version-output",
           "included": true,
           "displayMode": "normal",
           "inserted": {
             "type": "output",
-            "text": "$ mkdir ping-pong\n$ cd ping-pong\n$ pwd\n/Users/steffen/ping-pong\n$ ls\n(empty)",
+            "text": "claude 2.0.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "r-mkdir",
+      "kind": "terminal",
+      "prompt": "mkdir ping-pong && cd ping-pong",
+      "included": true,
+      "steps": [
+        {
+          "id": "s-mkdir-comment",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "status",
+            "text": "~/ping-pong",
+            "variant": "info",
             "comment": {
               "en": "Claude Code works best when launched from a project folder. Starting in an empty directory keeps things clean and lets us see exactly what Claude creates.",
               "ja": "Claude Code はプロジェクトフォルダから起動するのが最適です。空のディレクトリから始めることで、Claude が何を生成するかを正確に確認できます。"
@@ -65,13 +97,13 @@
       ]
     },
     {
-      "id": "r-terminal-auth",
+      "id": "r-auth",
       "kind": "terminal",
       "prompt": "claude",
       "included": true,
       "steps": [
         {
-          "id": "s-terminal-0",
+          "id": "s-auth-launch",
           "included": true,
           "displayMode": "normal",
           "inserted": {
@@ -84,7 +116,7 @@
           }
         },
         {
-          "id": "s-terminal-1",
+          "id": "s-auth-question",
           "included": true,
           "displayMode": "normal",
           "inserted": {
@@ -98,7 +130,7 @@
           }
         },
         {
-          "id": "s-terminal-2",
+          "id": "s-auth-result",
           "included": true,
           "displayMode": "normal",
           "inserted": {
@@ -111,7 +143,7 @@
           }
         },
         {
-          "id": "s-terminal-3",
+          "id": "s-auth-status",
           "included": true,
           "displayMode": "normal",
           "inserted": {
