@@ -604,7 +604,7 @@
 
 		.desktop :global(.nav) {
 			position: sticky;
-			top: 0;
+			top: calc(-1 * var(--browser-chrome-bleed));
 			z-index: 100;
 		}
 

@@ -128,8 +128,23 @@
 		return { preview: lines.slice(0, FOLD_LINES).join('\n'), hiddenCount: lines.length - FOLD_LINES };
 	}
 
+	function normalizeStoredMessage(text: string): string {
+		// Trace messages often arrive as simple HTML wrappers around Markdown
+		// (`<p>Done. [file](path)</p>`). marked treats that as raw HTML and
+		// will not parse the Markdown inside, so unwrap the lightweight tags first.
+		return text
+			.replace(/<br\s*\/?>/gi, '\n')
+			.replace(/<\/p>/gi, '\n\n')
+			.replace(/<p[^>]*>/gi, '')
+			.replace(/<strong[^>]*>([\s\S]*?)<\/strong>/gi, '**$1**')
+			.replace(/<em[^>]*>([\s\S]*?)<\/em>/gi, '*$1*')
+			.replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, '`$1`')
+			.replace(/<a\s+[^>]*href=(['"])(.*?)\1[^>]*>([\s\S]*?)<\/a>/gi, '[$3]($2)')
+			.trim();
+	}
+
 	async function renderMessageMarkdown(text: string): Promise<string> {
-		return renderMarkdown(text);
+		return renderMarkdown(normalizeStoredMessage(text));
 	}
 
 	function tryParseJsonResult(raw: string): ParsedJson {
