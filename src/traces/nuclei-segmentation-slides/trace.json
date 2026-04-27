@@ -74,28 +74,28 @@
                 {
                   "title": "#1 Otsu (raw)",
                   "content": {
-                    "kind": "fiji-image",
+                    "kind": "image",
                     "src": "tutorials/nuclei-segmentation/assets/step_003.png"
                   }
                 },
                 {
                   "title": "#2 Triangle",
                   "content": {
-                    "kind": "fiji-image",
+                    "kind": "image",
                     "src": "tutorials/nuclei-segmentation/assets/step_004.png"
                   }
                 },
                 {
                   "title": "#3 Li",
                   "content": {
-                    "kind": "fiji-image",
+                    "kind": "image",
                     "src": "tutorials/nuclei-segmentation/assets/step_005.png"
                   }
                 },
                 {
                   "title": "#4 Gaussian + Otsu",
                   "content": {
-                    "kind": "fiji-image",
+                    "kind": "image",
                     "src": "tutorials/nuclei-segmentation/assets/step_006.png"
                   }
                 }
@@ -120,28 +120,28 @@
                 {
                   "title": "#5 Median + Otsu + WS",
                   "content": {
-                    "kind": "fiji-image",
+                    "kind": "image",
                     "src": "tutorials/nuclei-segmentation/assets/step_008.png"
                   }
                 },
                 {
                   "title": "#6 Phansalkar (local)",
                   "content": {
-                    "kind": "fiji-image",
+                    "kind": "image",
                     "src": "tutorials/nuclei-segmentation/assets/step_010.png"
                   }
                 },
                 {
                   "title": "#7 Gauss + Otsu + Open + WS ★",
                   "content": {
-                    "kind": "fiji-image",
+                    "kind": "image",
                     "src": "tutorials/nuclei-segmentation/assets/step_011.png"
                   }
                 },
                 {
                   "title": "#8 Huang + WS",
                   "content": {
-                    "kind": "fiji-image",
+                    "kind": "image",
                     "src": "tutorials/nuclei-segmentation/assets/step_012.png"
                   }
                 }
