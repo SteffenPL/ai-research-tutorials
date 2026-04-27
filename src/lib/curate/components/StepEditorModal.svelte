@@ -30,6 +30,18 @@
 	let previewTick = $state(0);
 	function bumpPreview() { previewTick++; }
 
+	function durationSeconds(value: number | undefined): string {
+		return value ? String(value / 1000) : '';
+	}
+
+	function setSlideDuration(value: string) {
+		const seconds = Number(value);
+		editStep.slideDuration = Number.isFinite(seconds) && seconds > 0
+			? Math.round(seconds * 1000)
+			: undefined;
+		bumpPreview();
+	}
+
 	function handleAssetPicked(ref: string) {
 		showAssetPicker = false;
 		if (editStep.inserted && editStep.inserted.type === 'window' && 'src' in editStep.inserted.content) {
@@ -165,6 +177,20 @@
 						}}
 					></textarea>
 				</label>
+				<details class="advanced-fields">
+					<summary>Slide timing</summary>
+					<label class="field">
+						<span class="field-label">Override duration <span class="optional-tag">seconds</span></span>
+						<input
+							type="number"
+							min="0"
+							step="0.1"
+							value={durationSeconds(editStep.slideDuration)}
+							oninput={(e) => setSlideDuration((e.target as HTMLInputElement).value)}
+							placeholder="Use slide default"
+						/>
+					</label>
+				</details>
 			</div>
 
 			<!-- Right: Live Preview -->
@@ -1067,6 +1093,27 @@
 		text-transform: lowercase;
 		letter-spacing: 0;
 		margin-left: 0.3rem;
+	}
+
+	.advanced-fields {
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 6px;
+		padding: 0.55rem 0.7rem;
+		background: rgba(255, 255, 255, 0.025);
+	}
+
+	.advanced-fields > summary {
+		cursor: pointer;
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		color: var(--text-tertiary);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.advanced-fields[open] > summary {
+		margin-bottom: 0.65rem;
+		color: var(--orange-300);
 	}
 
 	.field input,

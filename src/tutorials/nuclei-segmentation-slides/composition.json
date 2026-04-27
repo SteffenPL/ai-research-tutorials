@@ -21,5 +21,10 @@
       "kind": "trace",
       "sourceSlug": "nuclei-segmentation-slides"
     }
-  ]
+  ],
+  "slideTimings": {
+    "message": 500,
+    "answer": 3000,
+    "prompt": 1000
+  }
 }

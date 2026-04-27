@@ -1,4 +1,4 @@
-import type { TutorialMeta } from '$lib/data/tutorials';
+import type { SlideTimingDefaults, TutorialMeta } from '$lib/data/tutorials';
 
 export const FORMAT_VERSION = '1.0.0';
 
@@ -10,6 +10,7 @@ export interface TutorialComposition {
 	requirements?: string;
 	welcome?: TutorialWelcome;
 	briefing?: { en: string; ja?: string };
+	slideTimings?: SlideTimingDefaults;
 	blocks: CompositionBlock[];
 	devOnly?: boolean;
 }

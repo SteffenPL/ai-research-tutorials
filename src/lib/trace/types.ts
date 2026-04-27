@@ -13,6 +13,7 @@ export interface TraceStep {
 	included: boolean;
 	displayMode: DisplayMode;
 	hidden?: boolean;
+	slideDuration?: number;
 	shortenedText?: string;
 	comment?: string | { en: string; ja?: string };
 	overrides?: Record<string, unknown>;

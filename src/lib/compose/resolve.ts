@@ -85,6 +85,7 @@ export function resolveComposition(
 		},
 		...(composition.description ? { description: composition.description } : {}),
 		...(composition.requirements ? { requirements: composition.requirements } : {}),
+		...(composition.slideTimings ? { slideTimings: composition.slideTimings } : {}),
 		rounds: rewriteRoundAssets(slug, rounds)
 	};
 }

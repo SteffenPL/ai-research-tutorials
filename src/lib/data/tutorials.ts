@@ -32,6 +32,13 @@ export interface TutorialMeta {
 	visibility?: TutorialVisibility;
 }
 
+export interface SlideTimingDefaults {
+	prompt?: number;
+	message?: number;
+	window?: number;
+	answer?: number;
+}
+
 /**
  * A single step in the trace timeline.
  *
@@ -368,6 +375,7 @@ export interface Tutorial {
 	meta: TutorialMeta;
 	description?: string;
 	requirements?: string;
+	slideTimings?: SlideTimingDefaults;
 	rounds: TutorialRound[];
 }
 

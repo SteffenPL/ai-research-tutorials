@@ -167,6 +167,7 @@ export function traceStepToTutorialStep(step: TraceStep): Step | null {
 
 	function applyBase(s: Step): Step {
 		if (step.comment) s.comment = step.comment;
+		if (step.slideDuration && step.slideDuration > 0) s.slideDuration = step.slideDuration;
 		if (isCompact) s.compact = true;
 		if (step.hidden) s.hidden = true;
 		return s;

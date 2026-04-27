@@ -25,6 +25,13 @@
 	let dirtyTraces = $state<Set<string>>(new Set());
 	let blockEditorRefs = $state<(TraceBlockEditor | null)[]>([]);
 
+	const defaultSlideTimings = {
+		prompt: 1500,
+		message: 2000,
+		window: 2000,
+		answer: 5000
+	};
+
 	function thumbnailPreviewUrl(ref: string | undefined): string | undefined {
 		if (!ref) return undefined;
 		if (ref.startsWith('shared/')) return `/assets/${ref.slice(7)}`;
@@ -116,6 +123,27 @@
 
 	function markTraceDirty(slug: string) {
 		dirtyTraces = new Set([...dirtyTraces, slug]);
+	}
+
+	function slideTimingSeconds(kind: keyof typeof defaultSlideTimings): string {
+		return String((composition.slideTimings?.[kind] ?? defaultSlideTimings[kind]) / 1000);
+	}
+
+	function setSlideTiming(kind: keyof typeof defaultSlideTimings, value: string) {
+		const seconds = Number(value);
+		if (!composition.slideTimings) composition.slideTimings = {};
+		if (Number.isFinite(seconds) && seconds > 0) {
+			composition.slideTimings[kind] = Math.round(seconds * 1000);
+		} else {
+			delete composition.slideTimings[kind];
+		}
+		if (Object.keys(composition.slideTimings).length === 0) {
+			composition.slideTimings = undefined;
+		}
+	}
+
+	function resetSlideTimings() {
+		composition.slideTimings = undefined;
 	}
 </script>
 
@@ -218,6 +246,54 @@
 						placeholder="What the reader needs before starting..."
 					></textarea>
 				</label>
+			</div>
+		</details>
+		<details class="card">
+			<summary>Slide Timing</summary>
+			<div class="form-grid">
+				<div class="timing-grid">
+					<label>
+						<span>Prompt (seconds)</span>
+						<input
+							type="number"
+							min="0.1"
+							step="0.1"
+							value={slideTimingSeconds('prompt')}
+							oninput={(e) => setSlideTiming('prompt', (e.target as HTMLInputElement).value)}
+						/>
+					</label>
+					<label>
+						<span>Message (seconds)</span>
+						<input
+							type="number"
+							min="0.1"
+							step="0.1"
+							value={slideTimingSeconds('message')}
+							oninput={(e) => setSlideTiming('message', (e.target as HTMLInputElement).value)}
+						/>
+					</label>
+					<label>
+						<span>Window (seconds)</span>
+						<input
+							type="number"
+							min="0.1"
+							step="0.1"
+							value={slideTimingSeconds('window')}
+							oninput={(e) => setSlideTiming('window', (e.target as HTMLInputElement).value)}
+						/>
+					</label>
+					<label>
+						<span>Final answer (seconds)</span>
+						<input
+							type="number"
+							min="0.1"
+							step="0.1"
+							value={slideTimingSeconds('answer')}
+							oninput={(e) => setSlideTiming('answer', (e.target as HTMLInputElement).value)}
+						/>
+					</label>
+				</div>
+				<button class="btn-sm" onclick={resetSlideTimings}>Reset to built-in defaults</button>
 			</div>
 		</details>
 	</section>
@@ -431,6 +507,11 @@
 	.form-row-2col {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
+		gap: 0.5rem;
+	}
+	.timing-grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 		gap: 0.5rem;
 	}
 
@@ -666,5 +747,11 @@
 	.btn-icon:disabled {
 		opacity: 0.3;
 		cursor: not-allowed;
+	}
+
+	@media (max-width: 760px) {
+		.timing-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
 	}
 </style>
