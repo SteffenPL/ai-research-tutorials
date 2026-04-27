@@ -596,7 +596,7 @@
 
 	.bubble__text {
 		font-family: var(--font-mono);
-		font-size: 0.9rem;
+		font-size: 1rem;
 		white-space: pre-wrap;
 		word-break: break-word;
 	}
@@ -692,7 +692,7 @@
 		font-weight: 700;
 		letter-spacing: 0.02em;
 		color: var(--text-primary);
-		opacity: 0.08;
+		opacity: 0.15;
 		pointer-events: none;
 		user-select: none;
 	}
@@ -707,12 +707,17 @@
 	}
 
 	.comment-text {
-		font-size: 1.35rem;
+		font-size: 1.5rem;
 		font-style: italic;
-		line-height: 1.4;
-		color: var(--text-secondary);
+		line-height: 1.5;
+		color: var(--text-primary);
 		text-align: center;
 		max-width: 900px;
+		padding: 20px 32px;
+		border-radius: 14px;
+		background: color-mix(in srgb, var(--bg-primary) 50%, transparent);
+		backdrop-filter: blur(12px);
+		border: 1px solid color-mix(in srgb, var(--text-primary) 6%, transparent);
 		animation: commentIn 0.4s ease both;
 	}
 	.comment-text :global(p) { margin: 0; }
@@ -725,14 +730,15 @@
 	/* ─── Pause ─── */
 	.pause-badge {
 		position: fixed;
-		bottom: 24px;
-		right: 24px;
+		top: 14px;
+		left: 50%;
+		transform: translateX(-50%);
 		z-index: 100;
-		padding: 6px 14px;
+		padding: 5px 16px;
 		border-radius: 8px;
-		background: rgba(0, 0, 0, 0.6);
-		color: var(--text-secondary);
-		font-size: 0.7rem;
+		background: rgba(0, 0, 0, 0.55);
+		color: var(--text-tertiary);
+		font-size: 0.65rem;
 		font-family: var(--font-mono);
 		letter-spacing: 0.15em;
 		backdrop-filter: blur(8px);
