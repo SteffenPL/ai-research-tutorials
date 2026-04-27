@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { TraceStep } from '$lib/trace/types';
 	import type { Step, WindowStep } from '$lib/data/tutorials';
-	import { getWindowIcon } from '$lib/data/tutorials';
+	import { getWindowIcon, isChromeless } from '$lib/data/tutorials';
 	import { traceStepToTutorialStep } from '$lib/trace/convert';
 	import { rewriteContent } from '$lib/compose/resolve';
 	import { stepLabel } from './step-helpers';
@@ -180,14 +180,18 @@
 								onFocusWindow={noopFocus}
 							/>
 							{#if previewStep.type === 'window' && !previewStep.compact}
-								<div class="preview-window">
-									<WindowChrome
-										title={previewStep.windowTitle}
-										subtitle={previewStep.subtitle}
-										icon={previewStep.icon ?? getWindowIcon(previewStep.content)}
-									/>
+								{#if isChromeless(previewStep.content)}
 									<WindowContent content={previewStep.content} />
-								</div>
+								{:else}
+									<div class="preview-window">
+										<WindowChrome
+											title={previewStep.windowTitle}
+											subtitle={previewStep.subtitle}
+											icon={previewStep.icon ?? getWindowIcon(previewStep.content)}
+										/>
+										<WindowContent content={previewStep.content} />
+									</div>
+								{/if}
 							{/if}
 						{/key}
 					{:else}

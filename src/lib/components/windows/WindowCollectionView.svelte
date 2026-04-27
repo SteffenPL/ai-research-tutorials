@@ -10,7 +10,7 @@
 
 <div
 	class="collection-grid"
-	style="--cols: {content.cols};"
+	style="--cols: {content.cols}; --rows: {content.rows};"
 >
 	{#each content.windows as entry, i}
 		<div class="sub-window" style="--delay: {i * 80}ms;">
@@ -49,6 +49,7 @@
 	.collection-grid {
 		display: grid;
 		grid-template-columns: repeat(var(--cols), 1fr);
+		grid-template-rows: repeat(var(--rows), 1fr);
 		gap: 6px;
 		justify-content: center;
 		align-content: center;
@@ -59,6 +60,7 @@
 	.sub-window {
 		display: flex;
 		flex-direction: column;
+		min-height: 0;
 		border-radius: 8px;
 		overflow: hidden;
 		border: 1px solid var(--border-subtle);
@@ -80,13 +82,16 @@
 	}
 
 	.sub-body {
+		flex: 1;
+		min-height: 0;
 		overflow: hidden;
 	}
 
 	.sub-body :global(img) {
 		display: block;
 		width: 100%;
-		height: auto;
+		height: 100%;
+		object-fit: contain;
 		image-rendering: auto;
 	}
 

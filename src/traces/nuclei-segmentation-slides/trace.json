@@ -5,7 +5,7 @@
     {
       "id": "r-1",
       "kind": "claude",
-      "prompt": "Open @tests/examples/Osteosarcoma_01.tif with Fiji",
+      "prompt": "Open @tests/examples/Osteosarcoma_01.tif with the Fiji-MCP.",
       "steps": [
         {
           "id": "s-1",
@@ -47,7 +47,7 @@
     {
       "id": "r-2",
       "kind": "claude",
-      "prompt": "Segment the nuclei. Try 10 different approaches, compare them, and pick the best.",
+      "prompt": "Segment the nuclei. Try 8 different approaches to tune parameters, compare them, and pick the best.",
       "steps": [
         {
           "id": "s-4",
@@ -55,7 +55,7 @@
           "displayMode": "full",
           "inserted": {
             "type": "assistant",
-            "html": "<p>I'll extract the blue channel and try 10 thresholding strategies — from simple Otsu to morphological cleanup with Watershed.</p>"
+            "html": "<p>I'll extract the blue channel and try 8 thresholding strategies — from simple Otsu to morphological cleanup with Watershed.</p>"
           }
         },
         {
@@ -64,11 +64,11 @@
           "displayMode": "full",
           "inserted": {
             "type": "window",
-            "windowTitle": "Approaches 1–5",
+            "windowTitle": "Approaches 1–4",
             "content": {
               "kind": "window-collection",
               "rows": 2,
-              "cols": 3,
+              "cols": 2,
               "windows": [
                 {
                   "title": "#1 Otsu (raw)",
@@ -117,42 +117,35 @@
           "displayMode": "full",
           "inserted": {
             "type": "window",
-            "windowTitle": "Approaches 6–10",
+            "windowTitle": "Approaches 5–8",
             "content": {
               "kind": "window-collection",
               "rows": 2,
-              "cols": 3,
+              "cols": 2,
               "windows": [
                 {
-                  "title": "#6 Median + Otsu + WS",
+                  "title": "#5 Median + Otsu + WS",
                   "content": {
                     "kind": "fiji-image",
                     "src": "tutorials/nuclei-segmentation/assets/step_008.png"
                   }
                 },
                 {
-                  "title": "#7 Gauss + Triangle + WS",
-                  "content": {
-                    "kind": "fiji-image",
-                    "src": "tutorials/nuclei-segmentation/assets/step_009.png"
-                  }
-                },
-                {
-                  "title": "#8 Phansalkar (local)",
+                  "title": "#6 Phansalkar (local)",
                   "content": {
                     "kind": "fiji-image",
                     "src": "tutorials/nuclei-segmentation/assets/step_010.png"
                   }
                 },
                 {
-                  "title": "#9 Gauss + Otsu + Open + WS ★",
+                  "title": "#7 Gauss + Otsu + Open + WS ★",
                   "content": {
                     "kind": "fiji-image",
                     "src": "tutorials/nuclei-segmentation/assets/step_011.png"
                   }
                 },
                 {
-                  "title": "#10 Huang + WS",
+                  "title": "#8 Huang + WS",
                   "content": {
                     "kind": "fiji-image",
                     "src": "tutorials/nuclei-segmentation/assets/step_012.png"
@@ -170,7 +163,8 @@
           "displayMode": "full",
           "inserted": {
             "type": "assistant",
-            "html": "<p>Approach #9 looks cleanest — running Analyze Particles to count nuclei.</p>"
+            "html": "<p>Approach #7 looks cleanest — running Analyze Particles to count nuclei.</p>",
+            "final": false
           }
         },
         {
@@ -194,7 +188,7 @@
           "displayMode": "full",
           "inserted": {
             "type": "assistant",
-            "html": "<p><strong>103 nuclei</strong> segmented using <strong>Approach #9</strong> — Gaussian blur + Otsu threshold + Morphological Open + Watershed.</p><p>#9's morphological Open step removed debris and thin bridges before Watershed, producing the cleanest nucleus shapes out of all 10 approaches.</p>",
+            "html": "<p><strong>103 nuclei</strong> segmented using <strong>Approach #7</strong> — Gaussian blur + Otsu threshold + Morphological Open + Watershed.</p><p>#7's morphological Open step removed debris and thin bridges before Watershed, producing the cleanest nucleus shapes out of all 10 approaches.</p>",
             "final": true,
             "slideDuration": 7000
           }

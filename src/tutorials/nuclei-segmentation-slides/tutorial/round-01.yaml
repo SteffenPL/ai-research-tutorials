@@ -1,0 +1,18 @@
+kind: claude
+prompt: Open @tests/examples/Osteosarcoma_01.tif with the Fiji-MCP.
+steps:
+  - type: assistant
+    html: <p>Opening the image in Fiji via MCP — let me take a look.</p>
+  - type: window
+    windowTitle: Osteosarcoma_01.tif
+    content:
+      kind: fiji-image
+      src: tutorials/nuclei-segmentation/assets/step_001.png
+      statusBar: 1376×1104 pixels; RGB
+    subtitle: 1376×1104 · RGB · fluorescence
+  - type: assistant
+    html: >-
+      <p>The image is open — a fluorescence micrograph of osteosarcoma cells. Blue (DAPI) marks nuclei, green marks
+      cytoskeleton.</p>
+    final: true
+    slideDuration: 4000

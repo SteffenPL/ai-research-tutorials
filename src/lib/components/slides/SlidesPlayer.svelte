@@ -627,6 +627,11 @@
 		overflow: hidden;
 	}
 
+	.window--collection .window__content {
+		max-height: 90vh;
+		height: 90vh;
+	}
+
 	.window--collection {
 		background: transparent;
 		box-shadow: none;

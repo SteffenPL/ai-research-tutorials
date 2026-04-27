@@ -1,0 +1,78 @@
+kind: claude
+prompt: Segment the nuclei. Try 8 different approaches to tune parameters, compare them, and pick the best.
+steps:
+  - type: assistant
+    html: >-
+      <p>I'll extract the blue channel and try 8 thresholding strategies — from simple Otsu to morphological cleanup
+      with Watershed.</p>
+  - type: window
+    windowTitle: Approaches 1–4
+    content:
+      kind: window-collection
+      rows: 2
+      cols: 2
+      windows:
+        - title: "#1 Otsu (raw)"
+          content:
+            kind: fiji-image
+            src: tutorials/nuclei-segmentation/assets/step_003.png
+        - title: "#2 Triangle"
+          content:
+            kind: fiji-image
+            src: tutorials/nuclei-segmentation/assets/step_004.png
+        - title: "#3 Li"
+          content:
+            kind: fiji-image
+            src: tutorials/nuclei-segmentation/assets/step_005.png
+        - title: "#4 Gaussian + Otsu"
+          content:
+            kind: fiji-image
+            src: tutorials/nuclei-segmentation/assets/step_006.png
+        - title: "#5 Gauss + Otsu + WS"
+          content:
+            kind: fiji-image
+            src: tutorials/nuclei-segmentation/assets/step_007.png
+    subtitle: Basic thresholding methods
+    slideDuration: 2500
+  - type: window
+    windowTitle: Approaches 5–8
+    content:
+      kind: window-collection
+      rows: 2
+      cols: 2
+      windows:
+        - title: "#5 Median + Otsu + WS"
+          content:
+            kind: fiji-image
+            src: tutorials/nuclei-segmentation/assets/step_008.png
+        - title: "#6 Phansalkar (local)"
+          content:
+            kind: fiji-image
+            src: tutorials/nuclei-segmentation/assets/step_010.png
+        - title: "#7 Gauss + Otsu + Open + WS ★"
+          content:
+            kind: fiji-image
+            src: tutorials/nuclei-segmentation/assets/step_011.png
+        - title: "#8 Huang + WS"
+          content:
+            kind: fiji-image
+            src: tutorials/nuclei-segmentation/assets/step_012.png
+    subtitle: Advanced methods
+    slideDuration: 2500
+  - type: assistant
+    html: "<p>Approach #7 looks cleanest — running Analyze Particles to count nuclei.</p>"
+    final: false
+  - type: window
+    windowTitle: Nuclei Segmentation Result
+    content:
+      kind: fiji-image
+      src: tutorials/nuclei-segmentation/assets/step_014.png
+      statusBar: "103 nuclei detected · Approach #9"
+    subtitle: 103 nuclei — Osteosarcoma_01.tif
+  - type: assistant
+    html: >-
+      <p><strong>103 nuclei</strong> segmented using <strong>Approach #7</strong> — Gaussian blur + Otsu threshold +
+      Morphological Open + Watershed.</p><p>#7's morphological Open step removed debris and thin bridges before
+      Watershed, producing the cleanest nucleus shapes out of all 10 approaches.</p>
+    final: true
+    slideDuration: 7000
