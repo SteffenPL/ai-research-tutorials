@@ -4,7 +4,7 @@
   "meta": {
     "slug": "nuclei-segmentation-slides",
     "title": {
-      "en": "Nuclei Segmentation with Fiji (Slides)"
+      "en": "Fiji-MCP Demo"
     },
     "tags": [
       "fiji",
@@ -15,7 +15,7 @@
     "author": "Steffen Plunder",
     "visibility": "draft"
   },
-  "description": "AI-driven nuclei segmentation: two prompts, ten approaches, 103 nuclei detected.",
+  "description": "AI-driven nuclei segmentation: two prompts, automatic algorithm selection and parameter tuning.",
   "blocks": [
     {
       "kind": "trace",

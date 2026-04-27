@@ -5,7 +5,7 @@
     {
       "id": "r-clone",
       "kind": "terminal",
-      "prompt": "git clone https://github.com/SteffenPL/fiji-mcp.git && cd fiji-mcp && uv sync",
+      "prompt": "git clone https://github.com/SteffenPL/fiji-mcp.git && cd fiji-mcp",
       "included": true,
       "steps": [
         {
@@ -22,15 +22,6 @@
           }
         },
         {
-          "id": "s-clone-2",
-          "included": true,
-          "displayMode": "normal",
-          "inserted": {
-            "type": "output",
-            "text": "Using CPython 3.12.8\nCreating virtual environment at: .venv\nResolved 28 packages in 1.2s\nInstalled 28 packages in 340ms\n + fastmcp==3.2.0\n + fiji-mcp==0.1.0 (from .)\n + websockets==15.0\n + ..."
-          }
-        },
-        {
           "id": "s-clone-3",
           "included": true,
           "displayMode": "normal",
@@ -38,6 +29,22 @@
             "type": "status",
             "text": "dependencies installed",
             "variant": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins-1001",
+      "kind": "terminal",
+      "prompt": "uv sync",
+      "steps": [
+        {
+          "id": "ins-1002",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "output",
+            "text": "Using CPython 3.12.8\nCreating virtual environment at: .venv\nResolved 28 packages in 1.2s\nInstalled 28 packages in 340ms\n + fastmcp==3.2.0\n + fiji-mcp==0.1.0 (from .)\n + websockets==15.0\n + ..."
           }
         }
       ]
@@ -59,7 +66,8 @@
               "en": "This command does three things: (1) auto-discovers your Fiji installation, (2) copies the bridge plugin JAR into Fiji's <code>plugins/</code> folder, and (3) saves the Fiji path so the MCP server can launch Fiji later. If Fiji is not in a standard location, pass <code>--fiji-home /path/to/Fiji.app</code>.",
               "ja": "このコマンドは3つのことを行います: (1) Fiji のインストール先を自動検出、(2) ブリッジプラグイン JAR を Fiji の <code>plugins/</code> フォルダにコピー、(3) MCP サーバーが後で Fiji を起動できるよう Fiji のパスを保存。Fiji が標準の場所にない場合は <code>--fiji-home /path/to/Fiji.app</code> を指定してください。"
             }
-          }
+          },
+          "comment": "We need to install a Fiji plugin, for this the Fiji installation direction will be searched in default paths, otherwise use `uv run fiji-mcp install --fiji-home /path/to/Fiji.app`."
         },
         {
           "id": "s-install-2",

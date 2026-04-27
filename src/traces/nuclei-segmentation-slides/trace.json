@@ -8,6 +8,19 @@
       "prompt": "Open @tests/examples/Osteosarcoma_01.tif with the Fiji-MCP.",
       "steps": [
         {
+          "id": "ins-1001",
+          "included": true,
+          "displayMode": "normal",
+          "inserted": {
+            "type": "window",
+            "windowTitle": "New Window",
+            "content": {
+              "kind": "fiji-main"
+            }
+          },
+          "comment": "The AI agent can open Fiji via a fiji-mcp bridge (Java plugin for Fiji)."
+        },
+        {
           "id": "s-1",
           "included": true,
           "displayMode": "full",

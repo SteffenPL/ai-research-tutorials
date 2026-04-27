@@ -1,6 +1,11 @@
 kind: claude
 prompt: Open @tests/examples/Osteosarcoma_01.tif with the Fiji-MCP.
 steps:
+  - type: window
+    windowTitle: New Window
+    content:
+      kind: fiji-main
+    comment: The AI agent can open Fiji via a fiji-mcp bridge (Java plugin for Fiji).
   - type: assistant
     html: <p>Opening the image in Fiji via MCP — let me take a look.</p>
   - type: window
@@ -16,3 +21,4 @@ steps:
       cytoskeleton.</p>
     final: true
     slideDuration: 4000
+    comment: Claude identifies the fluorescence channels automatically — DAPI (blue) for nuclei, green for cytoskeleton.
