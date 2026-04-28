@@ -84,7 +84,10 @@
 			const headerHeight = node.querySelector<HTMLElement>('.window-header')?.offsetHeight ?? 0;
 			const statusHeight = node.querySelector<HTMLElement>('.statusbar')?.offsetHeight ?? 0;
 			const isMobile = window.matchMedia('(max-width: 900px)').matches;
-			const frame = node.closest<HTMLElement>('.workspace') ?? node.offsetParent as HTMLElement | null;
+			const isMaximized = node.classList.contains('max-window');
+			const frame = isMaximized
+				? (node.closest<HTMLElement>('.workspace') ?? node.offsetParent as HTMLElement | null)
+				: (node.closest<HTMLElement>('.fiji-area') ?? node.offsetParent as HTMLElement | null);
 			const frameRect = frame?.getBoundingClientRect();
 			const frameWidth = isMobile ? window.innerWidth : (frameRect?.width ?? window.innerWidth);
 			const frameHeight = isMobile ? window.innerHeight : (frameRect?.height ?? window.innerHeight);
@@ -169,8 +172,11 @@
 		<div
 			class="fiji-window window"
 			class:chromeless
+			class:media-window={isMediaContent(win.step.content)}
+			class:has-status-bar={hasStatusBar(win.step.content)}
 			class:focused-hidden={isFocused}
 			style="{stackStyle(depth, chromeless)};--enter-delay:{enterDelay}ms"
+			use:fitMediaWindow
 		>
 			{#if !chromeless}
 				<WindowChrome
@@ -360,6 +366,31 @@
 
 	.fiji-window:hover:not(.chromeless) {
 		box-shadow: var(--shadow-window-0) !important;
+	}
+
+	.fiji-window.media-window {
+		width: calc(var(--fit-media-width, 440px) + 2px);
+		max-width: calc(100% - 44px);
+	}
+
+	.fiji-window.media-window :global(.zoom-container) {
+		display: block;
+		width: var(--fit-media-width, auto);
+		height: var(--fit-media-height, auto);
+	}
+
+	.fiji-window.media-window :global(.zoom-content) {
+		display: block;
+		width: auto;
+		height: auto;
+	}
+
+	.fiji-window.media-window :global(img),
+	.fiji-window.media-window :global(video) {
+		display: block;
+		width: var(--fit-media-width, auto);
+		height: var(--fit-media-height, auto);
+		object-fit: contain;
 	}
 
 	.fiji-window.focused-hidden {

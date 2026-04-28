@@ -1,7 +1,8 @@
 import { json, error } from '@sveltejs/kit';
 import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
-import { resolve, join } from 'node:path';
+import { resolve, join, relative } from 'node:path';
 import { Buffer } from 'node:buffer';
+import { generateAssetThumbnail } from '$lib/server/asset-thumbnails';
 import type { RequestHandler } from './$types';
 
 export const prerender = false;
@@ -22,10 +23,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	const filepath = join(assetsDir, filename);
 
 	writeFileSync(filepath, buffer);
+	const thumbnailPath = await generateAssetThumbnail(filepath);
 
 	return json({
 		ok: true,
 		filename: `shared/${filename}`,
-		path: `assets/${filename}`
+		path: `assets/${filename}`,
+		thumbnail: thumbnailPath ? relative(resolve('static'), thumbnailPath) : null
 	});
 };

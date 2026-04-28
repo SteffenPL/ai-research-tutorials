@@ -11,14 +11,35 @@
 	let { tutorial }: Props = $props();
 	let title = $derived(getTutorialTitle(tutorial.meta, langStore.current));
 	let isVideo = $derived(!!tutorial.meta.thumbnail && /\.(mp4|mov|webm)$/i.test(tutorial.meta.thumbnail));
+	let thumbnailFailed = $state(false);
+
+	function thumbnailCandidate(src: string): string {
+		const slash = src.lastIndexOf('/');
+		const dir = slash >= 0 ? src.slice(0, slash + 1) : '';
+		const file = slash >= 0 ? src.slice(slash + 1) : src;
+		const stem = file.replace(/\.[^.]+$/, '');
+		return `${dir}_thumbs/${stem}.jpg`;
+	}
+
+	let thumbnailSrc = $derived(tutorial.meta.thumbnail ? thumbnailCandidate(tutorial.meta.thumbnail) : '');
+	let originalSrc = $derived(tutorial.meta.thumbnail ?? '');
+
+	$effect(() => {
+		originalSrc;
+		thumbnailFailed = false;
+	});
 </script>
 
 <a href="{base}/tutorials/{tutorial.meta.slug}" class="card">
 	<div class="card__image">
-		{#if tutorial.meta.thumbnail && isVideo}
-			<video src="{base}/{tutorial.meta.thumbnail}" autoplay loop muted playsinline></video>
+		{#if tutorial.meta.thumbnail && thumbnailFailed && isVideo}
+			<video src="{base}/{originalSrc}" autoplay loop muted playsinline></video>
 		{:else if tutorial.meta.thumbnail}
-			<img src="{base}/{tutorial.meta.thumbnail}" alt={title} />
+			<img
+				src="{base}/{thumbnailFailed ? originalSrc : thumbnailSrc}"
+				alt={title}
+				onerror={() => { thumbnailFailed = true; }}
+			/>
 		{:else}
 			<svg viewBox="0 0 120 120" fill="none">
 				<rect x="20" y="30" width="80" height="50" rx="3" stroke="currentColor" stroke-width="1.5" opacity="0.4" />
