@@ -29,8 +29,11 @@ inbox/
 fiji-output/
 .mcp.json
 
-# Tutorial creation scratch space
-testevals/
+# Tutorial experiment specs
+/testevals/*
+!/testevals/limb-digit-patterning/
+!/testevals/limb-digit-patterning/*.md
+/testevals/limb-digit-patterning/workspace/
 
 .playwright-mcp/
 screenshots/
