@@ -17,25 +17,25 @@ Create a small Python project in:
 testevals/limb-digit-patterning/workspace/
 ```
 
-The project should simulate a 2D activator-inhibitor reaction-diffusion system on a rectangular domain and produce digit-like repeated high-activator regions.
+The project should simulate a 2D activator-inhibitor reaction-diffusion system on a rectangular domain and produce digit-like repeated high-activator fingers/rays.
 
 Interpretation:
 
 - activator `u` = Sox9-like digit-promoting field
 - inhibitor `v` = longer-range inhibitory field
-- high `u` = digit-like condensation
+- high `u` rays = digit-like condensations
 
 ## Requirements
 
 1. Use a simple finite-difference simulation with `numpy` and `matplotlib`.
 2. Keep the code readable and tutorial-friendly.
-3. Save at least one generated image to `outputs/final_pattern.png`.
+3. Save at least one generated image to `outputs/final_pattern.png` where the high-activator domains are elongated along the proximal-distal axis, not just isolated dots.
 4. Add `MODEL.md` explaining:
    - equations used
    - parameter meanings
    - biological interpretation
    - simplifications relative to the Sharpe/Raspopovic paper
-5. Add a simple parameter-tuning script that tries to produce a target number of high-activator domains, preferably five.
+5. Add a simple parameter-tuning script that tries to produce a target number of high-activator digit rays, preferably five.
 6. Keep runtime reasonable on a laptop.
 
 ## Constraints

@@ -29,7 +29,7 @@ The experiment intentionally simplifies the biological and numerical setting:
 A successful first attempt produces a small Python project that can:
 
 1. simulate activator-inhibitor pattern formation on a rectangular domain,
-2. save visible images of digit-like stripes or spots,
+2. save visible images of digit-like fingers/rays,
 3. run a small parameter search toward a target digit count, and
 4. write a short `MODEL.md` explaining what was built and how it relates to the Sharpe digit-patterning paper.
 

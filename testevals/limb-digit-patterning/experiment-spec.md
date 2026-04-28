@@ -18,9 +18,9 @@ For the experiment, we represent this idea with a generic two-species activator-
 
 - activator `u`: a Sox9-like digit-promoting field
 - inhibitor `v`: a longer-range inhibitory field
-- high-`u` regions: digit-like condensations
+- high-`u` rays: digit-like condensations
 
-The model should make the core principle visible: local activation plus longer-range inhibition can create repeated spatial domains.
+The model should make the core principle visible: local activation plus longer-range inhibition can create repeated spatial domains that elongate along the proximal-distal axis into finger-like digit rays.
 
 ## Deliverables
 
@@ -72,7 +72,7 @@ The chosen model must be explained in `MODEL.md`, including:
 - equations
 - parameter meanings
 - why inhibitor diffusion should be larger than activator diffusion
-- how high activator concentration is interpreted as a digit-like domain
+- how high activator concentration is interpreted as a digit-like ray/domain
 
 ## Parameter Fitting / Tuning
 
@@ -80,17 +80,17 @@ Include a simple second-stage task:
 
 - define a target digit count, such as `target_count = 5`
 - run a small grid search or random search over a few parameters
-- score each simulation by counting high-activator peaks or stripes near the final time
+- score each simulation by counting high-activator digit rays near the final time
 - save the best parameter set and one best-pattern image
 
-This does not need to be statistically rigorous. It should show the basic inverse-modeling idea: ask the agent to tune model parameters so a simulated tissue pattern matches an observed target.
+This does not need to be statistically rigorous. It should show the basic inverse-modeling idea: ask the agent to tune model parameters so a simulated tissue pattern matches an observed target digit-ray count.
 
 ## Acceptance Criteria
 
 A first attempt is successful if:
 
 - `python` or `uv run` command produces at least one nonblank pattern image
-- the pattern has repeated digit-like high-activator domains
+- the pattern has repeated finger-like high-activator domains elongated along the proximal-distal axis
 - `MODEL.md` clearly states that the model is educational and Sharpe-inspired, not a reproduction
 - parameter search can run in a few minutes on a laptop
 - the code is simple enough to explain in a 2-3 part tutorial series
@@ -109,7 +109,7 @@ A first attempt is successful if:
 If the experiment works, the later tutorial series can be:
 
 1. **Read a developmental biology paper with an agent**: extract the patterning logic and write `MODEL.md`.
-2. **Build a minimal simulator**: implement a rectangular-domain reaction-diffusion model and generate Sox9-like digit domains.
+2. **Build a minimal simulator**: implement a rectangular-domain reaction-diffusion model and generate Sox9-like digit rays.
 3. **Tune the model**: search for parameters that produce a requested digit count or match a simple target pattern.
 
 The tutorial should preserve the shortest authentic path from setup to visible result.

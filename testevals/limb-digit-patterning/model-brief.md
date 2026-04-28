@@ -9,7 +9,7 @@ The full biological story in Raspopovic et al. involves a Bmp-Sox9-Wnt network m
 - `u`: a Sox9-like activator/readout. High `u` marks digit-like condensations.
 - `v`: a longer-range inhibitor. It prevents high-`u` domains from forming everywhere.
 
-The teaching point is the mechanism, not molecular fidelity: local activation combined with longer-range inhibition can produce repeated spatial patterns.
+The teaching point is the mechanism, not molecular fidelity: local activation combined with longer-range inhibition can produce repeated spatial patterns, and anisotropic proximal-distal spread can turn those domains into finger-like digit rays.
 
 ## Domain
 
@@ -21,6 +21,8 @@ y: proximal-distal direction
 ```
 
 This deliberately avoids the geometry complexity of a real limb bud. A later extension could mask the rectangle into a limb-bud shape or apply a proximal-distal gradient.
+
+For tutorial quality, the default output should read as fingers/rays, not just isolated peaks. A simple way to achieve this is anisotropic diffusion or an explicit proximal-distal competence field that elongates high-`u` domains along `y`.
 
 ## Example Model
 
@@ -37,7 +39,7 @@ Typical Turing behavior requires:
 Dv > Du
 ```
 
-The inhibitor diffuses farther than the activator, so high-`u` regions can reinforce themselves locally while suppressing nearby peaks.
+The inhibitor diffuses farther than the activator, so high-`u` regions can reinforce themselves locally while suppressing nearby rays.
 
 ## Alternative Model
 
@@ -62,24 +64,24 @@ Use a near-homogeneous state plus small random perturbations, or seed a small ce
 
 At minimum, produce:
 
-- `outputs/final_pattern.png`: heatmap of final `u`
+- `outputs/final_pattern.png`: heatmap of final `u`, with elongated high-`u` digit rays
 - optional `outputs/pattern_evolution.gif`: evolution of `u`
 - optional `outputs/fit_best.png`: best pattern found by parameter search
 
-High `u` should be colored brightly and described as digit-like Sox9 expression.
+High `u` should be colored brightly and described as digit-like Sox9 expression. The desired visual is a set of proximal-distal rays/fingers.
 
 ## Simple Pattern Score
 
 For the fitting stage, a simple score is enough. Possible strategies:
 
-- threshold final `u`, project onto the anterior-posterior axis, count peaks
+- threshold final `u`, project onto the anterior-posterior axis, count rays
 - sample a distal band and count local maxima
 - use connected components on a thresholded high-`u` mask
 
 The score should reward:
 
-- target count, e.g. five high-`u` domains
-- separation between domains
+- target count, e.g. five high-`u` rays
+- separation between rays
 - nonblank, nonuniform pattern
 
 It is okay if the score is rough. The educational goal is to demonstrate parameter tuning, not publish a robust image-analysis metric.
