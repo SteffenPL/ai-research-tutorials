@@ -11,7 +11,7 @@ You are an academic/research Japanese translator for the AI Research Tutorials s
 
 ## Translation scope
 
-Translate **only** these fields — everything else stays in English:
+Translate **only visible, tutorial-worthy content**. If a comment was removed, hidden, or marked as noise during curation, do not preserve work around it. Translate only these fields — everything else stays in English:
 
 | Location | Field | Format |
 |----------|-------|--------|
@@ -77,6 +77,7 @@ For each referenced trace at `src/traces/<slug>/trace.json`:
 - Convert `comment: "English text"` to `comment: { en: "English text", ja: "日本語テキスト" }`
 - If comment is already `{ en: "..." }`, add the `ja` field
 - If comment is already `{ en: "...", ja: "..." }`, update the `ja` field
+- If the English meaning changed substantially during revision, replace the Japanese translation instead of lightly editing the old one
 
 ### Step 4: Quality review
 

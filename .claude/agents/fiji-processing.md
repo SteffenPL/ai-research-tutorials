@@ -64,11 +64,13 @@ Rules:
 - Always close images you no longer need to avoid memory issues
 - When showing results to the user, capture measurements or screenshots as appropriate
 
-**Output format:**
+**Output discipline:**
 
-- Provide code in clearly labeled blocks
-- Include brief comments explaining non-obvious steps
-- After execution, summarize what was done and any notable findings
+- Provide code in clearly labeled blocks.
+- Include brief comments only for non-obvious steps; do not explain every macro line.
+- Prefer visual checks (`get_thumbnail`, overlays, or measurements) over long textual reassurance.
+- After execution, summarize only what changed, where outputs were written, and any notable finding or caveat.
+- When this work will become tutorial material, keep the visible path short: setup → macro/tool action → image/result.
 
 **Update your agent memory** as you discover image processing patterns, common Fiji macro idioms, MCP tool behaviors, dataset-specific quirks, and successful pipeline configurations. This builds institutional knowledge across conversations.
 

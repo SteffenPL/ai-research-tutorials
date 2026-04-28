@@ -90,6 +90,8 @@ Create a timestamp marker before invoking the tutorial-producer to make this sca
 - `src/traces/<slug>/trace.json` exists and has `formatVersion`
 - `src/tutorials/<slug>/composition.json` exists and has valid `meta`
 - Composition references a trace that exists
+- The tutorial follows the brevity contract: no visible raw thinking, package-list noise, help/version checks, or redundant verification unless intentionally educational
+- Final assistant answers remain visible when they teach or summarize the result
 
 ### Step 5: Translate
 
@@ -103,7 +105,9 @@ Prompt: Add Japanese translations to the tutorial at src/tutorials/<slug>/compos
 
 **Verify**: Check that `meta.title.ja` exists in each composition and that trace comments have `ja` fields.
 
-### Step 6: Verify compilation
+### Step 6: Editorial and compilation verification
+
+Before declaring the draft ready, ask: **Can this be shorter without losing the teaching arc?** If yes, send it back to tutorial-producer for tightening.
 
 ```bash
 npx svelte-check --threshold error

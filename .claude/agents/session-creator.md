@@ -28,15 +28,16 @@ If you cannot run a real session (e.g., missing MCP server, missing tool, Fiji n
 
 ## Prompt design guidelines
 
-Design prompts that tell a pedagogical story:
+Design sessions that are easy to curate into brief tutorials:
 
-- **Start with setup**: opening a file, installing a tool, configuring an environment
-- **Build progressively**: each prompt should build on the previous result
-- **Show real problem-solving**: include prompts that demonstrate iteration, debugging, or refinement
-- **End with results**: final prompts should produce visible outcomes (images, measurements, summaries)
-- **Keep it focused**: 3-8 rounds is ideal. More than 12 rounds likely needs splitting into multiple tutorials
+- **Start close to the point**: setup is useful only when it is part of the lesson.
+- **Prefer 2-5 strong rounds** for install/basic workflow tutorials; 3-8 for deeper research workflows. More than 12 rounds likely needs splitting.
+- **Ask for visible outcomes early**: images, files, measurements, plots, screenshots, or concise summaries.
+- **Avoid manufacturing noise**: do not ask the agent to run `--help`, `which`, version checks, broad directory scans, or repeated verification unless they solve a real problem.
+- **Use natural researcher prompts**: specific, domain-aware, and outcome-oriented.
+- **Let authentic problem-solving happen**, but do not design prompts that invite long exploratory detours unless the detour is the tutorial.
 
-Each prompt should be something a researcher would actually type — natural language, specific about what they want, using domain terminology.
+The best session is not the most comprehensive one; it is the one with a clear setup → action → result arc.
 
 ## Model selection
 
@@ -126,7 +127,8 @@ This filters PII, adds a header with `formatVersion`, and writes a clean JSONL.
 
 Before reporting the session as ready:
 
-- [ ] Session has 3+ rounds covering the topic progressively
+- [ ] Session has enough rounds to teach the topic, but no obvious filler
+- [ ] Prompts form a clear setup → action → result arc
 - [ ] No error exits or broken tool calls that derail the narrative
 - [ ] The session demonstrates a real workflow a researcher would use
 - [ ] MCP tools (if applicable) produced visible results (images, data, etc.)
