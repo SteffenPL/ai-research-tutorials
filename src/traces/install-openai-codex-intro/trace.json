@@ -5,7 +5,7 @@
     {
       "id": "r-1",
       "kind": "terminal",
-      "prompt": "npm install -g @openai/codex",
+      "prompt": "curl -fsSL https://github.com/openai/codex/releases/latest/download/install.sh | sh",
       "steps": [
         {
           "id": "s-1",
@@ -13,29 +13,10 @@
           "displayMode": "full",
           "inserted": {
             "type": "status",
-            "text": "Codex CLI installed globally",
+            "text": "Codex CLI installed",
             "variant": "success",
             "comment": {
-              "en": "Codex CLI is OpenAI's local coding agent for the terminal. Install it globally with npm, then run it from the root of the project you want Codex to inspect or edit. See the <a href=\"https://developers.openai.com/codex/cli\">Codex CLI docs</a> for current install and auth options."
-            }
-          }
-        }
-      ]
-    },
-    {
-      "id": "r-2",
-      "kind": "terminal",
-      "prompt": "codex --version && codex --help",
-      "steps": [
-        {
-          "id": "s-2",
-          "included": true,
-          "displayMode": "full",
-          "inserted": {
-            "type": "output",
-            "text": "codex version 0.1.2504251714\n\nUsage: codex [options] [prompt]\n\nOptions:\n  -m, --model <model>    Model to use (default: codex-mini-latest)\n  -q, --quiet            Non-interactive, quiet mode\n  --full-auto            Skip all confirmations\n  -h, --help             Display help",
-            "comment": {
-              "en": "Verify that the <code>codex</code> command is on your PATH and inspect the available subcommands and flags."
+              "en": "The installer downloads the latest standalone Codex binary and places it on your PATH."
             }
           }
         }
@@ -53,10 +34,7 @@
           "inserted": {
             "type": "status",
             "text": "Authenticated via browser sign-in",
-            "variant": "success",
-            "comment": {
-              "en": "Follow the browser-based sign-in flow. Codex stores credentials locally so you only need to do this once."
-            }
+            "variant": "success"
           }
         }
       ]
@@ -74,7 +52,7 @@
             "type": "output",
             "text": "Welcome to Codex!\nWorking directory: /path/to/your/project\n\nType a message to get started.",
             "comment": {
-              "en": "Starting Codex inside a project gives it the local files and instructions it needs for a useful coding session. For this tutorial's demo, Codex was started in a small folder named <code>demo2</code> and asked to build a Brownian motion webpage."
+              "en": "Start Codex from the project folder you want it to inspect or edit."
             }
           }
         }
