@@ -93,10 +93,8 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-<div class="modal-backdrop" onclick={onClose}>
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-container" onclick={(e) => e.stopPropagation()}>
+<div class="modal-backdrop" onclick={onClose} onkeydown={handleKeydown} role="presentation">
+	<div class="modal-container" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
 		<div class="modal-header">
 			<h3>Edit: {stepLabel(editStep)}</h3>
 			<div class="modal-header-controls">

@@ -87,29 +87,6 @@
 		margin-bottom: 16px;
 	}
 
-	.about__content ul {
-		margin: 0 0 16px 24px;
-		list-style: none;
-	}
-
-	.about__content li {
-		position: relative;
-		padding-left: 16px;
-		margin-bottom: 8px;
-	}
-
-	.about__content li::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 10px;
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: var(--accent);
-		opacity: 0.6;
-	}
-
 	@media (max-width: 640px) {
 		.about {
 			padding: 80px 16px 64px;

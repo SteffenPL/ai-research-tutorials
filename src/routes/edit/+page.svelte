@@ -458,15 +458,15 @@
 	<!-- ═══ TRASH ═══ -->
 	{#if data.trash.count > 0}
 		<section class="section trash-section">
-			<button class="section-header trash-toggle" onclick={() => (trashExpanded = !trashExpanded)}>
-				<h2>Trash <span class="trash-count">{data.trash.count}</span></h2>
-				<div class="trash-header-actions">
-					{#if trashExpanded}
-						<button class="btn-sm btn-danger" onclick={(e: MouseEvent) => { e.stopPropagation(); emptyTrash(); }}>Empty All</button>
-					{/if}
+			<div class="section-header trash-toggle">
+				<button type="button" class="trash-title" onclick={() => (trashExpanded = !trashExpanded)}>
+					<h2>Trash <span class="trash-count">{data.trash.count}</span></h2>
 					<span class="asset-chevron" class:expanded={trashExpanded}>›</span>
-				</div>
-			</button>
+				</button>
+				{#if trashExpanded}
+					<button class="btn-sm btn-danger" onclick={emptyTrash}>Empty All</button>
+				{/if}
+			</div>
 
 			{#if trashExpanded}
 				<ul class="item-list">
@@ -918,16 +918,24 @@
 	}
 
 	.trash-toggle {
-		cursor: pointer;
-		border: none;
-		width: 100%;
-		text-align: left;
-		color: inherit;
-		font: inherit;
+		gap: 0.75rem;
 	}
 
 	.trash-toggle:hover {
 		background: rgba(220, 60, 60, 0.05);
+	}
+
+	.trash-title {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex: 1;
+		background: none;
+		border: none;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
+		padding: 0;
 	}
 
 	.trash-toggle h2 {
@@ -943,12 +951,6 @@
 		background: rgba(220, 60, 60, 0.15);
 		padding: 0.1rem 0.4rem;
 		border-radius: 8px;
-	}
-
-	.trash-header-actions {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
 	}
 
 	.inline-form {

@@ -430,10 +430,9 @@
 					rows="2"
 				></textarea>
 			{:else}
-				<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-				<div class="comment-text" onclick={() => startCommentEdit(step)}>
+				<button type="button" class="comment-text" onclick={() => startCommentEdit(step)}>
 					{getCommentText(step) || 'Click to add comment...'}
-				</div>
+				</button>
 			{/if}
 			{#if step.comment && editingCommentId !== step.id}
 				<button class="comment-remove" title="Remove comment" onclick={() => removeComment(step)}>✕</button>

@@ -303,7 +303,7 @@
 	{#if step.content.kind === 'window-collection'}
 		<!-- Desktop: collapsible marker with sub-window list -->
 		<details class="collection-marker">
-			<summary class="window-marker" role="button">
+			<summary class="window-marker">
 				<span class="marker-icon" aria-hidden="true">⊞</span>
 				<span class="marker-title">{step.windowTitle}</span>
 				{#if step.subtitle}<span class="marker-sub">{step.subtitle}</span>{/if}
@@ -374,35 +374,6 @@
 {/if}
 
 <style>
-	/* ── Compact one-line summary (fallback for non-grouped compact steps) ── */
-	.compact-step {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 4px 10px;
-		font-size: 0.72rem;
-		font-family: var(--font-mono);
-		color: var(--chip-accent);
-		background: color-mix(in srgb, var(--chip-accent) 8%, transparent);
-		border: 1px solid color-mix(in srgb, var(--chip-accent) 20%, transparent);
-		border-radius: 14px;
-		margin: 2px 2px;
-	}
-
-	.compact-type {
-		flex-shrink: 0;
-		width: 14px;
-		text-align: center;
-		font-size: 0.75rem;
-	}
-
-	.compact-text {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		max-width: 220px;
-	}
-
 	/* ── Assistant messages (default: plain) ── */
 	.assistant-block {
 		display: flex;

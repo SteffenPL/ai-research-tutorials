@@ -110,8 +110,14 @@
 {#if open}
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="backdrop" onclick={handleBackdrop} onkeydown={handleKeydown}>
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="picker" onclick={(e) => e.stopPropagation()} role="dialog" aria-label="Select asset">
+		<div
+			class="picker"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-label="Select asset"
+			tabindex="-1"
+		>
 			<div class="picker-header">
 				<h3>Select Asset</h3>
 				<button class="close-btn" onclick={onclose}>&times;</button>

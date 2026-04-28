@@ -349,9 +349,9 @@
 	<!-- Hotkeys overlay -->
 	{#if showHotkeys}
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="hotkeys-overlay" onclick={() => (showHotkeys = false)}>
+		<div class="hotkeys-overlay" onclick={() => (showHotkeys = false)} onkeydown={() => (showHotkeys = false)}>
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="hotkeys" onclick={(e) => e.stopPropagation()}>
+			<div class="hotkeys" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 				<h3>Keyboard Shortcuts</h3>
 				<dl>
 					<dt><kbd>Space</kbd> / <kbd>P</kbd></dt><dd>Play / Pause</dd>

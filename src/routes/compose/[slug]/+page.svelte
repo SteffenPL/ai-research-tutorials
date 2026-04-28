@@ -8,13 +8,15 @@
 
 	let { data } = $props();
 
-	let composition = $state<TutorialComposition>(
-		data.composition ?? {
+	function initialComposition(): TutorialComposition {
+		return data.composition ?? {
 			slug: data.slug,
 			meta: { slug: data.slug, title: { en: data.slug }, tags: [] },
 			blocks: []
-		}
-	);
+		};
+	}
+
+	let composition = $state<TutorialComposition>(initialComposition());
 
 	let saving = $state(false);
 	let previewing = $state(false);
@@ -499,8 +501,7 @@
 		letter-spacing: 0.06em;
 	}
 	.form-grid input,
-	.form-grid textarea,
-	.form-grid select {
+	.form-grid textarea {
 		padding: 0.35rem 0.5rem;
 		background: rgba(0, 0, 0, 0.3);
 		border: 1px solid var(--border-subtle);

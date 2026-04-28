@@ -362,8 +362,8 @@
 	</header>
 
 	{#if showResetConfirm}
-		<div class="overlay" role="dialog" onclick={() => (showResetConfirm = false)}>
-			<div class="dialog" onclick={(e) => e.stopPropagation()}>
+		<div class="overlay" role="dialog" tabindex="-1" onclick={() => (showResetConfirm = false)} onkeydown={() => (showResetConfirm = false)}>
+			<div class="dialog" role="presentation" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 				<h3>Reset to source session?</h3>
 				<p>This will discard all curation changes and re-derive the trace from the raw session. Unsaved changes will be lost.</p>
 				<div class="dialog-actions">
@@ -375,8 +375,8 @@
 	{/if}
 
 	{#if showDeleteConfirm}
-		<div class="overlay" role="dialog" onclick={() => (showDeleteConfirm = false)}>
-			<div class="dialog" onclick={(e) => e.stopPropagation()}>
+		<div class="overlay" role="dialog" tabindex="-1" onclick={() => (showDeleteConfirm = false)} onkeydown={() => (showDeleteConfirm = false)}>
+			<div class="dialog" role="presentation" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 				<h3>Delete saved trace?</h3>
 				<p>This will delete <code>trace.json</code> from disk. {view ? 'The trace will be re-derived from the source session.' : 'There is no source session — the trace data will be gone.'}</p>
 				<div class="dialog-actions">
@@ -451,9 +451,6 @@
 		min-height: 60vh;
 		color: var(--text-secondary);
 		font-family: var(--font-mono);
-	}
-	.loading a {
-		color: var(--orange-300);
 	}
 
 	/* ─── Toolbar ─────────────────────────────── */
@@ -532,46 +529,12 @@
 		color: var(--text-secondary);
 		border-color: var(--border-subtle);
 	}
-	.btn-sm {
-		padding: 0.2rem 0.5rem;
-		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid var(--border-subtle);
-		border-radius: 4px;
-		color: var(--text-secondary);
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		cursor: pointer;
-	}
-	.btn-sm:hover {
-		background: rgba(255, 255, 255, 0.08);
-		color: var(--text-primary);
-	}
-	.btn-sm.danger {
-		color: var(--red);
-		border-color: rgba(220, 50, 50, 0.3);
-	}
-	.btn-icon {
-		background: none;
-		border: none;
-		color: var(--text-tertiary);
-		cursor: pointer;
-		font-size: 0.75rem;
-		padding: 0.15rem 0.3rem;
-		border-radius: 3px;
-	}
-	.btn-icon:hover {
-		color: var(--text-primary);
-		background: rgba(255, 255, 255, 0.06);
-	}
 
 	/* ─── Metadata section (full-width, above panels) ─── */
 	.metadata-section {
 		max-width: 1600px;
 		margin: 0 auto;
 		padding: calc(var(--nav-total-height) + 3rem + 0.5rem) 1rem 0;
-	}
-	.metadata-section .tutorial-header {
-		margin: 0;
 	}
 
 	/* ─── Layout ──────────────────────────────── */

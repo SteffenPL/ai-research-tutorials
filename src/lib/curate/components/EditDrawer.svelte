@@ -398,11 +398,6 @@
 	.file-upload-row input[type='text'] {
 		flex: 1;
 	}
-	.file-upload-row input[type='file'] {
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
-		color: var(--text-secondary);
-	}
 
 	/* Display mode toggle in drawer */
 	.drawer-row {
