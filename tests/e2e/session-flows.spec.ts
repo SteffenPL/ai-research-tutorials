@@ -31,8 +31,8 @@ test.describe('session provider flows', () => {
 		await page.goto('/tutorials/install-openai-codex');
 
 		await expect(page).toHaveTitle(/Install OpenAI Codex/);
-		await expect(page.getByText('Install the Codex CLI')).toBeVisible();
-		await expect(page.getByText('npm install -g @openai/codex')).toBeVisible();
-		await expect(page.getByText('Create a small webpage showing a simulation')).toBeVisible();
+		await expect(page.locator('.welcome-card').getByText('Install the OpenAI Codex CLI')).toBeVisible();
+		await expect(page.locator('.welcome-card').getByRole('link', { name: 'OpenAI Codex CLI' })).toBeVisible();
+		await expect(page.locator('.welcome-card').getByText('curl available on your machine')).toBeVisible();
 	});
 });

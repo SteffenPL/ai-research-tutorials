@@ -72,6 +72,7 @@
 		if (!node.classList.contains('media-window')) return {};
 
 		let resizeObserver: ResizeObserver | null = null;
+		let rafIds: number[] = [];
 
 		const update = () => {
 			const media = node.querySelector<HTMLImageElement | HTMLVideoElement>('img, video');
@@ -102,21 +103,30 @@
 			node.style.setProperty('--fit-status-height', `${statusHeight}px`);
 		};
 
+		const scheduleUpdate = () => {
+			update();
+			rafIds.push(requestAnimationFrame(update));
+			rafIds.push(requestAnimationFrame(() => requestAnimationFrame(update)));
+		};
+
 		const media = node.querySelector<HTMLImageElement | HTMLVideoElement>('img, video');
-		media?.addEventListener('load', update);
-		media?.addEventListener('loadedmetadata', update);
-		window.addEventListener('resize', update);
-		resizeObserver = new ResizeObserver(update);
+		media?.addEventListener('load', scheduleUpdate);
+		media?.addEventListener('loadedmetadata', scheduleUpdate);
+		window.addEventListener('resize', scheduleUpdate);
+		resizeObserver = new ResizeObserver(scheduleUpdate);
 		const frame = node.closest<HTMLElement>('.workspace') ?? node.offsetParent as HTMLElement | null;
 		if (frame) resizeObserver.observe(frame);
-		update();
+		if (media) resizeObserver.observe(media);
+		scheduleUpdate();
 
 		return {
 			destroy() {
-				media?.removeEventListener('load', update);
-				media?.removeEventListener('loadedmetadata', update);
-				window.removeEventListener('resize', update);
+				media?.removeEventListener('load', scheduleUpdate);
+				media?.removeEventListener('loadedmetadata', scheduleUpdate);
+				window.removeEventListener('resize', scheduleUpdate);
 				resizeObserver?.disconnect();
+				for (const id of rafIds) cancelAnimationFrame(id);
+				rafIds = [];
 			}
 		};
 	}
@@ -175,6 +185,9 @@
 			class:media-window={isMediaContent(win.step.content)}
 			class:has-status-bar={hasStatusBar(win.step.content)}
 			class:focused-hidden={isFocused}
+			data-window-index={idx}
+			data-step-index={win.index}
+			data-content-kind={win.step.content.kind}
 			style="{stackStyle(depth, chromeless)};--enter-delay:{enterDelay}ms"
 			use:fitMediaWindow
 		>
@@ -202,6 +215,7 @@
 		class:chromeless
 		class:media-window={isMediaContent(focusedWindow.content)}
 		class:has-status-bar={hasStatusBar(focusedWindow.content)}
+		data-content-kind={focusedWindow.content.kind}
 		use:fitMediaWindow
 	>
 		{#if !chromeless}
@@ -390,10 +404,10 @@
 	.fiji-window.media-window :global(img),
 	.fiji-window.media-window :global(video) {
 		display: block;
+		width: 100%;
+		height: 100%;
 		max-width: 100%;
 		max-height: 100%;
-		width: auto;
-		height: auto;
 		object-fit: contain;
 	}
 
@@ -525,10 +539,10 @@
 	.max-window.media-window .max-body :global(img),
 	.max-window.media-window .max-body :global(video) {
 		display: block;
+		width: 100%;
+		height: 100%;
 		max-width: 100%;
 		max-height: 100%;
-		width: auto;
-		height: auto;
 		object-fit: contain;
 	}
 

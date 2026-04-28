@@ -10,6 +10,7 @@
 	import Wallpaper from '$lib/components/Wallpaper.svelte';
 	import { base } from '$app/paths';
 	import { browser } from '$app/environment';
+	import { afterNavigate } from '$app/navigation';
 	import { onMount, tick } from 'svelte';
 
 	let { tutorial }: { tutorial: Tutorial } = $props();
@@ -282,9 +283,64 @@
 
 	let displayRoundIdx = $derived(currentStep >= 0 ? getRoundIdx(currentStep) : 0);
 
+	function clampStep(step: number): number {
+		return Math.max(-1, Math.min(totalSteps, Math.trunc(step)));
+	}
+
+	function getInitialJumpStep(): number | null {
+		if (!browser) return null;
+		const params = new URLSearchParams(window.location.search);
+		const hash = new URLSearchParams(window.location.hash.replace(/^#/, '').replace(/^\?/, ''));
+		const value = (key: string) => params.get(key) ?? hash.get(key);
+
+		const stepValue = value('step');
+		if (stepValue !== null) {
+			const parsed = Number(stepValue);
+			if (Number.isFinite(parsed)) return clampStep(parsed);
+		}
+
+		const tutorialValue = value('tutorial');
+		if (tutorialValue !== null) {
+			const parsed = Number(tutorialValue);
+			if (Number.isFinite(parsed)) return tutorialStops[Math.trunc(parsed)] ?? null;
+		}
+
+		const roundValue = value('round');
+		if (roundValue !== null) {
+			const parsed = Number(roundValue);
+			if (Number.isFinite(parsed)) return roundBoundaries[Math.trunc(parsed)] ?? null;
+		}
+
+		const windowValue = value('window');
+		if (windowValue !== null) {
+			const parsed = Number(windowValue);
+			if (Number.isFinite(parsed)) return windowSteps[Math.trunc(parsed)]?.index ?? null;
+		}
+
+		const stepHash = window.location.hash.match(/^#step-(\d+)$/);
+		if (stepHash) return clampStep(Number(stepHash[1]));
+
+		return null;
+	}
+
+	function applyUrlJump() {
+		const jumpStep = getInitialJumpStep();
+		if (jumpStep === null) return;
+		scrollDriven = false;
+		currentStep = jumpStep;
+		revealedWindows = new Set(windowSteps.filter((w) => w.index <= jumpStep).map((w) => w.index));
+		tick().then(() => showUpTo(jumpStep));
+	}
+
+	afterNavigate(() => applyUrlJump());
+
 	onMount(() => {
 		document.body.classList.add('tutorial-active');
+		const previousScrollRestoration = history.scrollRestoration;
+		history.scrollRestoration = 'manual';
+		applyUrlJump();
 		return () => {
+			history.scrollRestoration = previousScrollRestoration;
 			document.body.classList.remove('tutorial-active');
 			if (revealTimer) clearTimeout(revealTimer);
 		};
