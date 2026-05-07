@@ -19,6 +19,9 @@
 	let newTraceSlug = $state('');
 	let showNewTrace = $state(false);
 	let newTraceFromSession = $state<string | null>(null);
+	let sessionQuery = $state('');
+	let traceQuery = $state('');
+	let tutorialQuery = $state('');
 
 	let expandedTutorialAssets: Record<string, boolean> = $state({});
 	let copyToast = $state('');
@@ -38,6 +41,47 @@
 	function isImage(filename: string): boolean {
 		return /\.(png|jpe?g|gif|svg|webp|avif|bmp|ico)$/i.test(filename);
 	}
+
+	function normalizeQuery(value: string): string {
+		return value.trim().toLowerCase();
+	}
+
+	function matchesQuery(query: string, fields: Array<string | number | undefined | null>): boolean {
+		if (!query) return true;
+		return fields.some((field) => String(field ?? '').toLowerCase().includes(query));
+	}
+
+	const filteredSessions = $derived.by(() => {
+		const query = normalizeQuery(sessionQuery);
+		return data.sessions.filter((session: { slug: string; hasTrace: boolean }) =>
+			matchesQuery(query, [session.slug, session.hasTrace ? 'has trace' : 'no trace'])
+		);
+	});
+
+	const filteredTraces = $derived.by(() => {
+		const query = normalizeQuery(traceQuery);
+		return data.traces.filter((trace: {
+			slug: string;
+			title?: string;
+			sessionSlug?: string;
+			roundCount: number;
+		}) => matchesQuery(query, [trace.slug, trace.title, trace.sessionSlug, trace.roundCount]));
+	});
+
+	const filteredTutorials = $derived.by(() => {
+		const query = normalizeQuery(tutorialQuery);
+		return data.tutorials.filter((tutorial: {
+			slug: string;
+			title?: string;
+			blockCount: number;
+			sourceSlugs?: string[];
+		}) => matchesQuery(query, [
+			tutorial.slug,
+			tutorial.title,
+			tutorial.blockCount,
+			tutorial.sourceSlugs?.join(' ')
+		]));
+	});
 
 	function findRefs(kind: string, slug: string): string[] {
 		const warnings: string[] = [];
@@ -184,6 +228,18 @@
 				{showImport ? 'Cancel' : 'Import Session'}
 			</button>
 		</div>
+		{#if data.sessions.length > 0}
+			<div class="section-tools">
+				<label class="filter-field">
+					<span class="visually-hidden">Filter sessions</span>
+					<input type="search" bind:value={sessionQuery} placeholder="Filter sessions" />
+					{#if sessionQuery}
+						<button type="button" class="filter-clear" title="Clear sessions filter" onclick={() => (sessionQuery = '')}>x</button>
+					{/if}
+				</label>
+				<span class="result-count">{filteredSessions.length}/{data.sessions.length}</span>
+			</div>
+		{/if}
 
 		{#if showImport}
 			<div class="import-form">
@@ -221,48 +277,52 @@
 
 		{#if data.sessions.length === 0}
 			<p class="empty">No sessions imported yet.</p>
+		{:else if filteredSessions.length === 0}
+			<p class="empty">No sessions match "{sessionQuery}".</p>
 		{:else}
-			<ul class="item-list">
-				{#each data.sessions as session}
-					{@const sessionTraces = data.traces.filter((t: { sessionSlug?: string }) => t.sessionSlug === session.slug)}
-					<li class="item item-col">
-						<div class="item-row">
-							<span class="item-slug">{session.slug}</span>
-							<div class="item-actions">
-								<a class="btn-sm" href="{base}/log/{session.slug}">View Log</a>
-								<button class="btn-sm btn-accent" onclick={() => {
-									newTraceFromSession = session.slug;
-									newTraceSlug = session.slug + '-trace';
-								}}>New Trace</button>
-								<button class="btn-sm btn-danger" onclick={() => deleteItem('session', { slug: session.slug })}>Delete</button>
+			<div class="scroll-region">
+				<ul class="item-list">
+					{#each filteredSessions as session}
+						{@const sessionTraces = data.traces.filter((t: { sessionSlug?: string }) => t.sessionSlug === session.slug)}
+						<li class="item item-col">
+							<div class="item-row">
+								<span class="item-slug">{session.slug}</span>
+								<div class="item-actions">
+									<a class="btn-sm" href="{base}/log/{session.slug}">View Log</a>
+									<button class="btn-sm btn-accent" onclick={() => {
+										newTraceFromSession = session.slug;
+										newTraceSlug = session.slug + '-trace';
+									}}>New Trace</button>
+									<button class="btn-sm btn-danger" onclick={() => deleteItem('session', { slug: session.slug })}>Delete</button>
+								</div>
 							</div>
-						</div>
-						{#if sessionTraces.length > 0}
-							<div class="item-sub">
-								{#each sessionTraces as trace}
-									<a class="sub-link" href="{base}/curate/{trace.slug}">{trace.slug}</a>
-								{/each}
-							</div>
-						{/if}
-						{#if newTraceFromSession === session.slug}
-							<div class="inline-form">
-								<input
-									type="text"
-									bind:value={newTraceSlug}
-									placeholder="trace-slug"
-									class="slug-input"
-								/>
-								<a
-									class="btn btn-primary"
-									href={newTraceSlug ? `${base}/curate/${newTraceSlug}?session=${session.slug}` : '#'}
-									class:disabled={!newTraceSlug}
-								>Create</a>
-								<button class="btn-sm" onclick={() => (newTraceFromSession = null)}>Cancel</button>
-							</div>
-						{/if}
-					</li>
-				{/each}
-			</ul>
+							{#if sessionTraces.length > 0}
+								<div class="item-sub">
+									{#each sessionTraces as trace}
+										<a class="sub-link" href="{base}/curate/{trace.slug}">{trace.slug}</a>
+									{/each}
+								</div>
+							{/if}
+							{#if newTraceFromSession === session.slug}
+								<div class="inline-form">
+									<input
+										type="text"
+										bind:value={newTraceSlug}
+										placeholder="trace-slug"
+										class="slug-input"
+									/>
+									<a
+										class="btn btn-primary"
+										href={newTraceSlug ? `${base}/curate/${newTraceSlug}?session=${session.slug}` : '#'}
+										class:disabled={!newTraceSlug}
+									>Create</a>
+									<button class="btn-sm" onclick={() => (newTraceFromSession = null)}>Cancel</button>
+								</div>
+							{/if}
+						</li>
+					{/each}
+				</ul>
+			</div>
 		{/if}
 	</section>
 
@@ -274,6 +334,18 @@
 				{showNewTrace ? 'Cancel' : 'New Trace'}
 			</button>
 		</div>
+		{#if data.traces.length > 0}
+			<div class="section-tools">
+				<label class="filter-field">
+					<span class="visually-hidden">Filter traces</span>
+					<input type="search" bind:value={traceQuery} placeholder="Filter traces" />
+					{#if traceQuery}
+						<button type="button" class="filter-clear" title="Clear traces filter" onclick={() => (traceQuery = '')}>x</button>
+					{/if}
+				</label>
+				<span class="result-count">{filteredTraces.length}/{data.traces.length}</span>
+			</div>
+		{/if}
 
 		{#if showNewTrace}
 			<div class="inline-form">
@@ -295,31 +367,35 @@
 
 		{#if data.traces.length === 0 && !showNewTrace}
 			<p class="empty">No traces yet. Create a blank trace or curate one from a session.</p>
+		{:else if data.traces.length > 0 && filteredTraces.length === 0}
+			<p class="empty">No traces match "{traceQuery}".</p>
 		{:else}
-			<ul class="item-list">
-				{#each data.traces as trace}
-					<li class="item">
-						<div class="item-info">
-							<span class="item-slug">{trace.slug}</span>
-							{#if trace.title && trace.title !== trace.slug}
-								<span class="item-title">{trace.title}</span>
-							{/if}
-							<span class="item-meta">
-								{trace.roundCount} rounds
-								{#if trace.sessionSlug}
-									· from <a class="meta-link" href="{base}/log/{trace.sessionSlug}">{trace.sessionSlug}</a>
-								{:else}
-									· standalone
+			<div class="scroll-region">
+				<ul class="item-list">
+					{#each filteredTraces as trace}
+						<li class="item">
+							<div class="item-info">
+								<span class="item-slug">{trace.slug}</span>
+								{#if trace.title && trace.title !== trace.slug}
+									<span class="item-title">{trace.title}</span>
 								{/if}
-							</span>
-						</div>
-						<div class="item-actions">
-							<a class="btn-sm" href="{base}/curate/{trace.slug}">Edit</a>
-							<button class="btn-sm btn-danger" onclick={() => deleteItem('trace', { slug: trace.slug })}>Delete</button>
-						</div>
-					</li>
-				{/each}
-			</ul>
+								<span class="item-meta">
+									{trace.roundCount} rounds
+									{#if trace.sessionSlug}
+										· from <a class="meta-link" href="{base}/log/{trace.sessionSlug}">{trace.sessionSlug}</a>
+									{:else}
+										· standalone
+									{/if}
+								</span>
+							</div>
+							<div class="item-actions">
+								<a class="btn-sm" href="{base}/curate/{trace.slug}">Edit</a>
+								<button class="btn-sm btn-danger" onclick={() => deleteItem('trace', { slug: trace.slug })}>Delete</button>
+							</div>
+						</li>
+					{/each}
+				</ul>
+			</div>
 		{/if}
 	</section>
 
@@ -331,6 +407,18 @@
 				{showNewTutorial ? 'Cancel' : 'New Tutorial'}
 			</button>
 		</div>
+		{#if data.tutorials.length > 0}
+			<div class="section-tools">
+				<label class="filter-field">
+					<span class="visually-hidden">Filter tutorials</span>
+					<input type="search" bind:value={tutorialQuery} placeholder="Filter tutorials" />
+					{#if tutorialQuery}
+						<button type="button" class="filter-clear" title="Clear tutorials filter" onclick={() => (tutorialQuery = '')}>x</button>
+					{/if}
+				</label>
+				<span class="result-count">{filteredTutorials.length}/{data.tutorials.length}</span>
+			</div>
+		{/if}
 
 		{#if showNewTutorial}
 			<div class="import-form">
@@ -346,30 +434,34 @@
 
 		{#if data.tutorials.length === 0}
 			<p class="empty">No tutorials yet.</p>
+		{:else if filteredTutorials.length === 0}
+			<p class="empty">No tutorials match "{tutorialQuery}".</p>
 		{:else}
-			<ul class="item-list">
-				{#each data.tutorials as tutorial}
-					<li class="item">
-						<div class="item-info">
-							<span class="item-slug">{tutorial.slug}</span>
-							{#if tutorial.title}
-								<span class="item-title">{tutorial.title}</span>
-							{/if}
-							<span class="item-meta">
-								{tutorial.blockCount} blocks
-								{#if tutorial.sourceSlugs?.length}
-									· traces: {tutorial.sourceSlugs.join(', ')}
+			<div class="scroll-region">
+				<ul class="item-list">
+					{#each filteredTutorials as tutorial}
+						<li class="item">
+							<div class="item-info">
+								<span class="item-slug">{tutorial.slug}</span>
+								{#if tutorial.title}
+									<span class="item-title">{tutorial.title}</span>
 								{/if}
-							</span>
-						</div>
-						<div class="item-actions">
-							<a class="btn-sm" href="{base}/compose/{tutorial.slug}">Edit</a>
-							<a class="btn-sm" href="{base}/preview/{tutorial.slug}">Preview</a>
-							<button class="btn-sm btn-danger" onclick={() => deleteItem('tutorial', { slug: tutorial.slug })}>Delete</button>
-						</div>
-					</li>
-				{/each}
-			</ul>
+								<span class="item-meta">
+									{tutorial.blockCount} blocks
+									{#if tutorial.sourceSlugs?.length}
+										· traces: {tutorial.sourceSlugs.join(', ')}
+									{/if}
+								</span>
+							</div>
+							<div class="item-actions">
+								<a class="btn-sm" href="{base}/compose/{tutorial.slug}">Edit</a>
+								<a class="btn-sm" href="{base}/preview/{tutorial.slug}">Preview</a>
+								<button class="btn-sm btn-danger" onclick={() => deleteItem('tutorial', { slug: tutorial.slug })}>Delete</button>
+							</div>
+						</li>
+					{/each}
+				</ul>
+			</div>
 		{/if}
 	</section>
 
@@ -524,9 +616,9 @@
 	:global(.trash-section) { grid-area: trash; }
 
 	.grid-sessions,
-	.grid-traces {
-		max-height: 500px;
-		overflow-y: auto;
+	.grid-traces,
+	.grid-tutorials {
+		max-height: min(560px, calc(100vh - var(--nav-total-height) - 80px));
 	}
 
 	@media (max-width: 768px) {
@@ -541,8 +633,9 @@
 		}
 
 		.grid-sessions,
-		.grid-traces {
-			max-height: none;
+		.grid-traces,
+		.grid-tutorials {
+			max-height: min(70vh, 560px);
 		}
 	}
 
@@ -551,6 +644,9 @@
 		border-radius: 8px;
 		background: var(--bg-surface);
 		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
 	}
 
 	.section-header {
@@ -568,6 +664,91 @@
 		font-size: 0.9rem;
 		color: var(--orange-300);
 		font-weight: 600;
+	}
+
+	.section-tools {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		border-bottom: 1px solid var(--border-subtle);
+		background: var(--glass-faint);
+	}
+
+	.filter-field {
+		position: relative;
+		flex: 1;
+		min-width: 0;
+	}
+
+	.filter-field input {
+		width: 100%;
+		padding: 0.35rem 1.75rem 0.35rem 0.5rem;
+		background: var(--bg-deep);
+		border: 1px solid var(--border-subtle);
+		border-radius: 4px;
+		color: var(--text-primary);
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+	}
+
+	.filter-field input:focus {
+		outline: none;
+		border-color: var(--orange-400);
+	}
+
+	.filter-clear {
+		position: absolute;
+		top: 50%;
+		right: 0.35rem;
+		width: 1.1rem;
+		height: 1.1rem;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		background: transparent;
+		color: var(--text-tertiary);
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		line-height: 1;
+		cursor: pointer;
+		transform: translateY(-50%);
+	}
+
+	.filter-clear:hover,
+	.filter-clear:focus-visible {
+		border-color: var(--border-subtle);
+		background: var(--glass-highlight);
+		color: var(--text-primary);
+		outline: none;
+	}
+
+	.result-count {
+		flex-shrink: 0;
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		color: var(--text-tertiary);
+		background: var(--glass-highlight);
+		border-radius: 999px;
+		padding: 0.12rem 0.45rem;
+	}
+
+	.scroll-region {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
 	.empty {
