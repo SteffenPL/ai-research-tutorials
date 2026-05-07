@@ -33,6 +33,7 @@ fiji-output/
 /testevals/*
 !/testevals/limb-digit-patterning/
 !/testevals/limb-digit-patterning/*.md
+/testevals/limb-digit-patterning/runs/
 /testevals/limb-digit-patterning/workspace/
 
 .playwright-mcp/
